@@ -1,4 +1,25 @@
 <resources>
     <string name="app_name">My Crypto Binder</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_tab">TabActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="lbl_currency_name">Name</string>
+    <string name="lbl_currency_iso_code">ISO code</string>
+    <string name="lbl_currency_symbol">Symbol</string>
+
+    <string name="ph_currency_name">ex. Euro</string>
+    <string name="ph_currency_iso_code">ex. EUR</string>
+    <string name="ph_currency_symbol">ex. €</string>
+
+    <string name="ph_exchange_name">Name</string>
+    <string name="ph_exchange_link">Website</string>
+    <string name="ph_exchange_description">Description</string>
+
+    <string name="btn_create_currency">Create currency</string>
+    <string name="btn_add_currency">Add currency</string>
+    <string name="btn_create_exchange">Create exchange</string>
+    <string name="btn_add_exchange">Add exchange</string>
+    <string name="title_activity_main_tabs">MainTabsActivity</string>
+
 </resources>
