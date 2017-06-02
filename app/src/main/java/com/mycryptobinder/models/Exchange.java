@@ -2,15 +2,15 @@ package com.mycryptobinder.models;
 
 /**
  * Created by Yann
- * Created on 25/05/2017
+ * Created on 26/05/2017
  */
 
-public class Currency {
+public class Exchange {
 
     private long id;
     private String name;
-    private String isoCode;
-    private String symbol;
+    private String link;
+    private String description;
 
     public long getId() {
         return id;
@@ -28,20 +28,20 @@ public class Currency {
         this.name = name;
     }
 
-    public String getIsoCode() {
-        return isoCode;
+    public String getLink() {
+        return link;
     }
 
-    public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
+    public void setLink(String link) {
+        this.link = link;
     }
 
-    public String getSymbol() {
-        return symbol;
+    public String getDescription() {
+        return description;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

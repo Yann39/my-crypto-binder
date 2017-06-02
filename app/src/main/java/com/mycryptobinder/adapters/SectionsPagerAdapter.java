@@ -10,11 +10,11 @@ import com.mycryptobinder.activities.StatisticsFragment;
 import com.mycryptobinder.activities.TransactionsFragment;
 
 /**
- * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the sections/tabs/pages.
- *
- * Created by Yann
- * Created on 25/05/2017
+ * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the sections/tabs/pages
+ * <p>
+ * Created by Yann on 25/05/2017
  */
+
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     public SectionsPagerAdapter(FragmentManager fm) {

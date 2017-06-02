@@ -7,6 +7,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.mycryptobinder.helpers.DatabaseHelper;
+import com.mycryptobinder.models.Exchange;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Yann
@@ -32,8 +36,37 @@ public class ExchangeManager {
         dbHelper.close();
     }
 
+    /**
+     * Get the list of all exchanges from the database
+     *
+     * @return list of Exchange elements representing the exchanges
+     */
+    public List<Exchange> getAll() {
+        List<Exchange> list = new ArrayList<>();
+        Cursor cursor = fetch();
+        try {
+            while (cursor.moveToNext()) {
+                Exchange exc = new Exchange();
+                exc.setId(cursor.getLong(0));
+                exc.setName(cursor.getString(1));
+                exc.setLink(cursor.getString(2));
+                exc.setDescription(cursor.getString(3));
+                list.add(exc);
+            }
+        } finally {
+            cursor.close();
+        }
+        return list;
+    }
+
+    /**
+     * Fetch all exchanges from the database into a cursor
+     *
+     * @return A Cursor containing all the records
+     */
+
     public Cursor fetch() {
-        String[] columns = new String[] { DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_LINK, DatabaseHelper.COLUMN_DESCRIPTION };
+        String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_LINK, DatabaseHelper.COLUMN_DESCRIPTION};
         Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, columns, null, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -41,6 +74,13 @@ public class ExchangeManager {
         return cursor;
     }
 
+    /**
+     * Insert a new exchange into the database
+     *
+     * @param name        The exchange name
+     * @param link        The exchange link
+     * @param description The exchange description
+     */
     public void insert(String name, String link, String description) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_NAME, name);
@@ -49,6 +89,15 @@ public class ExchangeManager {
         database.insert(DatabaseHelper.TABLE_EXCHANGES, null, contentValues);
     }
 
+    /**
+     * Update an existing exchange in the database
+     *
+     * @param id          The id of the exchange to edit
+     * @param name        The new name of the exchange
+     * @param link        The new link of the exchange
+     * @param description The new description of the exchange
+     * @return An integer representing the number of rows affected
+     */
     public int update(long id, String name, String link, String description) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_NAME, name);
@@ -57,6 +106,11 @@ public class ExchangeManager {
         return database.update(DatabaseHelper.TABLE_EXCHANGES, contentValues, DatabaseHelper.COLUMN_ID + " = " + id, null);
     }
 
+    /**
+     * Delete an existing exchange from the database
+     *
+     * @param id The id of the exchange to delete
+     */
     public void delete(long id) {
         database.delete(DatabaseHelper.TABLE_CURRENCIES, DatabaseHelper.COLUMN_ID + "=" + id, null);
     }

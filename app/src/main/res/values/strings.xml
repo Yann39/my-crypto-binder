@@ -8,6 +8,10 @@
     <string name="lbl_currency_iso_code">ISO code</string>
     <string name="lbl_currency_symbol">Symbol</string>
 
+    <string name="lbl_exchange_name">Name</string>
+    <string name="lbl_exchange_link">Link</string>
+    <string name="lbl_exchange_description">Description</string>
+
     <string name="ph_currency_name">ex. Euro</string>
     <string name="ph_currency_iso_code">ex. EUR</string>
     <string name="ph_currency_symbol">ex. €</string>
@@ -22,4 +26,26 @@
     <string name="btn_add_exchange">Add exchange</string>
     <string name="title_activity_main_tabs">MainTabsActivity</string>
 
+    <string name="btn_update_currency">Update currency</string>
+    <string name="btn_update_exchange">Update exchange</string>
+
+    <string name="imgbtn_delete_currency_desc">Delete this currency</string>
+    <string name="imgbtn_delete_exchange_desc">Delete this exchange</string>
+
+    <string name="dialog_delete_currency_message">Are you sure you want to delete currency %1$s</string>
+    <string name="dialog_delete_exchange_message">Are you sure you want to delete exchange %1$s</string>
+
+    <string name="lbl_confirmation">Confirmation</string>
+    <string name="lbl_yes">Yes</string>
+    <string name="lbl_no">No</string>
+
+    <string name="title_add_currency">Add currency</string>
+    <string name="title_add_exchange">Add exchange</string>
+
+    <string name="msg_currency_removed">Currency %1$s has been removed</string>
+    <string name="msg_currency_updated">Currency %1$s has been updated</string>
+    <string name="msg_currency_created">Currency %1$s has been created</string>
+    <string name="msg_exchange_removed">Exchange %1$s has been removed</string>
+    <string name="msg_exchange_updated">Exchange %1$s has been updated</string>
+    <string name="msg_exchange_created">Exchange %1$s has been created</string>
 </resources>

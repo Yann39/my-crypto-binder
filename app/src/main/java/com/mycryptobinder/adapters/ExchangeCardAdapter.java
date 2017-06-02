@@ -1,6 +1,5 @@
 package com.mycryptobinder.adapters;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,76 +13,76 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.activities.EditCurrencyActivity;
-import com.mycryptobinder.managers.CurrencyManager;
-import com.mycryptobinder.models.Currency;
-import com.mycryptobinder.viewholders.CurrencyCardViewHolder;
+import com.mycryptobinder.activities.EditExchangeActivity;
+import com.mycryptobinder.managers.ExchangeManager;
+import com.mycryptobinder.models.Exchange;
+import com.mycryptobinder.viewholders.ExchangeCardViewHolder;
 
 import java.util.List;
 
 /**
- * Adapter class for currency cards rendering
+ * Adapter class for exchange cards rendering
  * It acts as a bridge between an AdapterView and the underlying data for that view
  * <p>
- * Created by Yann on 25/05/2017
+ * Created by Yann on 02/05/2017
  */
 
-public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHolder> {
+public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHolder> {
 
-    private List<Currency> currencies;
+    private List<Exchange> exchanges;
     private Context context;
 
-    public CurrencyCardAdapter(Context context, List<Currency> currencies) {
-        this.currencies = currencies;
+    public ExchangeCardAdapter(Context context, List<Exchange> exchanges) {
+        this.exchanges = exchanges;
         this.context = context;
     }
 
     @Override
-    public CurrencyCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ExchangeCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
-        View v = LayoutInflater.from(context).inflate(R.layout.card_currency, parent, false);
-        return new CurrencyCardViewHolder(v);
+        View v = LayoutInflater.from(context).inflate(R.layout.card_exchange, parent, false);
+        return new ExchangeCardViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final CurrencyCardViewHolder holder, int position) {
+    public void onBindViewHolder(final ExchangeCardViewHolder holder, int position) {
         // get text from the data set at this position and replace it in the view
-        holder.currency_id_textView.setText((String.valueOf(currencies.get(holder.getAdapterPosition()).getId())));
-        holder.currency_name_textView.setText(currencies.get(holder.getAdapterPosition()).getName());
-        holder.currency_isocode_textView.setText(currencies.get(holder.getAdapterPosition()).getIsoCode());
-        holder.currency_symbol_textView.setText(currencies.get(holder.getAdapterPosition()).getSymbol());
+        holder.exchange_id_textView.setText((String.valueOf(exchanges.get(holder.getAdapterPosition()).getId())));
+        holder.exchange_name_textView.setText(exchanges.get(holder.getAdapterPosition()).getName());
+        holder.exchange_link_textView.setText(exchanges.get(holder.getAdapterPosition()).getLink());
+        holder.exchange_description_textView.setText(exchanges.get(holder.getAdapterPosition()).getDescription());
 
         // delete button click
-        holder.currency_delete_imageButton.setOnClickListener(new View.OnClickListener() {
+        holder.exchange_delete_imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 // position of the clicked item
                 final int position = holder.getAdapterPosition();
-                final String itemName = currencies.get(position).getName();
+                final String itemName = exchanges.get(position).getName();
 
                 // show a confirm dialog
                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
                 alert.setTitle(context.getResources().getString(R.string.lbl_confirmation));
                 // because Html.fromHtml is deprecated in last Android versions
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    alert.setMessage(Html.fromHtml(context.getResources().getString(R.string.dialog_delete_currency_message, " <b>" + itemName + "</b>"), Html.FROM_HTML_MODE_LEGACY));
+                    alert.setMessage(Html.fromHtml(context.getResources().getString(R.string.dialog_delete_exchange_message, " <b>" + itemName + "</b>"), Html.FROM_HTML_MODE_LEGACY));
                 } else {
-                    alert.setMessage(Html.fromHtml(context.getResources().getString(R.string.dialog_delete_currency_message, " <b>" + itemName + "</b>")));
+                    alert.setMessage(Html.fromHtml(context.getResources().getString(R.string.dialog_delete_exchange_message, " <b>" + itemName + "</b>")));
                 }
                 alert.setPositiveButton(context.getResources().getString(R.string.lbl_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        long itemId = currencies.get(position).getId();
+                        long itemId = exchanges.get(position).getId();
 
                         // delete from the database
-                        CurrencyManager cm = new CurrencyManager(context);
-                        cm.open();
-                        cm.delete(itemId);
+                        ExchangeManager em = new ExchangeManager(context);
+                        em.open();
+                        em.delete(itemId);
 
                         // remove the item from the data set
-                        currencies.remove(position);
+                        exchanges.remove(position);
 
                         // notify any registered observers that the item previously located at position
                         // has been removed from the data set. The items previously located at and
@@ -92,10 +91,10 @@ public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHo
 
                         // notify any registered observers that the itemCount items starting at
                         // position positionStart have changed.
-                        notifyItemRangeChanged(position, currencies.size());
+                        notifyItemRangeChanged(position, exchanges.size());
 
                         // show a notification about the removed item
-                        Toast.makeText(context, context.getResources().getString(R.string.msg_currency_removed, itemName), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getResources().getString(R.string.msg_exchange_removed, itemName), Toast.LENGTH_SHORT).show();
 
                         dialog.dismiss();
                     }
@@ -116,31 +115,31 @@ public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHo
             @Override
             public void onClick(View v) {
                 // get view elements
-                TextView idTextView = (TextView) v.findViewById(R.id.currency_card_currency_id);
-                TextView nameTextView = (TextView) v.findViewById(R.id.currency_card_currency_name);
-                TextView isoCodeTextView = (TextView) v.findViewById(R.id.currency_card_currency_iso_code);
-                TextView symbolTextView = (TextView) v.findViewById(R.id.currency_card_currency_symbol);
+                TextView idTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_id);
+                TextView nameTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_name);
+                TextView linkTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_link);
+                TextView descriptionTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_description);
 
                 // get element values
                 String id = idTextView.getText().toString();
                 String name = nameTextView.getText().toString();
-                String isoCode = isoCodeTextView.getText().toString();
-                String symbol = symbolTextView.getText().toString();
+                String link = linkTextView.getText().toString();
+                String description = descriptionTextView.getText().toString();
 
                 // store element values in the intent so we can access them later
-                Intent edit_cur = new Intent(v.getContext(), EditCurrencyActivity.class);
-                edit_cur.putExtra("id", id);
-                edit_cur.putExtra("name", name);
-                edit_cur.putExtra("isoCode", isoCode);
-                edit_cur.putExtra("symbol", symbol);
-                v.getContext().startActivity(edit_cur);
+                Intent edit_exc = new Intent(v.getContext(), EditExchangeActivity.class);
+                edit_exc.putExtra("id", id);
+                edit_exc.putExtra("name", name);
+                edit_exc.putExtra("link", link);
+                edit_exc.putExtra("description", description);
+                v.getContext().startActivity(edit_exc);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return currencies.size();
+        return exchanges.size();
     }
 
 }

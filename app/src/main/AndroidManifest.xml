@@ -19,11 +19,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AddTransactionActivity" />
-        <activity android:name=".activities.AddCurrencyActivity" />
-        <activity android:name=".activities.AddExchangeActivity" />
+
+        <activity
+            android:name=".activities.AddTransactionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".activities.AddCurrencyActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".activities.AddExchangeActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+
         <activity android:name=".activities.CurrencyListActivity" />
-        <activity android:name=".activities.ExchangeListActivity"></activity>
+        <activity android:name=".activities.ExchangeListActivity" />
+
+        <activity
+            android:name=".activities.EditCurrencyActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".activities.EditExchangeActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
     </application>
 
 </manifest>

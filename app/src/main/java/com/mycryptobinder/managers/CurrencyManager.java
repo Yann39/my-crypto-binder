@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.mycryptobinder.helpers.DatabaseHelper;
 import com.mycryptobinder.models.Currency;
 
@@ -35,13 +36,18 @@ public class CurrencyManager {
         dbHelper.close();
     }
 
+    /**
+     * Get the list of all currencies from the database
+     *
+     * @return list of Currency elements representing the currencies
+     */
     public List<Currency> getAll() {
         List<Currency> list = new ArrayList<>();
-
         Cursor cursor = fetch();
         try {
             while (cursor.moveToNext()) {
                 Currency curr = new Currency();
+                curr.setId(cursor.getLong(0));
                 curr.setName(cursor.getString(1));
                 curr.setIsoCode(cursor.getString(2));
                 curr.setSymbol(cursor.getString(3));
@@ -53,8 +59,13 @@ public class CurrencyManager {
         return list;
     }
 
-    public Cursor fetch() {
-        String[] columns = new String[] { DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_ISO_CODE, DatabaseHelper.COLUMN_SYMBOL };
+    /**
+     * Fetch all currencies from the database into a cursor
+     *
+     * @return A Cursor containing all the records
+     */
+    private Cursor fetch() {
+        String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_ISO_CODE, DatabaseHelper.COLUMN_SYMBOL};
         Cursor cursor = database.query(DatabaseHelper.TABLE_CURRENCIES, columns, null, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -62,6 +73,13 @@ public class CurrencyManager {
         return cursor;
     }
 
+    /**
+     * Insert a new currency into the database
+     *
+     * @param name     The currency name (ex: Euro)
+     * @param iso_code The currency ISO code (ex: EUR)
+     * @param symbol   The currency symbol (ex: €)
+     */
     public void insert(String name, String iso_code, String symbol) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_NAME, name);
@@ -70,6 +88,15 @@ public class CurrencyManager {
         database.insert(DatabaseHelper.TABLE_CURRENCIES, null, contentValues);
     }
 
+    /**
+     * Update an existing currency in the database
+     *
+     * @param id       The id of the currency to edit
+     * @param name     The new name of the currency (ex: Euro)
+     * @param iso_code The new ISO code of the currency (ex: EUR)
+     * @param symbol   The new symbol of the currency (ex: €)
+     * @return An integer representing the number of rows affected
+     */
     public int update(long id, String name, String iso_code, String symbol) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_NAME, name);
@@ -78,6 +105,11 @@ public class CurrencyManager {
         return database.update(DatabaseHelper.TABLE_CURRENCIES, contentValues, DatabaseHelper.COLUMN_ID + " = " + id, null);
     }
 
+    /**
+     * Delete an existing currency from the database
+     *
+     * @param id The id of the currency to delete
+     */
     public void delete(long id) {
         database.delete(DatabaseHelper.TABLE_CURRENCIES, DatabaseHelper.COLUMN_ID + "=" + id, null);
     }

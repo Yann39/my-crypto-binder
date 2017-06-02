@@ -15,9 +15,12 @@ import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.SectionsPagerAdapter;
 
 /**
+ * Main activity responsible for displaying the portfolio
+ * <p>
  * Created by Yann
  * Created on 21/05/2017
  */
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -25,28 +28,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Toolbar
+        // set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Add back arrow to toolbar
+        // add back arrow to toolbar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // Create the adapter that will return a fragment for each of the primary sections of the activity.
+        // create the adapter that will return a fragment for each of the primary sections of the activity.
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
+        // set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // Set up the tabs layout
+        // set up the tabs layout
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        // Set up floating button
+        // set up floating button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,17 +68,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // settings menu item click
         if (id == R.id.action_settings) {
             return true;
         }
 
-        // handle back arrow click (close this activity and return to preview activity if there is any)
+        // back arrow click (close this activity and return to preview activity if there is any)
         if (id == android.R.id.home) {
             finish();
         }
