@@ -13,7 +13,7 @@ import com.mycryptobinder.R;
 import com.mycryptobinder.managers.CurrencyManager;
 
 /**
- * Activity responsible for new currency creation
+ * Activity responsible for editing an existing currency
  * <p>
  * Created by Yann on 02/06/2017
  */
@@ -30,7 +30,7 @@ public class EditCurrencyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle("Edit Currency");
+        setTitle(getResources().getString(R.string.lbl_edit_currency));
         setContentView(R.layout.activity_edit_currency);
 
         // add back arrow to toolbar

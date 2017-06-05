@@ -20,11 +20,13 @@
     <string name="ph_exchange_link">Website</string>
     <string name="ph_exchange_description">Description</string>
 
-    <string name="btn_create_currency">Create currency</string>
     <string name="btn_add_currency">Add currency</string>
-    <string name="btn_create_exchange">Create exchange</string>
     <string name="btn_add_exchange">Add exchange</string>
     <string name="title_activity_main_tabs">MainTabsActivity</string>
+
+    <string name="btn_create_currency">Create currency</string>
+    <string name="btn_create_exchange">Create exchange</string>
+    <string name="btn_create_transaction">Create transaction</string>
 
     <string name="btn_update_currency">Update currency</string>
     <string name="btn_update_exchange">Update exchange</string>
@@ -38,9 +40,27 @@
     <string name="lbl_confirmation">Confirmation</string>
     <string name="lbl_yes">Yes</string>
     <string name="lbl_no">No</string>
+    <string name="lbl_currency_list">Currency list</string>
+    <string name="lbl_exchange_list">Exchange list</string>
+    <string name="lbl_edit_currency">Edit currency</string>
+    <string name="lbl_edit_exchange">Edit exchange</string>
+
+    <string name="lbl_currency1_selection">Send</string>
+    <string name="lbl_currency2_selection">For</string>
+
+    <string name="lbl_exchange_selection">Exchange</string>
+    <string name="lbl_quantity">Quantity</string>
+    <string name="lbl_price">Price</string>
+    <string name="lbl_fees">Fees</string>
+    <string name="lbl_date">Date</string>
+    <string name="lbl_comment">Comment</string>
+    <string name="lbl_transaction_type">Type</string>
+    <string name="lbl_transaction_type_buy">Buy</string>
+    <string name="lbl_transaction_type_sell">Sell</string>
 
     <string name="title_add_currency">Add currency</string>
     <string name="title_add_exchange">Add exchange</string>
+    <string name="title_add_transaction">Add transaction</string>
 
     <string name="msg_currency_removed">Currency %1$s has been removed</string>
     <string name="msg_currency_updated">Currency %1$s has been updated</string>
@@ -48,4 +68,5 @@
     <string name="msg_exchange_removed">Exchange %1$s has been removed</string>
     <string name="msg_exchange_updated">Exchange %1$s has been updated</string>
     <string name="msg_exchange_created">Exchange %1$s has been created</string>
+    <string name="msg_transaction_created">Transaction %1$s has been created</string>
 </resources>

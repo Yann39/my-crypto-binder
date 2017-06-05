@@ -9,23 +9,23 @@ import java.util.Date;
 
 public class Transaction {
 
-    private int id;
+    private long id;
     private Exchange exchange;
     private Currency currency1;
     private Currency currency2;
     private Double fees;
     private Date date;
     private String type;
-    private int quantity;
+    private Double quantity;
     private Double price;
     private String comment;
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -77,11 +77,11 @@ public class Transaction {
         this.type = type;
     }
 
-    public int getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 

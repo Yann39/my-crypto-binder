@@ -37,6 +37,29 @@ public class ExchangeManager {
     }
 
     /**
+     * Get a specific exchange from the database
+     *
+     * @param exchangeId The if of the exchange to retrieve
+     * @return A Exchange element representing the exchange
+     */
+    public Exchange getById(long exchangeId) {
+        Exchange curr = new Exchange();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, null, "id=?", new String[]{Long.toString(exchangeId)}, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            try {
+                curr.setId(cursor.getLong(0));
+                curr.setName(cursor.getString(1));
+                curr.setLink(cursor.getString(2));
+                curr.setDescription(cursor.getString(3));
+            } finally {
+                cursor.close();
+            }
+        }
+        return curr;
+    }
+
+    /**
      * Get the list of all exchanges from the database
      *
      * @return list of Exchange elements representing the exchanges
@@ -64,8 +87,7 @@ public class ExchangeManager {
      *
      * @return A Cursor containing all the records
      */
-
-    public Cursor fetch() {
+    private Cursor fetch() {
         String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_LINK, DatabaseHelper.COLUMN_DESCRIPTION};
         Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, columns, null, null, null, null, null);
         if (cursor != null) {
@@ -112,7 +134,7 @@ public class ExchangeManager {
      * @param id The id of the exchange to delete
      */
     public void delete(long id) {
-        database.delete(DatabaseHelper.TABLE_CURRENCIES, DatabaseHelper.COLUMN_ID + "=" + id, null);
+        database.delete(DatabaseHelper.TABLE_EXCHANGES, DatabaseHelper.COLUMN_ID + "=" + id, null);
     }
 
 }

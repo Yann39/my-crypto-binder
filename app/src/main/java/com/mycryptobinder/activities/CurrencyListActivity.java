@@ -25,7 +25,7 @@ public class CurrencyListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle("Currency list");
+        setTitle(getResources().getString(R.string.lbl_currency_list));
         setContentView(R.layout.activity_currency_list);
 
         // add back arrow to toolbar

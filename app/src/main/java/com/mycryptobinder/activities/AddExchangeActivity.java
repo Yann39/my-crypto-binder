@@ -32,12 +32,6 @@ public class AddExchangeActivity extends AppCompatActivity {
         setTitle(getResources().getString(R.string.title_add_exchange));
         setContentView(R.layout.activity_add_exchange);
 
-        // add back arrow to toolbar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
         // modal window full width
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 

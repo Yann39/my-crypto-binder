@@ -13,7 +13,7 @@ import com.mycryptobinder.R;
 import com.mycryptobinder.managers.ExchangeManager;
 
 /**
- * Activity responsible for new exchange creation
+ * Activity responsible for editing an existing exchange
  * <p>
  * Created by Yann on 02/06/2017
  */
@@ -30,7 +30,7 @@ public class EditExchangeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle("Edit Exchange");
+        setTitle(getResources().getString(R.string.lbl_edit_exchange));
         setContentView(R.layout.activity_edit_exchange);
 
         // add back arrow to toolbar

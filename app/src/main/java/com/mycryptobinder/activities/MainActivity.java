@@ -15,7 +15,7 @@ import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.SectionsPagerAdapter;
 
 /**
- * Main activity responsible for displaying the portfolio
+ * Main activity responsible for displaying the application main content
  * <p>
  * Created by Yann
  * Created on 21/05/2017
@@ -48,20 +48,11 @@ public class MainActivity extends AppCompatActivity {
         // set up the tabs layout
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        // set up floating button
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // inflate the menu, this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }

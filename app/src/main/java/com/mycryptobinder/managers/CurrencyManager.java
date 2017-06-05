@@ -37,40 +37,76 @@ public class CurrencyManager {
     }
 
     /**
+     * Get a specific currency from the database given its id
+     *
+     * @param currencyId The if of the currency to retrieve
+     * @return A Currency element representing the currency
+     */
+    public Currency getById(long currencyId) {
+        Currency curr = new Currency();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_CURRENCIES, null, "id=?", new String[]{Long.toString(currencyId)}, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            try {
+                curr.setId(cursor.getLong(0));
+                curr.setName(cursor.getString(1));
+                curr.setIsoCode(cursor.getString(2));
+                curr.setSymbol(cursor.getString(3));
+            } finally {
+                cursor.close();
+            }
+        }
+        return curr;
+    }
+
+    /**
+     * Get a specific currency from the database
+     *
+     * @param currencyName The if of the currency to retrieve
+     * @return A Currency element representing the currency
+     */
+    public Currency getByName(String currencyName) {
+        Currency curr = new Currency();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_CURRENCIES, null, "name like %?%", new String[]{ currencyName }, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            try {
+                curr.setId(cursor.getLong(0));
+                curr.setName(cursor.getString(1));
+                curr.setIsoCode(cursor.getString(2));
+                curr.setSymbol(cursor.getString(3));
+            } finally {
+                cursor.close();
+            }
+        }
+        return curr;
+    }
+
+    /**
      * Get the list of all currencies from the database
      *
      * @return list of Currency elements representing the currencies
      */
     public List<Currency> getAll() {
         List<Currency> list = new ArrayList<>();
-        Cursor cursor = fetch();
-        try {
-            while (cursor.moveToNext()) {
-                Currency curr = new Currency();
-                curr.setId(cursor.getLong(0));
-                curr.setName(cursor.getString(1));
-                curr.setIsoCode(cursor.getString(2));
-                curr.setSymbol(cursor.getString(3));
-                list.add(curr);
-            }
-        } finally {
-            cursor.close();
-        }
-        return list;
-    }
-
-    /**
-     * Fetch all currencies from the database into a cursor
-     *
-     * @return A Cursor containing all the records
-     */
-    private Cursor fetch() {
         String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_ISO_CODE, DatabaseHelper.COLUMN_SYMBOL};
         Cursor cursor = database.query(DatabaseHelper.TABLE_CURRENCIES, columns, null, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
+            try {
+                while (cursor.moveToNext()) {
+                    Currency curr = new Currency();
+                    curr.setId(cursor.getLong(0));
+                    curr.setName(cursor.getString(1));
+                    curr.setIsoCode(cursor.getString(2));
+                    curr.setSymbol(cursor.getString(3));
+                    list.add(curr);
+                }
+            } finally {
+                cursor.close();
+            }
         }
-        return cursor;
+        return list;
     }
 
     /**

@@ -25,7 +25,7 @@ public class ExchangeListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle("Exchanges list");
+        setTitle(getResources().getString(R.string.lbl_exchange_list));
         setContentView(R.layout.activity_exchange_list);
 
         // add back arrow to toolbar
