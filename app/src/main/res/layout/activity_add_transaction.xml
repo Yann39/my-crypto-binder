@@ -29,6 +29,7 @@
                 android:id="@+id/transaction_type_radio_group"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:checkedButton="@+id/buy_layout_rb"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
@@ -36,20 +37,19 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="0dp"
-                android:layout_weight="2">
+                tools:layout_editor_absoluteY="0dp">
 
                 <RadioButton
                     android:id="@+id/buy_layout_rb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_transaction_type_buy" />
+                    android:text="@string/lbl_transaction_currency1_buy" />
 
                 <RadioButton
                     android:id="@+id/sell_layout_rb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_transaction_type_sell" />
+                    android:text="@string/lbl_transaction_currency1_sell" />
             </RadioGroup>
         </TableRow>
 
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/transaction_type_textview"
+                android:id="@+id/transaction_currency1_textview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -73,6 +73,7 @@
                 android:imeOptions="flagNoExtractUi" />
 
             <TextView
+                android:id="@+id/transaction_currency2_textview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -218,11 +219,31 @@
             android:layout_height="wrap_content"
             android:gravity="center">
 
-            <Button
-                android:id="@+id/btn_create_transaction"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_create_transaction" />
+                android:layout_weight="2" />
+
+            <FrameLayout
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_create_transaction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_create_transaction" />
+
+                <Button
+                    android:id="@+id/btn_update_transaction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_update_transaction"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
 
         </TableRow>
 

@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.CurrencyCardAdapter;

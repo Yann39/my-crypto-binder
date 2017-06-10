@@ -4,10 +4,10 @@
     android:layout_height="match_parent"
     tools:context="com.mycryptobinder.activities.PortfolioFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/portfolio_total_textView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Portfolio here" />
+        android:textSize="40sp"/>
 
 </FrameLayout>

@@ -5,8 +5,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.managers.TransactionManager;
 
 /**
  * Fragment responsible for displaying portfolio
@@ -35,7 +37,17 @@ public class PortfolioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_portfolio, container, false);
+        View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
+
+        TextView portfolioTotalTextView = (TextView) view.findViewById(R.id.portfolio_total_textView);
+
+        // open database connections
+        TransactionManager transactionManager = new TransactionManager(this.getContext());
+        transactionManager.open();
+
+        portfolioTotalTextView.setText(String.valueOf(transactionManager.getTotal()));
+
+        return view;
     }
 
 }

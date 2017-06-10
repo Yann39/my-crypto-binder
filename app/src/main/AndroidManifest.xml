@@ -43,6 +43,10 @@
             android:name=".activities.EditExchangeActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".activities.EditTransactionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
     </application>
 
 </manifest>

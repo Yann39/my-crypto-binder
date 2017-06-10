@@ -37,6 +37,17 @@ public class TransactionManager {
         dbHelper.close();
     }
 
+    public Double getTotal() {
+        Cursor c;
+        Double total = -1.0;
+        c = database.rawQuery("select sum("+DatabaseHelper.COLUMN_QUANTITY+"*"+DatabaseHelper.COLUMN_PRICE+") from "+DatabaseHelper.TABLE_TRANSACTIONS+";", null);
+        if(c.moveToFirst()) {
+            total = c.getDouble(0);
+        }
+        c.close();
+        return total;
+    }
+
     /**
      * Get the list of all transactions from the database
      *

@@ -10,10 +10,12 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.activities.AddCurrencyActivity;
 import com.mycryptobinder.activities.EditCurrencyActivity;
 import com.mycryptobinder.managers.CurrencyManager;
 import com.mycryptobinder.models.Currency;

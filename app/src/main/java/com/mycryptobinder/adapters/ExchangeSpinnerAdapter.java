@@ -39,7 +39,19 @@ public class ExchangeSpinnerAdapter extends ArrayAdapter<String> {
 
     @Override
     public String getItem(int index) {
-        return exchanges.get(index).getName() + " (" + exchanges.get(index).getDescription() + ")";
+        return exchanges.get(index).getName();
+    }
+
+    @Override
+    public int getPosition(String item) {
+        int i=0;
+        for (Exchange ex : exchanges) {
+            if (ex.getName().equals(item)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
     }
 
 }

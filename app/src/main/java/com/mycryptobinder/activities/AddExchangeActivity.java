@@ -40,6 +40,11 @@ public class AddExchangeActivity extends AppCompatActivity {
         exchangeLinkEditText = (EditText) findViewById(R.id.exchange_link_add_edittext);
         exchangeDescriptionEditText = (EditText) findViewById(R.id.exchange_description_add_edittext);
         Button createExchangeButton = (Button) findViewById(R.id.btn_create_exchange);
+        Button editExchangeButton = (Button) findViewById(R.id.btn_update_exchange);
+
+        // hide edit button and show create button
+        editExchangeButton.setVisibility(View.INVISIBLE);
+        createExchangeButton.setVisibility(View.VISIBLE);
 
         // open database connection
         exchangeManager = new ExchangeManager(this);

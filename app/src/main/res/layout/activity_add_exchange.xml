@@ -79,11 +79,31 @@
             android:layout_height="wrap_content"
             android:gravity="center">
 
-            <Button
-                android:id="@+id/btn_create_exchange"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_create_exchange" />
+                android:layout_weight="2" />
+
+            <FrameLayout
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_create_exchange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_create_exchange" />
+
+                <Button
+                    android:id="@+id/btn_update_exchange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_update_exchange"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
 
         </TableRow>
 

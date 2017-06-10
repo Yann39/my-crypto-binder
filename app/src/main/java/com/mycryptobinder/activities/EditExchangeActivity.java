@@ -30,8 +30,8 @@ public class EditExchangeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(getResources().getString(R.string.lbl_edit_exchange));
-        setContentView(R.layout.activity_edit_exchange);
+        setTitle(getResources().getString(R.string.title_edit_exchange));
+        setContentView(R.layout.activity_add_exchange);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -43,10 +43,15 @@ public class EditExchangeActivity extends AppCompatActivity {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // get view components
-        exchangeNameEditText = (EditText) findViewById(R.id.exchange_name_edit_edittext);
-        exchangeLinkEditText = (EditText) findViewById(R.id.exchange_link_edit_edittext);
-        exchangeDescriptionEditText = (EditText) findViewById(R.id.exchange_description_edit_edittext);
-        Button updateExchangeButton = (Button) findViewById(R.id.btn_update_exchange);
+        exchangeNameEditText = (EditText) findViewById(R.id.exchange_name_add_edittext);
+        exchangeLinkEditText = (EditText) findViewById(R.id.exchange_link_add_edittext);
+        exchangeDescriptionEditText = (EditText) findViewById(R.id.exchange_description_add_edittext);
+        Button createExchangeButton = (Button) findViewById(R.id.btn_create_exchange);
+        Button editExchangeButton = (Button) findViewById(R.id.btn_update_exchange);
+
+        // hide create button and show edit button
+        createExchangeButton.setVisibility(View.INVISIBLE);
+        editExchangeButton.setVisibility(View.VISIBLE);
 
         // get the intent and its data
         Intent intent = getIntent();
@@ -64,13 +69,13 @@ public class EditExchangeActivity extends AppCompatActivity {
         exchangeManager.open();
 
         // set click listener for the update exchange button
-        updateExchangeButton.setOnClickListener(new View.OnClickListener() {
+        editExchangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // get values
-                final String name = exchangeNameEditText.getText().toString();
-                final String link = exchangeLinkEditText.getText().toString();
-                final String description = exchangeDescriptionEditText.getText().toString();
+                String name = exchangeNameEditText.getText().toString();
+                String link = exchangeLinkEditText.getText().toString();
+                String description = exchangeDescriptionEditText.getText().toString();
 
                 // update values into the database
                 exchangeManager.update(exchangeId, name, link, description);

@@ -40,6 +40,11 @@ public class AddCurrencyActivity extends AppCompatActivity {
         currencyIsoCodeEditText = (EditText) findViewById(R.id.currency_iso_code_add_edittext);
         currencySymbolEditText = (EditText) findViewById(R.id.currency_symbol_add_edittext);
         Button createCurrencyButton = (Button) findViewById(R.id.btn_create_currency);
+        Button editCurrencyButton = (Button) findViewById(R.id.btn_update_currency);
+
+        // hide edit button and show create button
+        editCurrencyButton.setVisibility(View.INVISIBLE);
+        createCurrencyButton.setVisibility(View.VISIBLE);
 
         // open database connection
         currencyManager = new CurrencyManager(this);
