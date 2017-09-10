@@ -24,7 +24,6 @@ public class EditExchangeActivity extends AppCompatActivity {
     private EditText exchangeLinkEditText;
     private EditText exchangeDescriptionEditText;
     private ExchangeManager exchangeManager;
-    private long exchangeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +54,9 @@ public class EditExchangeActivity extends AppCompatActivity {
 
         // get the intent and its data
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id");
         String name = intent.getStringExtra("name");
         String isoCode = intent.getStringExtra("link");
         String symbol = intent.getStringExtra("description");
-        exchangeId = Long.parseLong(id);
         exchangeNameEditText.setText(name);
         exchangeLinkEditText.setText(isoCode);
         exchangeDescriptionEditText.setText(symbol);
@@ -78,7 +75,7 @@ public class EditExchangeActivity extends AppCompatActivity {
                 String description = exchangeDescriptionEditText.getText().toString();
 
                 // update values into the database
-                exchangeManager.update(exchangeId, name, link, description);
+                exchangeManager.update(name, link, description);
 
                 // update intent so all top activities are closed
                 Intent main = new Intent(EditExchangeActivity.this, ExchangeListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

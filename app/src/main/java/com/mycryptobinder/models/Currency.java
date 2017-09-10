@@ -7,17 +7,16 @@ package com.mycryptobinder.models;
 
 public class Currency {
 
-    private long id;
-    private String name;
     private String isoCode;
+    private String name;
     private String symbol;
 
-    public long getId() {
-        return id;
+    public String getIsoCode() {
+        return isoCode;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
     }
 
     public String getName() {
@@ -26,14 +25,6 @@ public class Currency {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getIsoCode() {
-        return isoCode;
-    }
-
-    public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
     }
 
     public String getSymbol() {

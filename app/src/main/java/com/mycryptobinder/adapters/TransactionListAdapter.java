@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
@@ -54,6 +56,29 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         viewHolder.transactionItemQuantityTextView.setText(String.valueOf(transactions.get(position).getQuantity()));
         viewHolder.transactionItemPriceTextView.setText(String.valueOf(transactions.get(position).getPrice()));
         viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getPrice()*transactions.get(position).getQuantity()) + "(-" + df.format(transactions.get(position).getFees()) + ")");
+
+        viewHolder.transactionItemDetailsImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //creating a popup menu
+                PopupMenu popup = new PopupMenu(view.getContext(), viewHolder.transactionItemDetailsImageView);
+                //inflating menu from xml resource
+                popup.inflate(R.menu.menu_main);
+                //adding click listener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                        }
+                        return false;
+                    }
+                });
+                //displaying the popup
+                popup.show();
+
+            }
+        });
 
         // set click initializer for item row
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

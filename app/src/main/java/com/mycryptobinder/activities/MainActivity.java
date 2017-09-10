@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.SectionsPagerAdapter;
+import com.mycryptobinder.managers.CurrencyManager;
 
 /**
  * Main activity responsible for displaying the application main content

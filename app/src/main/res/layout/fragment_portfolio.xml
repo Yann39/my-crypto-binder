@@ -1,13 +1,23 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.mycryptobinder.activities.PortfolioFragment">
 
+    <Button
+        android:id="@+id/btn_synchronize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_synchronize"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:id="@+id/portfolio_total_textView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="40sp"/>
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/btn_synchronize" />
 
-</FrameLayout>
+</RelativeLayout>

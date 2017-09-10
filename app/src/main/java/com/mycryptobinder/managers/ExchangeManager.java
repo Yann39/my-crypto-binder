@@ -36,22 +36,22 @@ public class ExchangeManager {
         dbHelper.close();
     }
 
+    //region Read
+
     /**
      * Get a specific exchange from the database
      *
-     * @param exchangeId The if of the exchange to retrieve
-     * @return A Exchange element representing the exchange
+     * @param exchangeName The name of the exchange to retrieve
+     * @return An Exchange element representing the exchange
      */
-    public Exchange getById(long exchangeId) {
+    Exchange getByName(String exchangeName) {
         Exchange curr = new Exchange();
-        Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, null, "id=?", new String[]{Long.toString(exchangeId)}, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
+        Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, null, DatabaseHelper.COLUMN_NAME + "=?", new String[]{exchangeName}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
             try {
-                curr.setId(cursor.getLong(0));
-                curr.setName(cursor.getString(1));
-                curr.setLink(cursor.getString(2));
-                curr.setDescription(cursor.getString(3));
+                curr.setName(cursor.getString(0));
+                curr.setLink(cursor.getString(1));
+                curr.setDescription(cursor.getString(2));
             } finally {
                 cursor.close();
             }
@@ -66,35 +66,26 @@ public class ExchangeManager {
      */
     public List<Exchange> getAll() {
         List<Exchange> list = new ArrayList<>();
-        Cursor cursor = fetch();
-        try {
-            while (cursor.moveToNext()) {
-                Exchange exc = new Exchange();
-                exc.setId(cursor.getLong(0));
-                exc.setName(cursor.getString(1));
-                exc.setLink(cursor.getString(2));
-                exc.setDescription(cursor.getString(3));
-                list.add(exc);
+        String[] columns = new String[]{DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_LINK, DatabaseHelper.COLUMN_DESCRIPTION};
+        Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, columns, null, null, null, null, null);
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    Exchange exc = new Exchange();
+                    exc.setName(cursor.getString(0));
+                    exc.setLink(cursor.getString(1));
+                    exc.setDescription(cursor.getString(2));
+                    list.add(exc);
+                }
+            } finally {
+                cursor.close();
             }
-        } finally {
-            cursor.close();
         }
         return list;
     }
+    //endregion
 
-    /**
-     * Fetch all exchanges from the database into a cursor
-     *
-     * @return A Cursor containing all the records
-     */
-    private Cursor fetch() {
-        String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_LINK, DatabaseHelper.COLUMN_DESCRIPTION};
-        Cursor cursor = database.query(DatabaseHelper.TABLE_EXCHANGES, columns, null, null, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-        return cursor;
-    }
+    //region Create Update Delete
 
     /**
      * Insert a new exchange into the database
@@ -103,38 +94,38 @@ public class ExchangeManager {
      * @param link        The exchange link
      * @param description The exchange description
      */
-    public void insert(String name, String link, String description) {
+    public long insert(String name, String link, String description) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_NAME, name);
         contentValues.put(DatabaseHelper.COLUMN_LINK, link);
         contentValues.put(DatabaseHelper.COLUMN_DESCRIPTION, description);
-        database.insert(DatabaseHelper.TABLE_EXCHANGES, null, contentValues);
+        return database.insert(DatabaseHelper.TABLE_EXCHANGES, null, contentValues);
     }
 
     /**
      * Update an existing exchange in the database
      *
-     * @param id          The id of the exchange to edit
-     * @param name        The new name of the exchange
+     * @param name        The name of the exchange tro edit
      * @param link        The new link of the exchange
      * @param description The new description of the exchange
      * @return An integer representing the number of rows affected
      */
-    public int update(long id, String name, String link, String description) {
+    public int update(String name, String link, String description) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_NAME, name);
         contentValues.put(DatabaseHelper.COLUMN_LINK, link);
         contentValues.put(DatabaseHelper.COLUMN_DESCRIPTION, description);
-        return database.update(DatabaseHelper.TABLE_EXCHANGES, contentValues, DatabaseHelper.COLUMN_ID + " = " + id, null);
+        return database.update(DatabaseHelper.TABLE_EXCHANGES, contentValues, DatabaseHelper.COLUMN_NAME + " = " + name, null);
     }
 
     /**
      * Delete an existing exchange from the database
      *
-     * @param id The id of the exchange to delete
+     * @param name The name of the exchange to delete
      */
-    public void delete(long id) {
-        database.delete(DatabaseHelper.TABLE_EXCHANGES, DatabaseHelper.COLUMN_ID + "=" + id, null);
+    public void delete(String name) {
+        database.delete(DatabaseHelper.TABLE_EXCHANGES, DatabaseHelper.COLUMN_NAME + "=" + name, null);
     }
+    //endregion
 
 }

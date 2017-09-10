@@ -173,9 +173,9 @@ public class EditTransactionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // get fields values
-                Long currency1 = currencyAutoCompleteAdapter1.getItemId(0);
-                Long currency2 = currencyAutoCompleteAdapter2.getItemId(0);
-                Long exchange = exchangeSpinnerAdapter.getItemId(transactionExchangeSpinner.getSelectedItemPosition());
+                String currency1 = currencyAutoCompleteAdapter1.getItem(0);
+                String currency2 = currencyAutoCompleteAdapter2.getItem(0);
+                String exchange = exchangeSpinnerAdapter.getItem(transactionExchangeSpinner.getSelectedItemPosition());
                 Double quantity = Double.parseDouble(transactionQuantityEditText.getText().toString());
                 Double price = Double.parseDouble(transactionPriceEditText.getText().toString());
                 Double fees = Double.parseDouble(transactionFeesEditText.getText().toString());
@@ -194,7 +194,8 @@ public class EditTransactionActivity extends AppCompatActivity {
                 String comment = transactionCommentEditText.getText().toString();
 
                 // insert values into the database
-                transactionManager.update(transactionId, exchange, currency1, currency2, fees, date, type, quantity, price, comment);
+                //todo update right value for total
+                transactionManager.update(transactionId, exchange, "", currency1, currency2, fees, date, type, quantity, price, 0, comment);
 
                 // update intent so all top activities are closed
                 Intent main = new Intent(EditTransactionActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

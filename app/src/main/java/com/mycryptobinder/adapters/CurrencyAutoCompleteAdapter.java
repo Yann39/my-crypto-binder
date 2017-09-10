@@ -43,11 +43,6 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
     }
 
     @Override
-    public long getItemId(int index) {
-        return filteredCurrencies.get(index).getId();
-    }
-
-    @Override
     public String getItem(int index) {
         return filteredCurrencies.get(index).getIsoCode() + " (" + filteredCurrencies.get(index).getName() + ")";
     }

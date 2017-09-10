@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.helpers.DatabaseHelper;
 import com.mycryptobinder.managers.CurrencyManager;
 
 /**
@@ -46,10 +47,6 @@ public class AddCurrencyActivity extends AppCompatActivity {
         editCurrencyButton.setVisibility(View.INVISIBLE);
         createCurrencyButton.setVisibility(View.VISIBLE);
 
-        // open database connection
-        currencyManager = new CurrencyManager(this);
-        currencyManager.open();
-
         // set click listener for the create currency button
         createCurrencyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,9 +57,12 @@ public class AddCurrencyActivity extends AppCompatActivity {
                 String symbol = currencySymbolEditText.getText().toString();
 
                 // insert values into the database
+                currencyManager = new CurrencyManager(view.getContext());
+                currencyManager.open();
                 currencyManager.insert(name, isoCode, symbol);
+                currencyManager.close();
 
-                // update intent so all top activities are closed
+                // back to currency list and clear all top activities
                 Intent main = new Intent(AddCurrencyActivity.this, CurrencyListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(main);
 

@@ -32,6 +32,8 @@
     <string name="btn_update_exchange">Update exchange</string>
     <string name="btn_update_transaction">Update transaction</string>
 
+    <string name="btn_synchronize">Synchronize</string>
+
     <string name="imgbtn_delete_currency_desc">Delete this currency</string>
     <string name="imgbtn_delete_exchange_desc">Delete this exchange</string>
 

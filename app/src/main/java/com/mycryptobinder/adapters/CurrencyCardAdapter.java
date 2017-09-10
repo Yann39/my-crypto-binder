@@ -50,7 +50,7 @@ public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHo
     @Override
     public void onBindViewHolder(final CurrencyCardViewHolder holder, int position) {
         // get text from the data set at this position and replace it in the view
-        holder.currency_id_textView.setText((String.valueOf(currencies.get(holder.getAdapterPosition()).getId())));
+        //holder.currency_id_textView.setText((String.valueOf(currencies.get(holder.getAdapterPosition()).getId())));
         holder.currency_name_textView.setText(currencies.get(holder.getAdapterPosition()).getName());
         holder.currency_isocode_textView.setText(currencies.get(holder.getAdapterPosition()).getIsoCode());
         holder.currency_symbol_textView.setText(currencies.get(holder.getAdapterPosition()).getSymbol());
@@ -77,12 +77,12 @@ public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHo
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        long itemId = currencies.get(position).getId();
+                        String item = currencies.get(position).getIsoCode();
 
                         // delete from the database
                         CurrencyManager cm = new CurrencyManager(context);
                         cm.open();
-                        cm.delete(itemId);
+                        cm.delete(item);
 
                         // remove the item from the data set
                         currencies.remove(position);

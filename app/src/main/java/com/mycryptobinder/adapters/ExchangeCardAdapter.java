@@ -47,7 +47,7 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
     @Override
     public void onBindViewHolder(final ExchangeCardViewHolder holder, int position) {
         // get text from the data set at this position and replace it in the view
-        holder.exchange_id_textView.setText((String.valueOf(exchanges.get(holder.getAdapterPosition()).getId())));
+        //holder.exchange_id_textView.setText((String.valueOf(exchanges.get(holder.getAdapterPosition()).getId())));
         holder.exchange_name_textView.setText(exchanges.get(holder.getAdapterPosition()).getName());
         holder.exchange_link_textView.setText(exchanges.get(holder.getAdapterPosition()).getLink());
         holder.exchange_description_textView.setText(exchanges.get(holder.getAdapterPosition()).getDescription());
@@ -74,12 +74,12 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        long itemId = exchanges.get(position).getId();
+                        String item = exchanges.get(position).getName();
 
                         // delete from the database
                         ExchangeManager em = new ExchangeManager(context);
                         em.open();
-                        em.delete(itemId);
+                        em.delete(item);
 
                         // remove the item from the data set
                         exchanges.remove(position);

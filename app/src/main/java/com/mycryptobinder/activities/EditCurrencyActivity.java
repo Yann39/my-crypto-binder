@@ -24,7 +24,6 @@ public class EditCurrencyActivity extends AppCompatActivity {
     private EditText currencyIsoCodeEditText;
     private EditText currencySymbolEditText;
     private CurrencyManager currencyManager;
-    private long currencyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +54,11 @@ public class EditCurrencyActivity extends AppCompatActivity {
 
         // get the intent and its data
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id");
-        String name = intent.getStringExtra("name");
         String isoCode = intent.getStringExtra("isoCode");
+        String name = intent.getStringExtra("name");
         String symbol = intent.getStringExtra("symbol");
-        currencyId = Long.parseLong(id);
-        currencyNameEditText.setText(name);
         currencyIsoCodeEditText.setText(isoCode);
+        currencyNameEditText.setText(name);
         currencySymbolEditText.setText(symbol);
 
         // open database connection
@@ -78,7 +75,7 @@ public class EditCurrencyActivity extends AppCompatActivity {
                 String symbol = currencySymbolEditText.getText().toString();
 
                 // update values into the database
-                currencyManager.update(currencyId, name, isoCode, symbol);
+                currencyManager.update(isoCode, name, symbol);
 
                 // update intent so all top activities are closed
                 Intent main = new Intent(EditCurrencyActivity.this, CurrencyListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

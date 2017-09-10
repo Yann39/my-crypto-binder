@@ -142,9 +142,9 @@ public class AddTransactionActivity extends AppCompatActivity {
                 EditText transactionFeesEditText = (EditText) findViewById(R.id.transaction_fees_edittext);
                 EditText transactionCommentEditText = (EditText) findViewById(R.id.transaction_comment_edittext);
                 RadioGroup transactionTypeRadioGroup = (RadioGroup) findViewById(R.id.transaction_type_radio_group);
-                Long currency1 = currencyAutoCompleteAdapter1.getItemId(0);
-                Long currency2 = currencyAutoCompleteAdapter2.getItemId(0);
-                Long exchange = exchangeSpinnerAdapter.getItemId(transactionExchangeSpinner.getSelectedItemPosition());
+                String currency1 = currencyAutoCompleteAdapter1.getItem(0);
+                String currency2 = currencyAutoCompleteAdapter2.getItem(0);
+                String exchange = exchangeSpinnerAdapter.getItem(transactionExchangeSpinner.getSelectedItemPosition());
                 Double quantity = Double.parseDouble(transactionQuantityEditText.getText().toString());
                 Double price = Double.parseDouble(transactionPriceEditText.getText().toString());
                 Double fees = Double.parseDouble(transactionFeesEditText.getText().toString());
@@ -162,13 +162,14 @@ public class AddTransactionActivity extends AppCompatActivity {
                 }
 
                 // insert values into the database
-                transactionManager.insert(exchange, currency1, currency2, fees, date, type, quantity, price, comment);
+                //todo insert right values for tx id and total
+                transactionManager.insert(exchange, "", currency1, currency2, fees, date, type, quantity, price, 0, comment);
 
                 // update intent so all top activities are closed
-                Intent main = new Intent(AddTransactionActivity.this, TransactionsFragment.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                setResult(Activity.RESULT_OK, main);
-                //finish();
-                startActivity(main);
+                //Intent main = new Intent(AddTransactionActivity.this, TransactionsFragment.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                //setResult(Activity.RESULT_OK, main);
+                finish();
+                //startActivity(main);
 
                 // show a notification about the created item
                 Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_transaction_created, currency1 + "/" + currency2), Toast.LENGTH_SHORT).show();

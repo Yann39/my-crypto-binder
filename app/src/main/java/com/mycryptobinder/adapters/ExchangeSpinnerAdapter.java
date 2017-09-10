@@ -33,11 +33,6 @@ public class ExchangeSpinnerAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public long getItemId(int index) {
-        return exchanges.get(index).getId();
-    }
-
-    @Override
     public String getItem(int index) {
         return exchanges.get(index).getName();
     }

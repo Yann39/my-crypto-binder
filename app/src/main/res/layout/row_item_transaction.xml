@@ -49,4 +49,14 @@
         android:layout_weight="2"
         android:textAlignment="textStart" />
 
+    <ImageView
+        android:id="@+id/transaction_item_details_imageView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:contentDescription="item click icon"
+        android:src="@drawable/ic_more_vert_black_24dp" />
+
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.mycryptobinder.viewholders;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
@@ -23,6 +24,7 @@ public class TransactionListViewHolder extends RecyclerView.ViewHolder {
     public TextView transactionItemQuantityTextView;
     public TextView transactionItemPriceTextView;
     public TextView transactionItemTotalTextView;
+    public ImageView transactionItemDetailsImageView;
 
     public TransactionListViewHolder(View v) {
         super(v);
@@ -32,6 +34,7 @@ public class TransactionListViewHolder extends RecyclerView.ViewHolder {
         transactionItemQuantityTextView = (TextView) v.findViewById(R.id.transaction_item_quantity_textView);
         transactionItemPriceTextView = (TextView) v.findViewById(R.id.transaction_item_price_textView);
         transactionItemTotalTextView = (TextView) v.findViewById(R.id.transaction_item_total_textView);
+        transactionItemDetailsImageView = (ImageView) v.findViewById(R.id.transaction_item_details_imageView);
     }
 
 }

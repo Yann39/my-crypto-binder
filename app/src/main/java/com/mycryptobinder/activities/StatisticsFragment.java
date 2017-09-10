@@ -54,12 +54,27 @@ public class StatisticsFragment extends Fragment {
         List<Transaction> transactions = transactionManager.getAll();
         List<Entry> entries = new ArrayList<>();
 
-        for (Transaction data : transactions) {
+        /*for (Transaction data : transactions) {
             // turn your data into Entry objects
             entries.add(new Entry((float)data.getDate().getTime(), data.getPrice().floatValue()));
-        }
+        }*/
+        entries.add(new Entry(1F, 1252.457F));
+        entries.add(new Entry(2F, 1042.11F));
+        entries.add(new Entry(3F, 1430.15475F));
+        entries.add(new Entry(4F, 789.97845F));
+        entries.add(new Entry(5F, 899.5F));
+        entries.add(new Entry(6F, 884.545F));
+        entries.add(new Entry(7F, 987F));
+        entries.add(new Entry(8F, 1384.1145F));
+        entries.add(new Entry(9F, 1400.998F));
+        entries.add(new Entry(10F, 1778.92782F));
+        entries.add(new Entry(11F, 1832.2F));
+        entries.add(new Entry(12F, 1705.8902F));
+        entries.add(new Entry(13F, 1751.3F));
+        entries.add(new Entry(14F, 1698.75F));
+        entries.add(new Entry(15F, 1766.33341F));
 
-        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
+        LineDataSet dataSet = new LineDataSet(entries, "Portfolio value"); // add entries to dataset
         dataSet.setColor(Color.BLUE);
         dataSet.setValueTextColor(Color.GREEN);
 

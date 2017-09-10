@@ -11,6 +11,7 @@ public class Transaction {
 
     private long id;
     private Exchange exchange;
+    private String transactionId;
     private Currency currency1;
     private Currency currency2;
     private Double fees;
@@ -18,8 +19,8 @@ public class Transaction {
     private String type;
     private Double quantity;
     private Double price;
+    private Double total;
     private String comment;
-
 
     public long getId() {
         return id;
@@ -35,6 +36,14 @@ public class Transaction {
 
     public void setExchange(Exchange exchange) {
         this.exchange = exchange;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public Currency getCurrency1() {
@@ -91,6 +100,14 @@ public class Transaction {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
     }
 
     public String getComment() {
