@@ -85,6 +85,36 @@ public class CurrencyManager {
         }
         return list;
     }
+
+    /**
+     * Get the list of all currencies that appear in at least one transaction from the database
+     *
+     * @return list of Currency elements representing the currencies
+     */
+    public List<Currency> getUsed() {
+        List<Currency> list = new ArrayList<>();
+        String req = "SELECT DISTINCT A." + DatabaseHelper.COLUMN_ISO_CODE + ", A." + DatabaseHelper.COLUMN_NAME + ", A." + DatabaseHelper.COLUMN_SYMBOL + " " +
+                "FROM " + DatabaseHelper.TABLE_CURRENCIES + " A " +
+                "INNER JOIN " + DatabaseHelper.TABLE_TRANSACTIONS + " B ON A." + DatabaseHelper.COLUMN_ISO_CODE + " = B." + DatabaseHelper.COLUMN_CURRENCY1 + " " +
+                "LEFT JOIN " + DatabaseHelper.TABLE_TRANSACTIONS + " C ON A." + DatabaseHelper.COLUMN_ISO_CODE + " = C." + DatabaseHelper.COLUMN_CURRENCY2;
+
+        Cursor cursor = database.rawQuery(req, null);
+
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    Currency curr = new Currency();
+                    curr.setIsoCode(cursor.getString(0));
+                    curr.setName(cursor.getString(1));
+                    curr.setSymbol(cursor.getString(2));
+                    list.add(curr);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return list;
+    }
     //endregion
 
     //region Create Update Delete
@@ -130,6 +160,17 @@ public class CurrencyManager {
     }
     //endregion
 
+    /**
+     * Delete all data from the CURRENCIES table and reset the sequence
+     */
+    public void reset() {
+        database.execSQL("DELETE FROM " + DatabaseHelper.TABLE_CURRENCIES);
+        database.execSQL("DELETE FROM sqlite_sequence WHERE name = '" + DatabaseHelper.TABLE_CURRENCIES + "'");
+    }
+
+    /**
+     * Populate the CURRENCIES table from the data got from exchanges
+     */
     public void populateCurrencies() {
         String req = "INSERT INTO " + DatabaseHelper.TABLE_CURRENCIES + "(" +
                 DatabaseHelper.COLUMN_ISO_CODE + ", " +

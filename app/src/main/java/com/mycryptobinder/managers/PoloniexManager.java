@@ -10,6 +10,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.mycryptobinder.helpers.DatabaseHelper;
+import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.Exchange;
 import com.mycryptobinder.models.PoloniexAsset;
 import com.mycryptobinder.models.PoloniexTrade;
@@ -234,7 +235,7 @@ public class PoloniexManager {
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_GLOBAL_TRADE_ID, globalTradeID);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_PAIR, pair);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_TRADE_ID, tradeID);
-        contentValues.put(DatabaseHelper.COLUMN_POLONIEX_DATE, date.getTime());
+        contentValues.put(DatabaseHelper.COLUMN_POLONIEX_DATE, date.getTime()/1000);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_RATE, rate);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_AMOUNT, amount);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_TOTAL, total);
@@ -363,7 +364,7 @@ public class PoloniexManager {
         String signature = null;
         try {
             Mac mac = Mac.getInstance("HmacSHA512");
-            String secret = "<your secret key>";
+            String secret = "";
             mac.init(new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA512"));
             signature = bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
         } catch (Exception e) {
@@ -399,7 +400,7 @@ public class PoloniexManager {
         String start = String.valueOf(cal.getTime().getTime() / 1000);
 
         String domain = "https://poloniex.com/tradingApi";
-        String key = "<your API key>";
+        String key = "";
         String nonce = String.valueOf(System.currentTimeMillis());
 
         RequestParams params = new RequestParams();
@@ -443,8 +444,8 @@ public class PoloniexManager {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                UtilsHelper uh = new UtilsHelper(context);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", uh.getCurrentLocale());
 
                 //get any existing trades
                 List<Long> txIds = getTradeTransactionIds();

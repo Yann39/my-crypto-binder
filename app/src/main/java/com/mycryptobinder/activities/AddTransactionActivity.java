@@ -1,8 +1,6 @@
 package com.mycryptobinder.activities;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -40,7 +38,6 @@ import java.util.Date;
 public class AddTransactionActivity extends AppCompatActivity {
 
     private EditText transactionDateEditText;
-    private TransactionManager transactionManager;
     private CurrencyAutoCompleteAdapter currencyAutoCompleteAdapter1;
     private CurrencyAutoCompleteAdapter currencyAutoCompleteAdapter2;
     private ExchangeSpinnerAdapter exchangeSpinnerAdapter;
@@ -74,10 +71,8 @@ public class AddTransactionActivity extends AppCompatActivity {
         // open database connections
         CurrencyManager currencyManager = new CurrencyManager(this);
         ExchangeManager exchangeManager = new ExchangeManager(this);
-        transactionManager = new TransactionManager(this);
         currencyManager.open();
         exchangeManager.open();
-        transactionManager.open();
 
         // apply adapters
         currencyAutoCompleteAdapter1 = new CurrencyAutoCompleteAdapter(transactionCurrency1AutoCompleteText.getContext(), android.R.layout.simple_dropdown_item_1line, currencyManager.getAll());
@@ -86,6 +81,9 @@ public class AddTransactionActivity extends AppCompatActivity {
         transactionCurrency2AutoCompleteText.setAdapter(currencyAutoCompleteAdapter2);
         exchangeSpinnerAdapter = new ExchangeSpinnerAdapter(transactionExchangeSpinner.getContext(), android.R.layout.simple_dropdown_item_1line, exchangeManager.getAll());
         transactionExchangeSpinner.setAdapter(exchangeSpinnerAdapter);
+
+        currencyManager.close();
+        exchangeManager.close();
 
         // set click listener on the Buy radio button
         transactionTypeBuyRadioButton.setOnClickListener(new View.OnClickListener() {
@@ -137,17 +135,21 @@ public class AddTransactionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // get field values
+                EditText transactionTxIdEditText = (EditText) findViewById(R.id.transaction_txid_edittext);
                 EditText transactionQuantityEditText = (EditText) findViewById(R.id.transaction_quantity_edittext);
                 EditText transactionPriceEditText = (EditText) findViewById(R.id.transaction_price_edittext);
                 EditText transactionFeesEditText = (EditText) findViewById(R.id.transaction_fees_edittext);
                 EditText transactionCommentEditText = (EditText) findViewById(R.id.transaction_comment_edittext);
+                EditText transactionTotalEditText = (EditText) findViewById(R.id.transaction_total_edittext);
                 RadioGroup transactionTypeRadioGroup = (RadioGroup) findViewById(R.id.transaction_type_radio_group);
                 String currency1 = currencyAutoCompleteAdapter1.getItem(0);
                 String currency2 = currencyAutoCompleteAdapter2.getItem(0);
                 String exchange = exchangeSpinnerAdapter.getItem(transactionExchangeSpinner.getSelectedItemPosition());
+                String txId = transactionTxIdEditText.getText().toString();
                 Double quantity = Double.parseDouble(transactionQuantityEditText.getText().toString());
                 Double price = Double.parseDouble(transactionPriceEditText.getText().toString());
                 Double fees = Double.parseDouble(transactionFeesEditText.getText().toString());
+                Double total = Double.parseDouble(transactionTotalEditText.getText().toString());
                 RadioButton radioButton = (RadioButton) findViewById(transactionTypeRadioGroup.getCheckedRadioButtonId());
                 String type = radioButton.getText().toString();
                 String comment = transactionCommentEditText.getText().toString();
@@ -162,14 +164,14 @@ public class AddTransactionActivity extends AppCompatActivity {
                 }
 
                 // insert values into the database
-                //todo insert right values for tx id and total
-                transactionManager.insert(exchange, "", currency1, currency2, fees, date, type, quantity, price, 0, comment);
+                TransactionManager transactionManager = new TransactionManager(view.getContext());
+                transactionManager.open();
+                double totalQty = transactionManager.getCurrencyTotal(currency1) + quantity;
+                transactionManager.insert(exchange, txId, currency1, currency2, fees, date, type, quantity, price, total, totalQty, comment);
+                transactionManager.close();
 
-                // update intent so all top activities are closed
-                //Intent main = new Intent(AddTransactionActivity.this, TransactionsFragment.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                //setResult(Activity.RESULT_OK, main);
+                // close current activity
                 finish();
-                //startActivity(main);
 
                 // show a notification about the created item
                 Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_transaction_created, currency1 + "/" + currency2), Toast.LENGTH_SHORT).show();

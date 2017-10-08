@@ -128,4 +128,12 @@ public class ExchangeManager {
     }
     //endregion
 
+    /**
+     * Delete all data from the EXCHANGES table and reset the sequence
+     */
+    public void reset() {
+        database.execSQL("DELETE FROM " + DatabaseHelper.TABLE_EXCHANGES);
+        database.execSQL("DELETE FROM sqlite_sequence WHERE name = '" + DatabaseHelper.TABLE_EXCHANGES + "'");
+    }
+
 }

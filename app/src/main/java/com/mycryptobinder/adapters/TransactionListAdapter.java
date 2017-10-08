@@ -47,17 +47,22 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
     public void onBindViewHolder(final TransactionListViewHolder viewHolder, final int position) {
 
         // number formatter
-        DecimalFormat df = new DecimalFormat("#.#####");
+        DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
         // get element from your data set at this position and replace the contents of the view with that element
-        viewHolder.transactionItemTypeTextView.setText(transactions.get(position).getType());
+        viewHolder.transactionItemPairTextView.setCompoundDrawablePadding(5);
+        if (transactions.get(position).getType().equals("buy")) {
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_right_green, 0, 0, 0);
+        } else if (transactions.get(position).getType().equals("sell")) {
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_red, 0, 0, 0);
+        }
         viewHolder.transactionItemPairTextView.setText(transactions.get(position).getCurrency1().getIsoCode() +"/"+ transactions.get(position).getCurrency2().getIsoCode());
-        viewHolder.transactionItemQuantityTextView.setText(String.valueOf(transactions.get(position).getQuantity()));
-        viewHolder.transactionItemPriceTextView.setText(String.valueOf(transactions.get(position).getPrice()));
-        viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getPrice()*transactions.get(position).getQuantity()) + "(-" + df.format(transactions.get(position).getFees()) + ")");
+        viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity()));
+        viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice()));
+        viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal()));
 
-        viewHolder.transactionItemDetailsImageView.setOnClickListener(new View.OnClickListener() {
+        /*viewHolder.transactionItemDetailsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -78,7 +83,7 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
                 popup.show();
 
             }
-        });
+        });*/
 
         // set click initializer for item row
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

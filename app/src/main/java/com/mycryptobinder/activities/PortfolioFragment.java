@@ -2,14 +2,19 @@ package com.mycryptobinder.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.adapters.PortfolioCardAdapter;
 import com.mycryptobinder.managers.CurrencyManager;
+import com.mycryptobinder.managers.ExchangeManager;
 import com.mycryptobinder.managers.KrakenManager;
 import com.mycryptobinder.managers.PoloniexManager;
 import com.mycryptobinder.managers.TransactionManager;
@@ -22,6 +27,8 @@ import com.mycryptobinder.models.Currency;
  */
 
 public class PortfolioFragment extends Fragment {
+
+    private CheckBox checkBox;
 
     public PortfolioFragment() {
         // required empty public constructor
@@ -44,22 +51,46 @@ public class PortfolioFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
 
-        TextView portfolioTotalTextView = (TextView) view.findViewById(R.id.portfolio_total_textView);
+        Button synchronizeButton = (Button) view.findViewById(R.id.btn_synchronize);
+        checkBox = (CheckBox) view.findViewById(R.id.checkbox_clean_synchronize);
 
-        Button synchornizeButton = (Button) view.findViewById(R.id.btn_synchronize);
+        // open database connection
+        CurrencyManager currencyManager = new CurrencyManager(this.getContext());
+        currencyManager.open();
 
-        // set click listener for the create currency button
-        synchornizeButton.setOnClickListener(new View.OnClickListener() {
+        // prepare the recycler view with a linear layout
+        RecyclerView recList = (RecyclerView) view.findViewById(R.id.portfolio_recycler_view);
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this.getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+
+        // get the adapter with last data set and apply it to the recycler view
+        PortfolioCardAdapter portfolioCardAdapter = new PortfolioCardAdapter(this.getContext(), currencyManager.getUsed());
+        portfolioCardAdapter.notifyDataSetChanged();
+        recList.setAdapter(portfolioCardAdapter);
+
+        // set click listener for the synchronize button
+        synchronizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 KrakenManager km = new KrakenManager(view.getContext());
                 PoloniexManager pm = new PoloniexManager(view.getContext());
                 TransactionManager tm = new TransactionManager(view.getContext());
                 CurrencyManager cm = new CurrencyManager(view.getContext());
+                ExchangeManager em = new ExchangeManager(view.getContext());
+
                 km.open();
                 pm.open();
                 tm.open();
                 cm.open();
+                em.open();
+
+                if (checkBox.isChecked()) {
+                    tm.reset();
+                    cm.reset();
+                    em.reset();
+                }
 
                 km.populateExchange();
                 pm.populateExchange();
@@ -67,37 +98,13 @@ public class PortfolioFragment extends Fragment {
                 km.populateAssetPairs();
                 km.populateAssets();
                 pm.populateAssets();
-
                 cm.populateCurrencies();
 
                 km.populateTradeHistory();
                 pm.populateTradeHistory();
-
                 tm.populateTransactions();
             }
         });
-
-        TransactionManager tm = new TransactionManager(this.getContext());
-        CurrencyManager cm = new CurrencyManager(this.getContext());
-        tm.open();
-        cm.open();
-
-        String tt = "";
-        for (Currency c : cm.getAll()) {
-            Double tot = tm.getCurrencyQuantity(c.getIsoCode());
-            if (tot != null && tot > 0) {
-                tt = tt + "Holding " + c.getIsoCode() + ":" + tm.getCurrencyTotal(c.getIsoCode()) + "\n";
-            }
-        }
-        tt = tt + "\n";
-        for (Currency c : cm.getAll()) {
-            Double tot = tm.getCurrencyQuantity(c.getIsoCode());
-            if (tot != null && tot > 0) {
-                tt = tt + "Quantity " + c.getIsoCode() + ":" + tm.getCurrencyQuantity(c.getIsoCode()) + "\n";
-            }
-        }
-
-        portfolioTotalTextView.setText(tt);
 
         return view;
     }

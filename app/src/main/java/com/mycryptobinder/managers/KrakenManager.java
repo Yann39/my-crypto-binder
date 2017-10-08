@@ -16,11 +16,13 @@ import com.mycryptobinder.models.KrakenAsset;
 import com.mycryptobinder.models.KrakenAssetPair;
 import com.mycryptobinder.models.KrakenTrade;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,6 +42,7 @@ public class KrakenManager {
     private DatabaseHelper dbHelper;
     private Context context;
     private SQLiteDatabase database;
+    private static int offset = 0;
 
     private static final Logger logger = Logger.getLogger(KrakenManager.class.getName());
 
@@ -515,7 +518,7 @@ public class KrakenManager {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update((nonce + data).getBytes());
             Mac mac = Mac.getInstance("HmacSHA512");
-            String secret = "<your secret key>";
+            String secret = "";
             mac.init(new SecretKeySpec(Base64.decode(secret.getBytes(), 2), "HmacSHA512"));
             mac.update(path.getBytes());
             signature = new String(Base64.encode(mac.doFinal(md.digest()), 2));
@@ -525,57 +528,99 @@ public class KrakenManager {
         return signature;
     }
 
+
     /**
      * Populate trade history table from remote exchange
      */
     public void populateTradeHistory() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2016);
+        cal.set(Calendar.MONTH, Calendar.DECEMBER);
+        cal.set(Calendar.DAY_OF_MONTH, 13);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        String start = String.valueOf(cal.getTimeInMillis() / 1000);
         String domain = "https://api.kraken.com";
-        String key = "<your API key>";
+        String key = "";
         String nonce = String.valueOf(System.currentTimeMillis());
-        String data = "nonce=" + nonce;
         String path = "/0/private/TradesHistory";
-        String sign = calculateSignature(path, nonce, data);
+
+        RequestParams params = new RequestParams();
+        params.add("nonce", nonce);
+        params.add("start", start);
+        params.add("ofs", String.valueOf(offset));
+
+        String sign = calculateSignature(path, nonce, params.toString());
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.addHeader("API-Key", key);
         client.addHeader("API-Sign", sign);
-        RequestParams params = new RequestParams();
-        params.add("nonce", nonce);
+
         client.post(domain + path, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                logger.warning("Error");
+            }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
-                //get any existing trades
-                List<String> txIds = getTradeTransactionIds();
-
                 // populate data from remote exchange
                 try {
-                    JSONObject json_data = response.getJSONObject("result").getJSONObject("trades");
-                    for (Iterator<String> rows = json_data.keys(); rows.hasNext(); ) {
-                        JSONObject json_row = json_data.getJSONObject(rows.next());
-                        String orderTxId = json_row.getString("ordertxid");
-                        if (!txIds.contains(orderTxId)) {
-                            String pair = json_row.getString("pair");
-                            Long time = Double.valueOf(json_row.getString("time")).longValue();
-                            String type = json_row.getString("type");
-                            String orderType = json_row.getString("ordertype");
-                            Double price = Double.parseDouble(json_row.getString("price"));
-                            Double cost = Double.parseDouble(json_row.getString("cost"));
-                            Double fee = Double.parseDouble(json_row.getString("fee"));
-                            Double vol = Double.parseDouble(json_row.getString("vol"));
-                            Double margin = Double.parseDouble(json_row.getString("margin"));
-                            String misc = json_row.getString("misc");
-                            insertTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc);
-                            logger.info("New Kraken trade has been inserted : " + orderTxId);
+                    if (response.getJSONArray("error").length() > 0) {
+                        logger.warning("Error when trying to get Kraken trading history : " + response.getString("error"));
+                    } else {
+
+                        JSONObject json_data = response.getJSONObject("result").getJSONObject("trades");
+
+                        if (json_data.length() > 0) {
+
+                            //get any existing trades
+                            List<String> txIds = getTradeTransactionIds();
+
+                            for (Iterator<String> rows = json_data.keys(); rows.hasNext(); ) {
+                                JSONObject json_row = json_data.getJSONObject(rows.next());
+                                String orderTxId = json_row.getString("ordertxid");
+                                if (!txIds.contains(orderTxId)) {
+                                    String pair = json_row.getString("pair");
+                                    Long time = Double.valueOf(json_row.getString("time")).longValue();
+                                    String type = json_row.getString("type");
+                                    String orderType = json_row.getString("ordertype");
+                                    Double price = Double.parseDouble(json_row.getString("price"));
+                                    Double cost = Double.parseDouble(json_row.getString("cost"));
+                                    Double fee = Double.parseDouble(json_row.getString("fee"));
+                                    Double vol = Double.parseDouble(json_row.getString("vol"));
+                                    Double margin = Double.parseDouble(json_row.getString("margin"));
+                                    String misc = json_row.getString("misc");
+                                    insertTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc);
+                                    logger.info("New Kraken trade has been inserted : " + orderTxId);
+                                }
+                            }
+
+                            offset = offset + 50;
+
+                            // delay 10ms to be sure the nonce will change
+                            new android.os.Handler().postDelayed(
+                                new Runnable() {
+                                    public void run() {
+                                        populateTradeHistory();
+                                    }
+                                },
+                                10
+                            );
                         }
-                    }
 
-                    List<KrakenTrade> trades = getAllTrades();
-                    for (KrakenTrade t : trades) {
-                        logger.info("==================> " + t.getOrderTxId() + " " + t.getPair() + " " + t.getTime() + " " + t.getType() + " " + t.getOrderType() + " " + t.getPrice() + " " + t.getCost() + " " + t.getFee() + " " + t.getVol() + " " + t.getMargin() + " " + t.getMisc());
-                    }
+                        List<KrakenTrade> trades = getAllTrades();
+                        for (KrakenTrade t : trades) {
+                            logger.info("==================> " + t.getOrderTxId() + " " + t.getPair() + " " + t.getTime() + " " + t.getType() + " " + t.getOrderType() + " " + t.getPrice() + " " + t.getCost() + " " + t.getFee() + " " + t.getVol() + " " + t.getMargin() + " " + t.getMisc());
+                        }
 
+
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -585,6 +630,12 @@ public class KrakenManager {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                logger.warning("Failed to call Kraken API : " + statusCode);
+                try {
+                    logger.warning("Message is : " + response.getString("error"));
+                } catch (JSONException jse) {
+                    jse.printStackTrace();
+                }
             }
         });
     }

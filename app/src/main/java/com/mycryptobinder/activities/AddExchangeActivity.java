@@ -23,7 +23,6 @@ public class AddExchangeActivity extends AppCompatActivity {
     private EditText exchangeNameEditText;
     private EditText exchangeLinkEditText;
     private EditText exchangeDescriptionEditText;
-    private ExchangeManager exchangeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +45,6 @@ public class AddExchangeActivity extends AppCompatActivity {
         editExchangeButton.setVisibility(View.INVISIBLE);
         createExchangeButton.setVisibility(View.VISIBLE);
 
-        // open database connection
-        exchangeManager = new ExchangeManager(this);
-        exchangeManager.open();
-
         // set click listener for the create exchange button
         createExchangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +55,10 @@ public class AddExchangeActivity extends AppCompatActivity {
                 String description = exchangeDescriptionEditText.getText().toString();
 
                 // insert values into the database
+                ExchangeManager exchangeManager = new ExchangeManager(view.getContext());
+                exchangeManager.open();
                 exchangeManager.insert(name, link, description);
+                exchangeManager.close();
 
                 // update intent so all top activities are closed
                 Intent main = new Intent(AddExchangeActivity.this, ExchangeListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

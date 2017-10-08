@@ -14,12 +14,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "MYCRYPTOBINDER.DB";
 
     // Database version
-    private static final int DB_VERSION = 19;
+    private static final int DB_VERSION = 23;
 
     //region Table names
     public static final String TABLE_CURRENCIES = "CURRENCIES";
     public static final String TABLE_EXCHANGES = "EXCHANGES";
     public static final String TABLE_TRANSACTIONS = "TRANSACTIONS";
+    public static final String TABLE_ICO_INVESTMENTS = "ICO_INVESTMENTS";
 
     public static final String TABLE_KRAKEN_ASSETPAIRS = "KRAKEN_ASSET_PAIRS";
     public static final String TABLE_KRAKEN_ASSETS = "KRAKEN_ASSETS";
@@ -46,6 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_TOTAL = "total";
+    public static final String COLUMN_SUM_QUANTITY = "sum_quantity";
     public static final String COLUMN_COMMENT = "comment";
 
     public static final String COLUMN_KRAKEN_ORDER_TX_ID = "order_tx_id";
@@ -78,6 +80,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_POLONIEX_ORDER_NUMBER = "order_number";
     public static final String COLUMN_POLONIEX_TYPE = "type";
     public static final String COLUMN_POLONIEX_CATEGORY = "category";
+
+    public static final String COLUMN_ICO_NAME = "name";
+    public static final String COLUMN_ICO_CURRENCY = "currency";
+    public static final String COLUMN_ICO_AMOUNT = "amount";
+    public static final String COLUMN_ICO_FEES = "fees";
+    public static final String COLUMN_ICO_INVEST_DATE = "invest_date";
+    public static final String COLUMN_ICO_TOKEN = "token";
+    public static final String COLUMN_ICO_TOKEN_DATE = "token_date";
+    public static final String COLUMN_ICO_TOKEN_QUANTITY = "token_quantity";
+    public static final String COLUMN_ICO_BONUS = "bonus";
+    public static final String COLUMN_ICO_COMMENT = "comment";
     //endregion
 
     //region Table creations
@@ -105,10 +118,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_QUANTITY + " REAL NOT NULL, " +
             COLUMN_PRICE + " REAL NOT NULL, " +
             COLUMN_TOTAL + " REAL NOT NULL, " +
+            COLUMN_SUM_QUANTITY + " REAL NOT NULL, " +
             COLUMN_COMMENT + " TEXT, " +
             "FOREIGN KEY(" + COLUMN_EXCHANGE + ") REFERENCES " + TABLE_EXCHANGES + "(" + COLUMN_NAME + "), " +
             "FOREIGN KEY(" + COLUMN_CURRENCY1 + ") REFERENCES " + TABLE_CURRENCIES + "(" + COLUMN_ISO_CODE + "), " +
             "FOREIGN KEY(" + COLUMN_CURRENCY2 + ") REFERENCES " + TABLE_CURRENCIES + "(" + COLUMN_ISO_CODE + "))";
+
+    private static final String CREATE_TABLE_ICO_INVESTMENTS = "CREATE TABLE " + TABLE_ICO_INVESTMENTS + " (" +
+            COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_ICO_NAME + " TEXT NOT NULL, " +
+            COLUMN_ICO_CURRENCY + " TEXT NOT NULL, " +
+            COLUMN_ICO_AMOUNT + " REAL NOT NULL, " +
+            COLUMN_ICO_FEES + " REAL NOT NULL, " +
+            COLUMN_ICO_INVEST_DATE + " NUMERIC NOT NULL, " +
+            COLUMN_ICO_TOKEN + " TEXT NOT NULL, " +
+            COLUMN_ICO_TOKEN_DATE + " NUMERIC NOT NULL, " +
+            COLUMN_ICO_TOKEN_QUANTITY + " REAL NOT NULL, " +
+            COLUMN_ICO_BONUS + " REAL NOT NULL, " +
+            COLUMN_ICO_COMMENT + " TEXT, " +
+            "FOREIGN KEY(" + COLUMN_ICO_CURRENCY + ") REFERENCES " + TABLE_CURRENCIES + "(" + COLUMN_ISO_CODE + "))";
 
     private static final String CREATE_TABLE_KRAKEN_ASSETPAIRS = "CREATE TABLE " + TABLE_KRAKEN_ASSETPAIRS + " (" +
             COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -165,6 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CURRENCIES);
         db.execSQL(CREATE_TABLE_EXCHANGES);
         db.execSQL(CREATE_TABLE_TRANSACTIONS);
+        db.execSQL(CREATE_TABLE_ICO_INVESTMENTS);
         db.execSQL(CREATE_TABLE_KRAKEN_ASSETPAIRS);
         db.execSQL(CREATE_TABLE_KRAKEN_ASSETS);
         db.execSQL(CREATE_TABLE_KRAKEN_TRADE_HISTORY);
@@ -177,6 +206,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EXCHANGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CURRENCIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ICO_INVESTMENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_ASSETPAIRS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_ASSETS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_TRADE_HISTORY);

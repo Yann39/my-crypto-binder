@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -43,7 +42,9 @@ public class EditTransactionActivity extends AppCompatActivity {
     private EditText transactionQuantityEditText;
     private EditText transactionPriceEditText;
     private EditText transactionFeesEditText;
+    private EditText transactionTotalEditText;
     private EditText transactionCommentEditText;
+    private EditText transactionTxIdEditText;
     private RadioGroup transactionTypeRadioGroup;
     private Spinner transactionExchangeSpinner;
     private EditText transactionDateEditText;
@@ -73,7 +74,9 @@ public class EditTransactionActivity extends AppCompatActivity {
         transactionQuantityEditText = (EditText) findViewById(R.id.transaction_quantity_edittext);
         transactionPriceEditText = (EditText) findViewById(R.id.transaction_price_edittext);
         transactionFeesEditText = (EditText) findViewById(R.id.transaction_fees_edittext);
+        transactionTotalEditText = (EditText) findViewById(R.id.transaction_total_edittext);
         transactionCommentEditText = (EditText) findViewById(R.id.transaction_comment_edittext);
+        transactionTxIdEditText = (EditText) findViewById(R.id.transaction_txid_edittext);
         transactionTypeRadioGroup = (RadioGroup) findViewById(R.id.transaction_type_radio_group);
         Button chooseTransactionDateButton = (Button) findViewById(R.id.btn_select_transaction_date);
         Button createTransactionButton = (Button) findViewById(R.id.btn_create_transaction);
@@ -116,6 +119,8 @@ public class EditTransactionActivity extends AppCompatActivity {
         transactionQuantityEditText.setText(String.valueOf(intent.getDoubleExtra("quantity", 0.0)));
         transactionPriceEditText.setText(String.valueOf(intent.getDoubleExtra("price", 0.0)));
         transactionFeesEditText.setText(String.valueOf(intent.getDoubleExtra("fees", 0.0)));
+        transactionTotalEditText.setText(String.valueOf(intent.getDoubleExtra("total", 0.0)));
+        transactionTxIdEditText.setText(intent.getStringExtra("txid"));
         transactionCommentEditText.setText(intent.getStringExtra("comment"));
 
         // format the date and display it in the related text box
@@ -179,6 +184,8 @@ public class EditTransactionActivity extends AppCompatActivity {
                 Double quantity = Double.parseDouble(transactionQuantityEditText.getText().toString());
                 Double price = Double.parseDouble(transactionPriceEditText.getText().toString());
                 Double fees = Double.parseDouble(transactionFeesEditText.getText().toString());
+                Double total = Double.parseDouble(transactionTotalEditText.getText().toString());
+                String txId = transactionTxIdEditText.getText().toString();
 
                 UtilsHelper uh = new UtilsHelper(getApplicationContext());
                 DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", uh.getCurrentLocale());
@@ -194,12 +201,11 @@ public class EditTransactionActivity extends AppCompatActivity {
                 String comment = transactionCommentEditText.getText().toString();
 
                 // insert values into the database
-                //todo update right value for total
-                transactionManager.update(transactionId, exchange, "", currency1, currency2, fees, date, type, quantity, price, 0, comment);
+                transactionManager.update(transactionId, exchange, txId, currency1, currency2, fees, date, type, quantity, price, total, 0, comment);
 
                 // update intent so all top activities are closed
-                Intent main = new Intent(EditTransactionActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                setResult(Activity.RESULT_OK, main);
+                //Intent main = new Intent(EditTransactionActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                //setResult(Activity.RESULT_OK, main);
                 finish();
                 //startActivity(main);
 

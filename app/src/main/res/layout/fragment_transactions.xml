@@ -14,47 +14,32 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <TextView
-            android:id="@+id/column_header1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="TYPE" />
-
-        <TextView
             android:id="@+id/column_header2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="5"
             android:text="PAIR" />
 
         <TextView
             android:id="@+id/column_header3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="QUANTITY" />
+            android:layout_weight="3"
+            android:text="QTY" />
 
         <TextView
             android:id="@+id/column_header4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:text="PRICE" />
 
         <TextView
             android:id="@+id/column_header5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:text="TOTAL" />
-
-
-        <TextView
-            android:id="@+id/column_header6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="" />
 
     </LinearLayout>
 

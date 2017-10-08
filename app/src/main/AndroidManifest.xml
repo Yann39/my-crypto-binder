@@ -17,14 +17,14 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.AddTransactionActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.AddCurrencyActivity"
             android:excludeFromRecents="true"
@@ -33,10 +33,8 @@
             android:name=".activities.AddExchangeActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
-
         <activity android:name=".activities.CurrencyListActivity" />
         <activity android:name=".activities.ExchangeListActivity" />
-
         <activity
             android:name=".activities.EditCurrencyActivity"
             android:excludeFromRecents="true"
@@ -49,6 +47,7 @@
             android:name=".activities.EditTransactionActivity"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity android:name=".activities.AddIcoActivity"></activity>
     </application>
 
 </manifest>

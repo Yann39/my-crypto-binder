@@ -32,7 +32,10 @@
     <string name="btn_update_exchange">Update exchange</string>
     <string name="btn_update_transaction">Update transaction</string>
 
+    <string name="btn_create_ico">Add new ICO</string>
+
     <string name="btn_synchronize">Synchronize</string>
+    <string name="btn_select">Select</string>
 
     <string name="imgbtn_delete_currency_desc">Delete this currency</string>
     <string name="imgbtn_delete_exchange_desc">Delete this exchange</string>
@@ -45,12 +48,15 @@
     <string name="lbl_no">No</string>
     <string name="lbl_currency_list">Currency list</string>
     <string name="lbl_exchange_list">Exchange list</string>
+    <string name="lbl_checkbox_clean_synchronize">Clean?</string>
 
     <string name="lbl_currency1_selection">Send</string>
     <string name="lbl_currency2_selection">For</string>
 
+    <string name="lbl_transaction_id">Transaction id</string>
     <string name="lbl_exchange_selection">Exchange</string>
     <string name="lbl_quantity">Quantity</string>
+    <string name="lbl_total">Total</string>
     <string name="lbl_price">Price</string>
     <string name="lbl_fees">Fees</string>
     <string name="lbl_date">Date</string>
@@ -65,6 +71,7 @@
     <string name="title_add_currency">Add currency</string>
     <string name="title_add_exchange">Add exchange</string>
     <string name="title_add_transaction">Add transaction</string>
+    <string name="title_add_ico">Add ICO</string>
     <string name="title_edit_currency">Edit currency</string>
     <string name="title_edit_exchange">Edit exchange</string>
     <string name="title_edit_transaction">Edit transaction</string>

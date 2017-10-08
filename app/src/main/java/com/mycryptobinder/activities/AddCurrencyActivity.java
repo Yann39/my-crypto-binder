@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.helpers.DatabaseHelper;
 import com.mycryptobinder.managers.CurrencyManager;
 
 /**
@@ -24,7 +23,6 @@ public class AddCurrencyActivity extends AppCompatActivity {
     private EditText currencyNameEditText;
     private EditText currencyIsoCodeEditText;
     private EditText currencySymbolEditText;
-    private CurrencyManager currencyManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,7 @@ public class AddCurrencyActivity extends AppCompatActivity {
                 String symbol = currencySymbolEditText.getText().toString();
 
                 // insert values into the database
-                currencyManager = new CurrencyManager(view.getContext());
+                CurrencyManager currencyManager = new CurrencyManager(view.getContext());
                 currencyManager.open();
                 currencyManager.insert(name, isoCode, symbol);
                 currencyManager.close();

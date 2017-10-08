@@ -20,6 +20,7 @@ public class Transaction {
     private Double quantity;
     private Double price;
     private Double total;
+    private Double sumQuantity;
     private String comment;
 
     public long getId() {
@@ -108,6 +109,14 @@ public class Transaction {
 
     public void setTotal(Double total) {
         this.total = total;
+    }
+
+    public Double getSumQuantity() {
+        return sumQuantity;
+    }
+
+    public void setSumQuantity(Double sumQuantity) {
+        this.sumQuantity = sumQuantity;
     }
 
     public String getComment() {
