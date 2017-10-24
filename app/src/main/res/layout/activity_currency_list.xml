@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mycryptobinder.activities.CurrencyListActivity">
+    tools:context="com.mycryptobinder.activities.CurrencyListActivity"
+    android:background="@color/colorDark90">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/currency_list_recycler_view"
@@ -25,6 +26,6 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/ic_add_white_24px" />
 
 </android.support.constraint.ConstraintLayout>

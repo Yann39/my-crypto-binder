@@ -1,19 +1,18 @@
 package com.mycryptobinder.activities;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.SectionsPagerAdapter;
-import com.mycryptobinder.managers.CurrencyManager;
 
 /**
  * Main activity responsible for displaying the application main content
@@ -33,12 +32,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // add back arrow to toolbar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
         // create the adapter that will return a fragment for each of the primary sections of the activity.
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 
@@ -49,6 +42,15 @@ public class MainActivity extends AppCompatActivity {
         // set up the tabs layout
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.tab_home_selector);
+        tabLayout.getTabAt(1).setIcon(R.drawable.tab_transactions_selector);
+        tabLayout.getTabAt(2).setIcon(R.drawable.tab_ico_selector);
+        tabLayout.getTabAt(3).setIcon(R.drawable.tab_chart_selector);
+        tabLayout.getTabAt(4).setIcon(R.drawable.tab_settings_selector);
+
     }
 
     @Override

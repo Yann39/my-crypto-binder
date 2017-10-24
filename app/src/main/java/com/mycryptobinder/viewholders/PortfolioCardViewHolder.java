@@ -3,6 +3,7 @@ package com.mycryptobinder.viewholders;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
@@ -21,7 +22,7 @@ public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
     public TextView portfolio_currency_isocode_textView;
     public TextView portfolio_holding_value_textView;
     public TextView portfolio_holding_quantity_textView;
-    public ImageButton portfolio_delete_imageButton;
+    public ImageView portfolio_delete_imageView;
 
     public PortfolioCardViewHolder(View v) {
         super(v);
@@ -29,7 +30,7 @@ public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
         portfolio_currency_isocode_textView = (TextView) v.findViewById(R.id.portfolio_card_currency_iso_code);
         portfolio_holding_value_textView = (TextView) v.findViewById(R.id.portfolio_card_holding_value);
         portfolio_holding_quantity_textView = (TextView) v.findViewById(R.id.portfolio_card_holding_quantity);
-        portfolio_delete_imageButton = (ImageButton) v.findViewById(R.id.currency_card_btn_delete);
+        portfolio_delete_imageView = (ImageView) v.findViewById(R.id.currency_card_btn_delete);
     }
 
 }

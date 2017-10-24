@@ -1,23 +1,15 @@
 package com.mycryptobinder.adapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.activities.EditCurrencyActivity;
 import com.mycryptobinder.managers.CurrencyManager;
 import com.mycryptobinder.managers.TransactionManager;
 import com.mycryptobinder.models.Currency;
-import com.mycryptobinder.viewholders.CurrencyCardViewHolder;
 import com.mycryptobinder.viewholders.PortfolioCardViewHolder;
 
 import java.text.DecimalFormat;
@@ -44,6 +36,7 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
     public PortfolioCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(context).inflate(R.layout.card_portfolio, parent, false);
+
         return new PortfolioCardViewHolder(v);
     }
 

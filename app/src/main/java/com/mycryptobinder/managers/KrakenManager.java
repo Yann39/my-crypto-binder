@@ -2,6 +2,7 @@ package com.mycryptobinder.managers;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,11 +21,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.crypto.Mac;
@@ -43,6 +47,7 @@ public class KrakenManager {
     private Context context;
     private SQLiteDatabase database;
     private static int offset = 0;
+    private Properties properties;
 
     private static final Logger logger = Logger.getLogger(KrakenManager.class.getName());
 
@@ -53,6 +58,13 @@ public class KrakenManager {
     public KrakenManager open() throws SQLException {
         dbHelper = new DatabaseHelper(context);
         database = dbHelper.getWritableDatabase();
+        properties = new Properties();
+        try {
+            InputStream inputStream = context.getAssets().open("myCryptoBinder.properties");
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -417,7 +429,7 @@ public class KrakenManager {
     public void populateAssetPairs() {
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://api.kraken.com/0/public/AssetPairs", new JsonHttpResponseHandler() {
+        client.get(properties.getProperty("KRAKEN_API_PUBLIC_URL") + "AssetPairs", new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -464,7 +476,7 @@ public class KrakenManager {
     public void populateAssets() {
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://api.kraken.com/0/public/Assets", new JsonHttpResponseHandler() {
+        client.get(properties.getProperty("KRAKEN_API_PUBLIC_URL") + "Assets", new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -518,7 +530,7 @@ public class KrakenManager {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update((nonce + data).getBytes());
             Mac mac = Mac.getInstance("HmacSHA512");
-            String secret = "";
+            String secret = properties.getProperty("KRAKEN_API_PRIVATE_KEY");
             mac.init(new SecretKeySpec(Base64.decode(secret.getBytes(), 2), "HmacSHA512"));
             mac.update(path.getBytes());
             signature = new String(Base64.encode(mac.doFinal(md.digest()), 2));
@@ -543,8 +555,8 @@ public class KrakenManager {
         cal.set(Calendar.MILLISECOND, 0);
 
         String start = String.valueOf(cal.getTimeInMillis() / 1000);
-        String domain = "https://api.kraken.com";
-        String key = "";
+        String domain = properties.getProperty("KRAKEN_API_BASE_URL");
+        String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");;
         String nonce = String.valueOf(System.currentTimeMillis());
         String path = "/0/private/TradesHistory";
 
@@ -605,12 +617,12 @@ public class KrakenManager {
 
                             // delay 10ms to be sure the nonce will change
                             new android.os.Handler().postDelayed(
-                                new Runnable() {
-                                    public void run() {
-                                        populateTradeHistory();
-                                    }
-                                },
-                                10
+                                    new Runnable() {
+                                        public void run() {
+                                            populateTradeHistory();
+                                        }
+                                    },
+                                    10
                             );
                         }
 

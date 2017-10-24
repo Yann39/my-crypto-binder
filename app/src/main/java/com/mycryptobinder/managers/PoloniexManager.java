@@ -19,12 +19,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.crypto.Mac;
@@ -42,6 +45,7 @@ public class PoloniexManager {
     private DatabaseHelper dbHelper;
     private Context context;
     private SQLiteDatabase database;
+    private Properties properties;
 
     private static final Logger logger = Logger.getLogger(PoloniexManager.class.getName());
 
@@ -52,6 +56,13 @@ public class PoloniexManager {
     public PoloniexManager open() throws SQLException {
         dbHelper = new DatabaseHelper(context);
         database = dbHelper.getWritableDatabase();
+        properties = new Properties();
+        try {
+            InputStream inputStream = context.getAssets().open("myCryptoBinder.properties");
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -235,7 +246,7 @@ public class PoloniexManager {
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_GLOBAL_TRADE_ID, globalTradeID);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_PAIR, pair);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_TRADE_ID, tradeID);
-        contentValues.put(DatabaseHelper.COLUMN_POLONIEX_DATE, date.getTime()/1000);
+        contentValues.put(DatabaseHelper.COLUMN_POLONIEX_DATE, date.getTime() / 1000);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_RATE, rate);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_AMOUNT, amount);
         contentValues.put(DatabaseHelper.COLUMN_POLONIEX_TOTAL, total);
@@ -316,7 +327,7 @@ public class PoloniexManager {
     public void populateAssets() {
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://poloniex.com/public?command=returnCurrencies", new JsonHttpResponseHandler() {
+        client.get(properties.getProperty("POLONIEX_API_PUBLIC_URL") + "?command=returnCurrencies", new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -364,7 +375,7 @@ public class PoloniexManager {
         String signature = null;
         try {
             Mac mac = Mac.getInstance("HmacSHA512");
-            String secret = "";
+            String secret = properties.getProperty("POLONIEX_API_PRIVATE_KEY");
             mac.init(new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA512"));
             signature = bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
         } catch (Exception e) {
@@ -399,8 +410,8 @@ public class PoloniexManager {
 
         String start = String.valueOf(cal.getTime().getTime() / 1000);
 
-        String domain = "https://poloniex.com/tradingApi";
-        String key = "";
+        String domain = properties.getProperty("POLONIEX_API_BASE_URL");
+        String key = properties.getProperty("POLONIEX_API_PUBLIC_KEY");
         String nonce = String.valueOf(System.currentTimeMillis());
 
         RequestParams params = new RequestParams();

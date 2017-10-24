@@ -1,7 +1,15 @@
 package com.mycryptobinder.activities;
 
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
@@ -18,7 +27,8 @@ import com.mycryptobinder.managers.ExchangeManager;
 import com.mycryptobinder.managers.KrakenManager;
 import com.mycryptobinder.managers.PoloniexManager;
 import com.mycryptobinder.managers.TransactionManager;
-import com.mycryptobinder.models.Currency;
+
+import java.util.Random;
 
 /**
  * Fragment responsible for displaying portfolio
@@ -27,8 +37,6 @@ import com.mycryptobinder.models.Currency;
  */
 
 public class PortfolioFragment extends Fragment {
-
-    private CheckBox checkBox;
 
     public PortfolioFragment() {
         // required empty public constructor
@@ -51,12 +59,27 @@ public class PortfolioFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
 
-        Button synchronizeButton = (Button) view.findViewById(R.id.btn_synchronize);
-        checkBox = (CheckBox) view.findViewById(R.id.checkbox_clean_synchronize);
+        /*View view2 = inflater.inflate(R.layout.card_portfolio, container, false);
+        AppCompatImageView imageView = (AppCompatImageView) view2.findViewById(R.id.portfolio_card_currency_logo);
+        //int[] androidColors = getResources().getIntArray(R.array.currency_backgrounds);
+        //int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
 
-        // open database connection
-        CurrencyManager currencyManager = new CurrencyManager(this.getContext());
-        currencyManager.open();
+        TypedArray ar = getContext().getResources().obtainTypedArray(R.array.currency_backgrounds);
+        int len = ar.length();
+        int[] picArray = new int[len];
+        for (int i = 0; i < len; i++) {
+            picArray[i] = ar.getResourceId(i, 0);
+        }
+        ar.recycle();
+        int randomAndroidColor = picArray[new Random().nextInt(picArray.length)];
+
+        ContextCompat.getColor(getContext(), R.color.colorCurrency3);
+        imageView.setColorFilter(ContextCompat.getColor(getContext(), randomAndroidColor));
+        imageView.setSupportBackgroundTintList(ContextCompat.getColorStateList(getContext(), randomAndroidColor));
+        //DrawableCompat.setTint(imageView.getDrawable(), ContextCompat.getColor(getContext(), randomAndroidColor));
+        //imageView.invalidate();
+        //imageView.setSupportBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorBlue));
+        //ViewCompat.setBackgroundTintList(imageView, ContextCompat.getColorStateList(getContext(), randomAndroidColor));*/
 
         // prepare the recycler view with a linear layout
         RecyclerView recList = (RecyclerView) view.findViewById(R.id.portfolio_recycler_view);
@@ -65,46 +88,17 @@ public class PortfolioFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
 
+        // add horizontal separator between rows
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recList.getContext(), LinearLayoutManager.VERTICAL);
+        recList.addItemDecoration(mDividerItemDecoration);
+
         // get the adapter with last data set and apply it to the recycler view
+        CurrencyManager currencyManager = new CurrencyManager(this.getContext());
+        currencyManager.open();
         PortfolioCardAdapter portfolioCardAdapter = new PortfolioCardAdapter(this.getContext(), currencyManager.getUsed());
         portfolioCardAdapter.notifyDataSetChanged();
         recList.setAdapter(portfolioCardAdapter);
-
-        // set click listener for the synchronize button
-        synchronizeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                KrakenManager km = new KrakenManager(view.getContext());
-                PoloniexManager pm = new PoloniexManager(view.getContext());
-                TransactionManager tm = new TransactionManager(view.getContext());
-                CurrencyManager cm = new CurrencyManager(view.getContext());
-                ExchangeManager em = new ExchangeManager(view.getContext());
-
-                km.open();
-                pm.open();
-                tm.open();
-                cm.open();
-                em.open();
-
-                if (checkBox.isChecked()) {
-                    tm.reset();
-                    cm.reset();
-                    em.reset();
-                }
-
-                km.populateExchange();
-                pm.populateExchange();
-
-                km.populateAssetPairs();
-                km.populateAssets();
-                pm.populateAssets();
-                cm.populateCurrencies();
-
-                km.populateTradeHistory();
-                pm.populateTradeHistory();
-                tm.populateTransactions();
-            }
-        });
+        currencyManager.close();
 
         return view;
     }

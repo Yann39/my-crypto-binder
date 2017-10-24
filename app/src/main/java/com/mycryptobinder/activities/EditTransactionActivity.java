@@ -1,12 +1,11 @@
 package com.mycryptobinder.activities;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -48,7 +47,6 @@ public class EditTransactionActivity extends AppCompatActivity {
     private RadioGroup transactionTypeRadioGroup;
     private Spinner transactionExchangeSpinner;
     private EditText transactionDateEditText;
-    private TransactionManager transactionManager;
     private CurrencyAutoCompleteAdapter currencyAutoCompleteAdapter1;
     private CurrencyAutoCompleteAdapter currencyAutoCompleteAdapter2;
     private ExchangeSpinnerAdapter exchangeSpinnerAdapter;
@@ -58,11 +56,13 @@ public class EditTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(getResources().getString(R.string.title_edit_transaction));
-        setContentView(R.layout.activity_add_transaction);
+        setContentView(R.layout.activity_add_edit_transaction);
 
-        // modal window full width
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         // get view components
         AutoCompleteTextView transactionCurrency1AutoCompleteText = (AutoCompleteTextView) findViewById(R.id.transaction_currency1_autoCompleteText);
@@ -78,7 +78,6 @@ public class EditTransactionActivity extends AppCompatActivity {
         transactionCommentEditText = (EditText) findViewById(R.id.transaction_comment_edittext);
         transactionTxIdEditText = (EditText) findViewById(R.id.transaction_txid_edittext);
         transactionTypeRadioGroup = (RadioGroup) findViewById(R.id.transaction_type_radio_group);
-        Button chooseTransactionDateButton = (Button) findViewById(R.id.btn_select_transaction_date);
         Button createTransactionButton = (Button) findViewById(R.id.btn_create_transaction);
         Button editTransactionButton = (Button) findViewById(R.id.btn_update_transaction);
 
@@ -86,23 +85,23 @@ public class EditTransactionActivity extends AppCompatActivity {
         createTransactionButton.setVisibility(View.INVISIBLE);
         editTransactionButton.setVisibility(View.VISIBLE);
 
-        // open database connections
+        // populate the currency autocomplete text views from database
         CurrencyManager currencyManager = new CurrencyManager(this);
-        ExchangeManager exchangeManager = new ExchangeManager(this);
-        transactionManager = new TransactionManager(this);
         currencyManager.open();
-        exchangeManager.open();
-        transactionManager.open();
-
-        // apply adapters
         currencyAutoCompleteAdapter1 = new CurrencyAutoCompleteAdapter(transactionCurrency1AutoCompleteText.getContext(), android.R.layout.simple_dropdown_item_1line, currencyManager.getAll());
         transactionCurrency1AutoCompleteText.setAdapter(currencyAutoCompleteAdapter1);
         currencyAutoCompleteAdapter2 = new CurrencyAutoCompleteAdapter(transactionCurrency2AutoCompleteText.getContext(), android.R.layout.simple_spinner_dropdown_item, currencyManager.getAll());
         transactionCurrency2AutoCompleteText.setAdapter(currencyAutoCompleteAdapter2);
+        currencyManager.close();
+
+        // populate the exchange spinner text views from database
+        ExchangeManager exchangeManager = new ExchangeManager(this);
+        exchangeManager.open();
         exchangeSpinnerAdapter = new ExchangeSpinnerAdapter(transactionExchangeSpinner.getContext(), android.R.layout.simple_dropdown_item_1line, exchangeManager.getAll());
         transactionExchangeSpinner.setAdapter(exchangeSpinnerAdapter);
+        exchangeManager.close();
 
-        // get the intent and its data
+        // get the intent data and set field values
         Intent intent = getIntent();
         transactionId = intent.getLongExtra("id", 0);
         String name = intent.getStringExtra("type");
@@ -115,7 +114,6 @@ public class EditTransactionActivity extends AppCompatActivity {
         transactionCurrency1AutoCompleteText.setText(intent.getStringExtra("currency1"));
         transactionCurrency2AutoCompleteText.setText(intent.getStringExtra("currency2"));
         transactionExchangeSpinner.setSelection(exchangeSpinnerAdapter.getPosition(intent.getStringExtra("exchange")));
-
         transactionQuantityEditText.setText(String.valueOf(intent.getDoubleExtra("quantity", 0.0)));
         transactionPriceEditText.setText(String.valueOf(intent.getDoubleExtra("price", 0.0)));
         transactionFeesEditText.setText(String.valueOf(intent.getDoubleExtra("fees", 0.0)));
@@ -150,26 +148,28 @@ public class EditTransactionActivity extends AppCompatActivity {
             }
         });
 
-        // set click listener for date picker button
-        chooseTransactionDateButton.setOnClickListener(new View.OnClickListener() {
+        // set focus listener to display a date picker on transaction date field focus
+        transactionDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View view) {
-                // get current date to initialize the date picker
-                Calendar c = Calendar.getInstance();
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // get current date to initialize the date picker
+                    Calendar c = Calendar.getInstance();
 
-                // open the date picker
-                DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        // format the date and display it in the related text box
-                        UtilsHelper uh = new UtilsHelper(getApplicationContext());
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", uh.getCurrentLocale());
-                        Calendar c = Calendar.getInstance();
-                        c.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
-                        transactionDateEditText.setText(sdf.format(c.getTime()));
-                    }
-                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
+                    // open the date picker
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                            // format the date and display it in the related text box
+                            UtilsHelper uh = new UtilsHelper(getApplicationContext());
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", uh.getCurrentLocale());
+                            Calendar c = Calendar.getInstance();
+                            c.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
+                            transactionDateEditText.setText(sdf.format(c.getTime()));
+                        }
+                    }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                    datePickerDialog.show();
+                }
             }
         });
 
@@ -201,7 +201,11 @@ public class EditTransactionActivity extends AppCompatActivity {
                 String comment = transactionCommentEditText.getText().toString();
 
                 // insert values into the database
+
+                TransactionManager transactionManager = new TransactionManager(view.getContext());
+                transactionManager.open();
                 transactionManager.update(transactionId, exchange, txId, currency1, currency2, fees, date, type, quantity, price, total, 0, comment);
+                transactionManager.close();
 
                 // update intent so all top activities are closed
                 //Intent main = new Intent(EditTransactionActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -213,5 +217,17 @@ public class EditTransactionActivity extends AppCompatActivity {
                 Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_transaction_updated, currency1 + "/" + currency2), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // handle back arrow click (close this activity and return to previous activity if there is any)
+        if (id == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

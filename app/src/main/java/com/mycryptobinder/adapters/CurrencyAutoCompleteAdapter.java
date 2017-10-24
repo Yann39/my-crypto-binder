@@ -1,23 +1,14 @@
 package com.mycryptobinder.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.TextView;
 
-import com.mycryptobinder.R;
 import com.mycryptobinder.models.Currency;
-import com.mycryptobinder.viewholders.CurrencyCardViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Adapter class for currency list item rendering
@@ -53,7 +44,7 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
-                if(constraint != null && currencies != null) {
+                if (constraint != null && currencies != null) {
                     List<Currency> tmpCurrencies = new ArrayList<>();
                     for (Currency c : currencies) {
                         if (c.getName().toLowerCase().contains(constraint.toString().toLowerCase())) {
@@ -69,11 +60,10 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                if(results.count > 0) {
+                if (results.count > 0) {
                     filteredCurrencies = (ArrayList<Currency>) results.values;
                     notifyDataSetChanged();
-                }
-                else {
+                } else {
                     filteredCurrencies = currencies;
                     notifyDataSetInvalidated();
                 }

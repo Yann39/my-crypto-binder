@@ -2,13 +2,9 @@ package com.mycryptobinder.adapters;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 
-import com.mycryptobinder.models.Currency;
 import com.mycryptobinder.models.Exchange;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +35,7 @@ public class ExchangeSpinnerAdapter extends ArrayAdapter<String> {
 
     @Override
     public int getPosition(String item) {
-        int i=0;
+        int i = 0;
         for (Exchange ex : exchanges) {
             if (ex.getName().equals(item)) {
                 return i;

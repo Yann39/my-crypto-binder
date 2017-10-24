@@ -3,8 +3,8 @@ package com.mycryptobinder.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,14 +23,12 @@ public class EditCurrencyActivity extends AppCompatActivity {
     private EditText currencyNameEditText;
     private EditText currencyIsoCodeEditText;
     private EditText currencySymbolEditText;
-    private CurrencyManager currencyManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(getResources().getString(R.string.title_edit_currency));
-        setContentView(R.layout.activity_add_currency);
+        setContentView(R.layout.activity_add_edit_currency);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -38,13 +36,10 @@ public class EditCurrencyActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // modal window full width
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         // get view components
-        currencyNameEditText = (EditText) findViewById(R.id.currency_name_add_edittext);
-        currencyIsoCodeEditText = (EditText) findViewById(R.id.currency_iso_code_add_edittext);
-        currencySymbolEditText = (EditText) findViewById(R.id.currency_symbol_add_edittext);
+        currencyNameEditText = (EditText) findViewById(R.id.add_currency_name_editText);
+        currencyIsoCodeEditText = (EditText) findViewById(R.id.add_currency_iso_code_editText);
+        currencySymbolEditText = (EditText) findViewById(R.id.add_currency_symbol_editText);
         Button createCurrencyButton = (Button) findViewById(R.id.btn_create_currency);
         Button editCurrencyButton = (Button) findViewById(R.id.btn_update_currency);
 
@@ -52,7 +47,7 @@ public class EditCurrencyActivity extends AppCompatActivity {
         createCurrencyButton.setVisibility(View.INVISIBLE);
         editCurrencyButton.setVisibility(View.VISIBLE);
 
-        // get the intent and its data
+        // get the intent data and set field values
         Intent intent = getIntent();
         String isoCode = intent.getStringExtra("isoCode");
         String name = intent.getStringExtra("name");
@@ -60,10 +55,6 @@ public class EditCurrencyActivity extends AppCompatActivity {
         currencyIsoCodeEditText.setText(isoCode);
         currencyNameEditText.setText(name);
         currencySymbolEditText.setText(symbol);
-
-        // open database connection
-        currencyManager = new CurrencyManager(this);
-        currencyManager.open();
 
         // set click listener for the update currency button
         editCurrencyButton.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +66,10 @@ public class EditCurrencyActivity extends AppCompatActivity {
                 String symbol = currencySymbolEditText.getText().toString();
 
                 // update values into the database
+                CurrencyManager currencyManager = new CurrencyManager(view.getContext());
+                currencyManager.open();
                 currencyManager.update(isoCode, name, symbol);
+                currencyManager.close();
 
                 // update intent so all top activities are closed
                 Intent main = new Intent(EditCurrencyActivity.this, CurrencyListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -86,5 +80,17 @@ public class EditCurrencyActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // handle back arrow click (close this activity and return to previous activity if there is any)
+        if (id == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

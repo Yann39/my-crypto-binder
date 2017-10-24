@@ -25,7 +25,6 @@ public class ExchangeListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(getResources().getString(R.string.lbl_exchange_list));
         setContentView(R.layout.activity_exchange_list);
 
         // add back arrow to toolbar
@@ -41,14 +40,13 @@ public class ExchangeListActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
 
-        // open database connection
+        // get the adapter with last data set and apply it to the recycler view
         ExchangeManager exchangeManager = new ExchangeManager(this);
         exchangeManager.open();
-
-        // get the adapter with last data set and apply it to the recycler view
         ExchangeCardAdapter exchangeCardAdapter = new ExchangeCardAdapter(this, exchangeManager.getAll());
         exchangeCardAdapter.notifyDataSetChanged();
         recList.setAdapter(exchangeCardAdapter);
+        exchangeManager.close();
 
         // set click listener for the add exchange button
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.btn_add_exchange);

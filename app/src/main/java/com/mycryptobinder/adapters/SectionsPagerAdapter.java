@@ -58,24 +58,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        int[] iconIds = {
-                R.drawable.ic_home_white_24px,
-                R.drawable.ic_swap_horiz_white_24px,
-                R.drawable.ic_ico_white_24px,
-                R.drawable.ic_show_chart_white_24px,
-                R.drawable.ic_settings_white_24px
-        };
-        Drawable image;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            image = context.getResources().getDrawable(iconIds[position], context.getTheme());
-        } else {
-            image = context.getResources().getDrawable(iconIds[position]);
-        }
-        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-        SpannableString sb = new SpannableString(" ");
-        ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BASELINE);
-        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return sb;
+        return null;
     }
 
 }

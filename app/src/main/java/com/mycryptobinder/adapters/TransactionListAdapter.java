@@ -1,25 +1,21 @@
 package com.mycryptobinder.adapters;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
-import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.activities.EditTransactionActivity;
-import com.mycryptobinder.managers.TransactionManager;
 import com.mycryptobinder.models.Transaction;
 import com.mycryptobinder.viewholders.TransactionListViewHolder;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -57,7 +53,7 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         } else if (transactions.get(position).getType().equals("sell")) {
             viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_red, 0, 0, 0);
         }
-        viewHolder.transactionItemPairTextView.setText(transactions.get(position).getCurrency1().getIsoCode() +"/"+ transactions.get(position).getCurrency2().getIsoCode());
+        viewHolder.transactionItemPairTextView.setText(transactions.get(position).getCurrency1().getIsoCode() + "/" + transactions.get(position).getCurrency2().getIsoCode());
         viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity()));
         viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice()));
         viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal()));
@@ -114,5 +110,90 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
     @Override
     public int getItemCount() {
         return transactions.size();
+    }
+
+    public void sortTransactions(int colIndex, boolean asc) {
+        switch (colIndex) {
+            case 0:
+                if (asc) {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return (t1.getCurrency1().getIsoCode() + "/" + t1.getCurrency2().getIsoCode()).compareTo(t2.getCurrency1().getIsoCode() + "/" + t2.getCurrency2().getIsoCode());
+                        }
+                    });
+                } else {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return (t2.getCurrency1().getIsoCode() + "/" + t2.getCurrency2().getIsoCode()).compareTo(t1.getCurrency1().getIsoCode() + "/" + t1.getCurrency2().getIsoCode());
+                        }
+                    });
+                }
+            case 1:
+                if (asc) {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return Double.compare(t1.getQuantity(), t2.getQuantity());
+                        }
+                    });
+                } else {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return Double.compare(t2.getQuantity(), t1.getQuantity());
+                        }
+                    });
+                }
+            case 2:
+                if (asc) {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return Double.compare(t1.getPrice(), t2.getPrice());
+                        }
+                    });
+                } else {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return Double.compare(t2.getPrice(), t1.getPrice());
+                        }
+                    });
+                }
+            case 3:
+                if (asc) {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return Double.compare(t1.getTotal(), t2.getTotal());
+                        }
+                    });
+                } else {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return Double.compare(t2.getTotal(), t1.getTotal());
+                        }
+                    });
+                }
+            default:
+                if (asc) {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return (t1.getCurrency1().getIsoCode() + "/" + t1.getCurrency2().getIsoCode()).compareTo(t2.getCurrency1().getIsoCode() + "/" + t2.getCurrency2().getIsoCode());
+                        }
+                    });
+                } else {
+                    Collections.sort(transactions, new Comparator<Transaction>() {
+                        @Override
+                        public int compare(Transaction t1, Transaction t2) {
+                            return (t2.getCurrency1().getIsoCode() + "/" + t2.getCurrency2().getIsoCode()).compareTo(t1.getCurrency1().getIsoCode() + "/" + t1.getCurrency2().getIsoCode());
+                        }
+                    });
+                }
+        }
     }
 }

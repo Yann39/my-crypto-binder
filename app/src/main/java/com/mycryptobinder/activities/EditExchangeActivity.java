@@ -3,6 +3,7 @@ package com.mycryptobinder.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,14 +24,12 @@ public class EditExchangeActivity extends AppCompatActivity {
     private EditText exchangeNameEditText;
     private EditText exchangeLinkEditText;
     private EditText exchangeDescriptionEditText;
-    private ExchangeManager exchangeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(getResources().getString(R.string.title_edit_exchange));
-        setContentView(R.layout.activity_add_exchange);
+        setContentView(R.layout.activity_add_edit_exchange);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -38,13 +37,10 @@ public class EditExchangeActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // modal window full width
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         // get view components
-        exchangeNameEditText = (EditText) findViewById(R.id.exchange_name_add_edittext);
-        exchangeLinkEditText = (EditText) findViewById(R.id.exchange_link_add_edittext);
-        exchangeDescriptionEditText = (EditText) findViewById(R.id.exchange_description_add_edittext);
+        exchangeNameEditText = (EditText) findViewById(R.id.add_exchange_name_editText);
+        exchangeLinkEditText = (EditText) findViewById(R.id.add_exchange_link_editText);
+        exchangeDescriptionEditText = (EditText) findViewById(R.id.add_exchange_description_editText);
         Button createExchangeButton = (Button) findViewById(R.id.btn_create_exchange);
         Button editExchangeButton = (Button) findViewById(R.id.btn_update_exchange);
 
@@ -52,7 +48,7 @@ public class EditExchangeActivity extends AppCompatActivity {
         createExchangeButton.setVisibility(View.INVISIBLE);
         editExchangeButton.setVisibility(View.VISIBLE);
 
-        // get the intent and its data
+        // get the intent data and set field values
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         String isoCode = intent.getStringExtra("link");
@@ -60,10 +56,6 @@ public class EditExchangeActivity extends AppCompatActivity {
         exchangeNameEditText.setText(name);
         exchangeLinkEditText.setText(isoCode);
         exchangeDescriptionEditText.setText(symbol);
-
-        // open database connection
-        exchangeManager = new ExchangeManager(this);
-        exchangeManager.open();
 
         // set click listener for the update exchange button
         editExchangeButton.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +67,10 @@ public class EditExchangeActivity extends AppCompatActivity {
                 String description = exchangeDescriptionEditText.getText().toString();
 
                 // update values into the database
+                ExchangeManager exchangeManager = new ExchangeManager(view.getContext());
+                exchangeManager.open();
                 exchangeManager.update(name, link, description);
+                exchangeManager.close();
 
                 // update intent so all top activities are closed
                 Intent main = new Intent(EditExchangeActivity.this, ExchangeListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -86,5 +81,17 @@ public class EditExchangeActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // handle back arrow click (close this activity and return to previous activity if there is any)
+        if (id == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

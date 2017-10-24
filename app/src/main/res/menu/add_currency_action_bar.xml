@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.mycryptobinder.activities.MainActivity">
+    <item
+        android:id="@+id/cancel_add_currency"
+        android:orderInCategory="90"
+        android:icon="@drawable/ic_clear_white_24px"
+        app:showAsAction="ifRoom"
+        android:title="Cancel currency" />
+    <item
+        android:id="@+id/save_add_currency"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_done_white_24px"
+        app:showAsAction="ifRoom"
+        android:title="Save currency" />
+</menu>

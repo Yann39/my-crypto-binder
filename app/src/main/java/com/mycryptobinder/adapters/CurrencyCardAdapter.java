@@ -1,6 +1,5 @@
 package com.mycryptobinder.adapters;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,12 +9,10 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.activities.AddCurrencyActivity;
 import com.mycryptobinder.activities.EditCurrencyActivity;
 import com.mycryptobinder.managers.CurrencyManager;
 import com.mycryptobinder.models.Currency;

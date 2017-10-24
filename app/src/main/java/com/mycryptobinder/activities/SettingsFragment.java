@@ -8,9 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.managers.CurrencyManager;
+import com.mycryptobinder.managers.ExchangeManager;
+import com.mycryptobinder.managers.KrakenManager;
+import com.mycryptobinder.managers.PoloniexManager;
+import com.mycryptobinder.managers.TransactionManager;
 
 /**
  * Fragment responsible for displaying settings
@@ -19,6 +26,8 @@ import com.mycryptobinder.R;
  */
 
 public class SettingsFragment extends Fragment {
+
+    private CheckBox checkBox;
 
     public SettingsFragment() {
         // required empty public constructor
@@ -63,6 +72,45 @@ public class SettingsFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), ExchangeListActivity.class);
                     startActivity(intent);
                 }
+            }
+        });
+
+        Button synchronizeButton = (Button) view.findViewById(R.id.btn_synchronize);
+        checkBox = (CheckBox) view.findViewById(R.id.checkbox_clean_synchronize);
+
+        // set click listener for the synchronize button
+        synchronizeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                KrakenManager km = new KrakenManager(view.getContext());
+                PoloniexManager pm = new PoloniexManager(view.getContext());
+                TransactionManager tm = new TransactionManager(view.getContext());
+                CurrencyManager cm = new CurrencyManager(view.getContext());
+                ExchangeManager em = new ExchangeManager(view.getContext());
+
+                km.open();
+                pm.open();
+                tm.open();
+                cm.open();
+                em.open();
+
+                if (checkBox.isChecked()) {
+                    tm.reset();
+                    cm.reset();
+                    em.reset();
+                }
+
+                km.populateExchange();
+                pm.populateExchange();
+
+                km.populateAssetPairs();
+                km.populateAssets();
+                pm.populateAssets();
+                cm.populateCurrencies();
+
+                km.populateTradeHistory();
+                pm.populateTradeHistory();
+                tm.populateTransactions();
             }
         });
 

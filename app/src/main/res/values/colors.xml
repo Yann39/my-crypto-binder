@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="white">#ffffff</color>
+    <color name="primary">#4fa5d5</color>
+    <color name="primaryLight">#7cc1e7</color>
+    <color name="primaryDark">#2275a4</color>
+    <color name="colorAccent">#4fa5d5</color>
+    <color name="colorHeader">#73a3e7</color>
+    <color name="colorDark30">#cccccc</color>
+    <color name="colorDark80">#333333</color>
+    <color name="colorDark90">#222222</color>
+    <color name="colorLight">#b4d6e9</color>
+
+    <color name="colorCurrency1">#6ab0d7</color>
+    <color name="colorCurrency2">#6ad7ab</color>
+    <color name="colorCurrency3">#d76c6a</color>
+    <color name="colorCurrency4">#ab6ad7</color>
+    <color name="colorCurrency5">#ccd76a</color>
+    <color name="colorCurrency6">#d76aa6</color>
+    <color name="colorCurrency7">#6a75d7</color>
+    <color name="colorCurrency8">#6cd76a</color>
+    <color name="colorCurrency9">#a8d76a</color>
+    <color name="colorCurrency10">#d7a16a</color>
+
+    <integer-array name="currency_backgrounds">
+        <item>@color/colorCurrency1</item>
+        <item>@color/colorCurrency2</item>
+        <item>@color/colorCurrency3</item>
+        <item>@color/colorCurrency4</item>
+        <item>@color/colorCurrency5</item>
+        <item>@color/colorCurrency6</item>
+        <item>@color/colorCurrency7</item>
+        <item>@color/colorCurrency8</item>
+        <item>@color/colorCurrency9</item>
+        <item>@color/colorCurrency10</item>
+    </integer-array>
+
 </resources>

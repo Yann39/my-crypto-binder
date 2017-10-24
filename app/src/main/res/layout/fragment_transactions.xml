@@ -8,38 +8,72 @@
     <LinearLayout
         android:id="@+id/transactions_list_header"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_height="36dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/column_header2"
+        <LinearLayout
+            android:id="@+id/transactions_pair_column_header"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="5"
-            android:text="PAIR" />
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/column_header3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="QTY" />
+            <TextView
+                android:id="@+id/transactions_pair_column_header_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PAIR"
+                android:textColor="@color/white"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/column_header4"
+        <LinearLayout
+            android:id="@+id/transactions_quantity_column_header"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="3"
-            android:text="PRICE" />
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/column_header5"
+            <TextView
+                android:id="@+id/transactions_quantity_column_header_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QTY"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/transactions_price_column_header"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="3"
-            android:text="TOTAL" />
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/transactions_price_column_header_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PRICE"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/transactions_total_column_header"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/transactions_total_column_header_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TOTAL"
+                android:textColor="@color/white" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -47,9 +81,11 @@
         android:id="@+id/transactions_list_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/ic_scrollbar_black_24px"
+        android:fadeScrollbars="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -63,6 +99,6 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/ic_add_white_24px" />
 
 </android.support.constraint.ConstraintLayout>

@@ -11,43 +11,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/app_name"
+            android:label="@string/title_portfolio"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.AddTransactionActivity"
-            android:excludeFromRecents="true"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_add_transaction" />
         <activity
             android:name=".activities.AddCurrencyActivity"
-            android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+            android:label="@string/title_add_currency" />
         <activity
             android:name=".activities.AddExchangeActivity"
-            android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" />
-        <activity android:name=".activities.CurrencyListActivity" />
-        <activity android:name=".activities.ExchangeListActivity" />
+            android:label="@string/title_add_exchange" />
+        <activity
+            android:name=".activities.AddIcoActivity"
+            android:label="@string/title_add_ico" />
+        <activity
+            android:name=".activities.CurrencyListActivity"
+            android:label="@string/title_currency_list" />
+        <activity
+            android:name=".activities.ExchangeListActivity"
+            android:label="@string/title_exchange_list" />
         <activity
             android:name=".activities.EditCurrencyActivity"
-            android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+            android:label="@string/title_edit_currency" />
         <activity
             android:name=".activities.EditExchangeActivity"
-            android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+            android:label="@string/title_edit_exchange" />
         <activity
             android:name=".activities.EditTransactionActivity"
-            android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" />
-        <activity android:name=".activities.AddIcoActivity"></activity>
+            android:label="@string/title_edit_transaction" />
+
     </application>
 
 </manifest>

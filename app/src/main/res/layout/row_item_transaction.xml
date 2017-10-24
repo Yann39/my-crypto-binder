@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="25dp">
+    android:layout_height="30dp"
+    android:background="@color/colorDark80"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
 
     <TextView
         android:id="@+id/transaction_item_id_textView"
@@ -12,43 +15,37 @@
     <TextView
         android:id="@+id/transaction_item_pair_textView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_weight="5"
-        android:textAlignment="textStart"/>
+        android:gravity="center_vertical"
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/transaction_item_quantity_textView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_weight="3"
-        android:textAlignment="textStart" />
+        android:gravity="center_vertical"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/transaction_item_price_textView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_weight="3"
-        android:textAlignment="textStart" />
+        android:gravity="center_vertical"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/transaction_item_total_textView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_weight="3"
-        android:textAlignment="textStart" />
-
-    <!--ImageView
-        android:id="@+id/transaction_item_details_imageView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:contentDescription="item click icon"
-        android:src="@drawable/ic_more_vert_black_24dp" /-->
+        android:gravity="center_vertical"
+        android:textColor="@color/white" />
 
 </LinearLayout>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mycryptobinder.activities.AddIcoActivity">
+
+    <TextView
+        android:id="@+id/add_ico_title_textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="10dp"
+        android:text="ICO"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_name_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_title_textView">
+
+        <EditText
+            android:id="@+id/add_ico_name_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            android:inputType="textPersonName" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_amount_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/add_ico_currency_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_name_textInputLayout">
+
+        <EditText
+            android:id="@+id/add_ico_amount_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Amount"
+            android:inputType="numberDecimal" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Spinner
+        android:id="@+id/add_ico_currency_spinner"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        android:hint="Currency"
+        app:layout_constraintLeft_toRightOf="@+id/add_ico_amount_textInputLayout"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_name_textInputLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_date_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/add_ico_token_name_textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_amount_textInputLayout">
+
+        <EditText
+            android:id="@+id/add_ico_date_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date"
+            android:inputType="date" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_token_name_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toRightOf="@+id/add_ico_date_textInputLayout"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_currency_spinner">
+
+        <EditText
+            android:id="@+id/add_ico_token_name_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Token Name"
+            android:inputType="numberDecimal" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_token_date_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/add_ico_token_quantity_textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_date_textInputLayout">
+    <EditText
+        android:id="@+id/add_ico_token_date_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Token Date"
+        android:inputType="date" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_token_quantity_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toRightOf="@+id/add_ico_token_date_textInputLayout"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_token_name_textInputLayout">
+    <EditText
+        android:id="@+id/add_ico_token_quantity_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Token Quantity"
+        android:inputType="numberDecimal" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_fees_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/add_ico_bonus_textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_token_date_textInputLayout">
+    <EditText
+        android:id="@+id/add_ico_fees_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fees"
+        android:inputType="numberDecimal" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_bonus_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toRightOf="@+id/add_ico_fees_textInputLayout"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_token_quantity_textInputLayout">
+    <EditText
+        android:id="@+id/add_ico_bonus_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Bonus"
+        android:inputType="numberDecimal" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/add_ico_comment_textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/form_margin"
+        android:layout_marginLeft="@dimen/form_margin"
+        android:layout_marginRight="@dimen/form_margin"
+        android:layout_marginStart="@dimen/form_margin"
+        android:layout_marginTop="@dimen/form_margin"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_ico_fees_textInputLayout">
+    <EditText
+        android:id="@+id/add_ico_comment_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top|left"
+        android:hint="Comments"
+        android:inputType="textMultiLine"
+        android:lines="2"
+        android:maxLines="5"
+        android:minLines="2"
+        android:scrollbars="vertical" />
+    </android.support.design.widget.TextInputLayout>
+
+</android.support.constraint.ConstraintLayout>
