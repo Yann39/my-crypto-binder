@@ -1,7 +1,10 @@
 package com.mycryptobinder.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,8 +13,16 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.adapters.CurrencyCardAdapter;
 import com.mycryptobinder.adapters.ExchangeCardAdapter;
+import com.mycryptobinder.entities.Currency;
+import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.managers.ExchangeManager;
+import com.mycryptobinder.viewmodels.CurrencyListViewModel;
+import com.mycryptobinder.viewmodels.ExchangeListViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity responsible for displaying the list of exchanges
@@ -20,6 +31,8 @@ import com.mycryptobinder.managers.ExchangeManager;
  */
 
 public class ExchangeListActivity extends AppCompatActivity {
+
+    private ExchangeCardAdapter exchangeCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +47,26 @@ public class ExchangeListActivity extends AppCompatActivity {
         }
 
         // prepare the recycler view with a linear layout
-        RecyclerView recList = (RecyclerView) findViewById(R.id.exchange_list_recycler_view);
-        recList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
+        RecyclerView exchangeListRecyclerView = findViewById(R.id.exchange_list_recycler_view);
+        exchangeListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // get the adapter with last data set and apply it to the recycler view
-        ExchangeManager exchangeManager = new ExchangeManager(this);
-        exchangeManager.open();
-        ExchangeCardAdapter exchangeCardAdapter = new ExchangeCardAdapter(this, exchangeManager.getAll());
-        exchangeCardAdapter.notifyDataSetChanged();
-        recList.setAdapter(exchangeCardAdapter);
-        exchangeManager.close();
+        // initialize the adapter for the list
+        exchangeCardAdapter = new ExchangeCardAdapter(new ArrayList<Exchange>(),this);
+        exchangeListRecyclerView.setAdapter(exchangeCardAdapter);
+
+        // get view model
+        ExchangeListViewModel exchangeListViewModel = ViewModelProviders.of(this).get(ExchangeListViewModel.class);
+
+        // observe the application settings list from the view model so it will always be up to date
+        exchangeListViewModel.getExchangeList().observe(ExchangeListActivity.this, new Observer<List<Exchange>>() {
+            @Override
+            public void onChanged(@Nullable List<Exchange> exchanges) {
+                exchangeCardAdapter.addItems(exchanges);
+            }
+        });
 
         // set click listener for the add exchange button
-        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.btn_add_exchange);
+        FloatingActionButton button = findViewById(R.id.btn_add_exchange);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,8 +80,9 @@ public class ExchangeListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // handle back arrow click (close this activity and return to previous activity if there is any)
+        // back arrow click
         if (id == android.R.id.home) {
+            // close current activity and return to previous activity if there is any
             finish();
         }
 

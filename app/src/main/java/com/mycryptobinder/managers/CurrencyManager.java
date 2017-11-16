@@ -115,6 +115,19 @@ public class CurrencyManager {
         }
         return list;
     }
+
+    public Cursor getUsedCur() {
+        String req = "SELECT curr as _id, qty, max(date) FROM (" +
+                "SELECT " + DatabaseHelper.COLUMN_CURRENCY1 + " AS curr, MAX(" + DatabaseHelper.COLUMN_DATE + ") AS date, " + DatabaseHelper.COLUMN_SUM_CURRENCY1 + " AS qty " +
+                "FROM " + DatabaseHelper.TABLE_TRANSACTIONS + " " +
+                "GROUP BY " + DatabaseHelper.COLUMN_CURRENCY1 + " " +
+                "UNION ALL " +
+                "SELECT " + DatabaseHelper.COLUMN_CURRENCY2 + " AS curr, MAX(" + DatabaseHelper.COLUMN_DATE + ") AS date, " + DatabaseHelper.COLUMN_SUM_CURRENCY1 + " AS qty " +
+                "FROM " + DatabaseHelper.TABLE_TRANSACTIONS + " " +
+                "GROUP BY " + DatabaseHelper.COLUMN_CURRENCY1 + ") T " +
+                "GROUP BY curr";
+        return database.rawQuery(req, null);
+    }
     //endregion
 
     //region Create Update Delete

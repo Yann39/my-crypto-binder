@@ -179,7 +179,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/transaction_fees_edittext"
+                android:id="@+id/transaction_fee_edittext"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"

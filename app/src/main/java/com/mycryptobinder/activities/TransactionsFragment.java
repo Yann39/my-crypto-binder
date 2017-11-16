@@ -72,15 +72,15 @@ public class TransactionsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_transactions, container, false);
 
         // get view elements
-        transactionsRecyclerView = (RecyclerView) view.findViewById(R.id.transactions_list_recycler_view);
-        transactionsPairColumnHeader = (LinearLayout) view.findViewById(R.id.transactions_pair_column_header);
-        transactionsPairColumnHeaderText = (TextView) view.findViewById(R.id.transactions_pair_column_header_text);
-        transactionsQuantityColumnHeader = (LinearLayout) view.findViewById(R.id.transactions_quantity_column_header);
-        transactionsQuantityColumnHeaderText = (TextView) view.findViewById(R.id.transactions_quantity_column_header_text);
-        transactionsPriceColumnHeader = (LinearLayout) view.findViewById(R.id.transactions_price_column_header);
-        transactionsPriceColumnHeaderText = (TextView) view.findViewById(R.id.transactions_price_column_header_text);
-        transactionsTotalColumnHeader = (LinearLayout) view.findViewById(R.id.transactions_total_column_header);
-        transactionsTotalColumnHeaderText = (TextView) view.findViewById(R.id.transactions_total_column_header_text);
+        transactionsRecyclerView = view.findViewById(R.id.transactions_list_recycler_view);
+        transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
+        transactionsPairColumnHeaderText = view.findViewById(R.id.transactions_pair_column_header_text);
+        transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
+        transactionsQuantityColumnHeaderText = view.findViewById(R.id.transactions_quantity_column_header_text);
+        transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
+        transactionsPriceColumnHeaderText = view.findViewById(R.id.transactions_price_column_header_text);
+        transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
+        transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
 
         // set linear layout for recycler view
         transactionsLayoutManager = new LinearLayoutManager(getActivity());
@@ -100,7 +100,7 @@ public class TransactionsFragment extends Fragment {
         transactionsRecyclerView.addItemDecoration(mDividerItemDecoration);
 
         // set click listener for the add transaction button
-        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.btn_add_transaction);
+        FloatingActionButton button = view.findViewById(R.id.btn_add_transaction);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

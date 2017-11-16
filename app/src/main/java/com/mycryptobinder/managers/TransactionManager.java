@@ -43,6 +43,27 @@ public class TransactionManager {
     //region Read
 
     /**
+     * Get the total count of different currencies used in transactions
+     *
+     * @return The total number of different currencies
+     */
+    public int getNbDifferentCurrencies() {
+        int total = 0;
+        String req = "SELECT COUNT(1) FROM (" +
+                "SELECT DISTINCT " + DatabaseHelper.COLUMN_CURRENCY1 + " " +
+                "FROM " + DatabaseHelper.TABLE_TRANSACTIONS + " " +
+                "UNION ALL " +
+                "SELECT DISTINCT " + DatabaseHelper.COLUMN_CURRENCY2 + " " +
+                "FROM " + DatabaseHelper.TABLE_TRANSACTIONS + ") T";
+        try (Cursor cursor = database.rawQuery(req, null)) {
+            if (cursor.moveToFirst()) {
+                total = cursor.getInt(0);
+            }
+        }
+        return total;
+    }
+
+    /**
      * Get the total price value of the specified currency
      *
      * @param currencyCode The currency code
@@ -58,13 +79,10 @@ public class TransactionManager {
                 "SELECT " + DatabaseHelper.COLUMN_TOTAL + " * CASE WHEN " + DatabaseHelper.COLUMN_TYPE + " = 'buy' THEN -1 ELSE 1 END AS Total " +
                 "FROM " + DatabaseHelper.TABLE_TRANSACTIONS + " " +
                 "WHERE " + DatabaseHelper.COLUMN_CURRENCY2 + " = '" + currencyCode + "') As Total2";
-        Cursor cursor = database.rawQuery(req, null);
-        try {
+        try (Cursor cursor = database.rawQuery(req, null)) {
             if (cursor.moveToFirst()) {
                 total = cursor.getDouble(0);
             }
-        } finally {
-            cursor.close();
         }
         return total;
     }
@@ -86,13 +104,10 @@ public class TransactionManager {
                 "SELECT SUM(" + DatabaseHelper.COLUMN_TOTAL + " * CASE WHEN " + DatabaseHelper.COLUMN_TYPE + " = 'buy' THEN -1 ELSE 1 END) AS Total " +
                 "FROM " + DatabaseHelper.TABLE_TRANSACTIONS + " " +
                 "WHERE " + DatabaseHelper.COLUMN_CURRENCY2 + " = '" + currencyCode + "') T;";
-        Cursor cursor = database.rawQuery(req, null);
-        try {
+        try (Cursor cursor = database.rawQuery(req, null)) {
             if (cursor.moveToFirst()) {
                 total = cursor.getDouble(0);
             }
-        } finally {
-            cursor.close();
         }
         return total;
     }
@@ -132,7 +147,8 @@ public class TransactionManager {
                 DatabaseHelper.COLUMN_QUANTITY,
                 DatabaseHelper.COLUMN_PRICE,
                 DatabaseHelper.COLUMN_TOTAL,
-                DatabaseHelper.COLUMN_SUM_QUANTITY,
+                DatabaseHelper.COLUMN_SUM_CURRENCY1,
+                DatabaseHelper.COLUMN_SUM_CURRENCY2,
                 DatabaseHelper.COLUMN_COMMENT
         };
         Cursor cursor = database.query(DatabaseHelper.TABLE_TRANSACTIONS, columns, null, null, null, null, null);
@@ -155,8 +171,9 @@ public class TransactionManager {
                     trans.setQuantity(cursor.getDouble(8));
                     trans.setPrice(cursor.getDouble(9));
                     trans.setTotal(cursor.getDouble(10));
-                    trans.setSumQuantity(cursor.getDouble(11));
-                    trans.setComment(cursor.getString(12));
+                    trans.setSumCurrency1(cursor.getDouble(11));
+                    trans.setSumCurrency2(cursor.getDouble(12));
+                    trans.setComment(cursor.getString(13));
                     list.add(trans);
                 }
             } finally {
@@ -182,10 +199,11 @@ public class TransactionManager {
      * @param quantity      The quantity of bought currency
      * @param price         The price of the bought currency
      * @param total         The total amount of the transaction
-     * @param sumQuantity   The sum of all quantities until the current date
+     * @param sumCurrency1  The sum of all quantities for currency1 until the current date
+     * @param sumCurrency2  The sum of all quantities for currency2 until the current date
      * @param comment       Any optional comment
      */
-    public void insert(String exchange, String transactionId, String currency1, String currency2, double fees, Date date, String type, double quantity, double price, double total, double sumQuantity, String comment) {
+    public void insert(String exchange, String transactionId, String currency1, String currency2, double fees, Date date, String type, double quantity, double price, double total, double sumCurrency1, double sumCurrency2, String comment) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_EXCHANGE, exchange);
         contentValues.put(DatabaseHelper.COLUMN_TX_ID, transactionId);
@@ -197,7 +215,8 @@ public class TransactionManager {
         contentValues.put(DatabaseHelper.COLUMN_QUANTITY, quantity);
         contentValues.put(DatabaseHelper.COLUMN_PRICE, price);
         contentValues.put(DatabaseHelper.COLUMN_TOTAL, total);
-        contentValues.put(DatabaseHelper.COLUMN_SUM_QUANTITY, sumQuantity);
+        contentValues.put(DatabaseHelper.COLUMN_SUM_CURRENCY1, sumCurrency1);
+        contentValues.put(DatabaseHelper.COLUMN_SUM_CURRENCY2, sumCurrency2);
         contentValues.put(DatabaseHelper.COLUMN_COMMENT, comment);
         database.insert(DatabaseHelper.TABLE_TRANSACTIONS, null, contentValues);
     }
@@ -216,11 +235,12 @@ public class TransactionManager {
      * @param quantity      The quantity of bought currency
      * @param price         The price of the bought currency
      * @param total         The total amount of the transaction
-     * @param sumQuantity   The sum of all quantities until the current date
+     * @param sumCurrency1  The sum of all quantities for currency1 until the current date
+     * @param sumCurrency2  The sum of all quantities for currency2 until the current date
      * @param comment       Any optional comment
      * @return An integer representing the number of rows affected
      */
-    public int update(long id, String exchange, String transactionId, String currency1, String currency2, double fees, Date date, String type, double quantity, double price, double total, double sumQuantity, String comment) {
+    public int update(long id, String exchange, String transactionId, String currency1, String currency2, double fees, Date date, String type, double quantity, double price, double total, double sumCurrency1, double sumCurrency2, String comment) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.COLUMN_EXCHANGE, exchange);
         contentValues.put(DatabaseHelper.COLUMN_TX_ID, transactionId);
@@ -232,7 +252,8 @@ public class TransactionManager {
         contentValues.put(DatabaseHelper.COLUMN_QUANTITY, quantity);
         contentValues.put(DatabaseHelper.COLUMN_PRICE, price);
         contentValues.put(DatabaseHelper.COLUMN_TOTAL, total);
-        contentValues.put(DatabaseHelper.COLUMN_SUM_QUANTITY, sumQuantity);
+        contentValues.put(DatabaseHelper.COLUMN_SUM_CURRENCY1, sumCurrency1);
+        contentValues.put(DatabaseHelper.COLUMN_SUM_CURRENCY2, sumCurrency2);
         contentValues.put(DatabaseHelper.COLUMN_COMMENT, comment);
         return database.update(DatabaseHelper.TABLE_TRANSACTIONS, contentValues, DatabaseHelper.COLUMN_ID + " = " + id, null);
     }
@@ -259,50 +280,6 @@ public class TransactionManager {
      * Populate the TRANSACTIONS table from the data got from exchanges
      */
     public void populateTransactions() {
-        /*String req = "INSERT INTO " + DatabaseHelper.TABLE_TRANSACTIONS + "(" +
-                DatabaseHelper.COLUMN_EXCHANGE + ", " +
-                DatabaseHelper.COLUMN_TX_ID + ", " +
-                DatabaseHelper.COLUMN_CURRENCY1 + ", " +
-                DatabaseHelper.COLUMN_CURRENCY2 + ", " +
-                DatabaseHelper.COLUMN_FEES + ", " +
-                DatabaseHelper.COLUMN_DATE + ", " +
-                DatabaseHelper.COLUMN_TYPE + ", " +
-                DatabaseHelper.COLUMN_QUANTITY + ", " +
-                DatabaseHelper.COLUMN_PRICE + ", " +
-                DatabaseHelper.COLUMN_TOTAL + ", " +
-                DatabaseHelper.COLUMN_COMMENT + ") " +
-                "SELECT * FROM (" +
-                "SELECT 'Kraken', " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_ORDER_TX_ID + " AS txid, " +
-                "C." + DatabaseHelper.COLUMN_KRAKEN_ALTNAME + ", " +
-                "D." + DatabaseHelper.COLUMN_KRAKEN_ALTNAME + ", " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_FEE + ", " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_TIME + ", " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_TYPE + ", " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_VOL + ", " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_PRICE + ", " +
-                "A." + DatabaseHelper.COLUMN_KRAKEN_COST + ", " +
-                "null " +
-                "FROM " + DatabaseHelper.TABLE_KRAKEN_TRADE_HISTORY + " A " +
-                "INNER JOIN " + DatabaseHelper.TABLE_KRAKEN_ASSETPAIRS + " B ON A." + DatabaseHelper.COLUMN_KRAKEN_PAIR + " = B." + DatabaseHelper.COLUMN_KRAKEN_ASSETPAIR + " " +
-                "INNER JOIN " + DatabaseHelper.TABLE_KRAKEN_ASSETS + " C ON B." + DatabaseHelper.COLUMN_KRAKEN_BASE + " = C." + DatabaseHelper.COLUMN_KRAKEN_ASSETNAME + " " +
-                "INNER JOIN " + DatabaseHelper.TABLE_KRAKEN_ASSETS + " D ON B." + DatabaseHelper.COLUMN_KRAKEN_QUOTE + " = D." + DatabaseHelper.COLUMN_KRAKEN_ASSETNAME + " " +
-                "UNION ALL " +
-                "SELECT 'Poloniex', " +
-                DatabaseHelper.COLUMN_POLONIEX_GLOBAL_TRADE_ID + " AS txid, " +
-                "replace(" + DatabaseHelper.COLUMN_POLONIEX_PAIR + ", rtrim(" + DatabaseHelper.COLUMN_POLONIEX_PAIR + ", replace(" + DatabaseHelper.COLUMN_POLONIEX_PAIR + ", '_', '' ) ), ''), " +
-                "replace(" + DatabaseHelper.COLUMN_POLONIEX_PAIR + ", ltrim(" + DatabaseHelper.COLUMN_POLONIEX_PAIR + ", replace(" + DatabaseHelper.COLUMN_POLONIEX_PAIR + ", '_', '' ) ), ''), " +
-                DatabaseHelper.COLUMN_POLONIEX_FEE + ", " +
-                DatabaseHelper.COLUMN_POLONIEX_DATE + ", " +
-                DatabaseHelper.COLUMN_POLONIEX_TYPE + ", " +
-                DatabaseHelper.COLUMN_POLONIEX_AMOUNT + ", " +
-                DatabaseHelper.COLUMN_POLONIEX_RATE + ", " +
-                DatabaseHelper.COLUMN_POLONIEX_TOTAL + ", " +
-                "null " +
-                "FROM " + DatabaseHelper.TABLE_POLONIEX_TRADE_HISTORY + ") T1 " +
-                "WHERE NOT EXISTS (SELECT 1 FROM " + DatabaseHelper.TABLE_TRANSACTIONS + " WHERE " + DatabaseHelper.COLUMN_TX_ID + " = T1.txid)";
-        database.execSQL(req);*/
-
         String req = "SELECT * FROM (" +
                 "SELECT 'Kraken', " +
                 "A." + DatabaseHelper.COLUMN_KRAKEN_ORDER_TX_ID + " AS txid, " +
@@ -338,18 +315,28 @@ public class TransactionManager {
         Cursor cursor = database.rawQuery(req, null);
 
         if (cursor != null) {
-            HashMap<String, Double> hm = new HashMap<>();
+            HashMap<String, Double> curr1Map = new HashMap<>();
+            HashMap<String, Double> curr2Map = new HashMap<>();
             try {
                 while (cursor.moveToNext()) {
                     String curr1 = cursor.getString(2);
+                    String curr2 = cursor.getString(3);
                     String type = cursor.getString(6);
                     double quantity = cursor.getDouble(7);
+                    double total = cursor.getDouble(9);
 
-                    if (hm.containsKey(curr1)) {
-                        double tmp = hm.get(curr1);
-                        hm.put(curr1, type.equals("buy") ? (tmp + quantity) : (tmp - quantity));
+                    if (curr1Map.containsKey(curr1)) {
+                        double tmp = curr1Map.get(curr1);
+                        curr1Map.put(curr1, type.equals("buy") ? (tmp + quantity) : (tmp - quantity));
                     } else {
-                        hm.put(curr1, quantity);
+                        curr1Map.put(curr1, type.equals("buy") ? quantity : -quantity);
+                    }
+
+                    if (curr2Map.containsKey(curr2)) {
+                        double tmp = curr2Map.get(curr2);
+                        curr2Map.put(curr2, type.equals("buy") ? (tmp - total) : (tmp + total));
+                    } else {
+                        curr2Map.put(curr2, type.equals("buy") ? -total : total);
                     }
 
                     insert(cursor.getString(0),
@@ -362,7 +349,8 @@ public class TransactionManager {
                             quantity,
                             cursor.getDouble(8),
                             cursor.getDouble(9),
-                            hm.get(curr1),
+                            curr1Map.get(curr1),
+                            curr2Map.get(curr2),
                             cursor.getString(10)
                     );
                 }

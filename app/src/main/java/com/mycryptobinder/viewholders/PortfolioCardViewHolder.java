@@ -2,7 +2,6 @@ package com.mycryptobinder.viewholders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,18 +18,20 @@ import com.mycryptobinder.R;
 public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
 
     public TextView portfolio_id_textView;
-    public TextView portfolio_currency_isocode_textView;
-    public TextView portfolio_holding_value_textView;
+    public TextView portfolio_currency_iso_code_textView;
+    public TextView portfolio_holding_total_value_textView;
     public TextView portfolio_holding_quantity_textView;
-    public ImageView portfolio_delete_imageView;
+    public TextView portfolio_card_current_price;
+    public TextView portfolio_card_price_24h_change;
 
     public PortfolioCardViewHolder(View v) {
         super(v);
-        portfolio_id_textView = (TextView) v.findViewById(R.id.portfolio_card_currency_id);
-        portfolio_currency_isocode_textView = (TextView) v.findViewById(R.id.portfolio_card_currency_iso_code);
-        portfolio_holding_value_textView = (TextView) v.findViewById(R.id.portfolio_card_holding_value);
-        portfolio_holding_quantity_textView = (TextView) v.findViewById(R.id.portfolio_card_holding_quantity);
-        portfolio_delete_imageView = (ImageView) v.findViewById(R.id.currency_card_btn_delete);
+        portfolio_id_textView = v.findViewById(R.id.portfolio_card_currency_id);
+        portfolio_currency_iso_code_textView = v.findViewById(R.id.portfolio_card_currency_iso_code);
+        portfolio_holding_total_value_textView = v.findViewById(R.id.portfolio_card_holding_total_value);
+        portfolio_holding_quantity_textView = v.findViewById(R.id.portfolio_card_holding_quantity);
+        portfolio_card_current_price = v.findViewById(R.id.portfolio_card_current_price);
+        portfolio_card_price_24h_change = v.findViewById(R.id.portfolio_card_price_24h_change);
     }
 
 }

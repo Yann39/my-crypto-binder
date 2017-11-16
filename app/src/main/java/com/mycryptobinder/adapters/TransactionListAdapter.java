@@ -58,29 +58,6 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice()));
         viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal()));
 
-        /*viewHolder.transactionItemDetailsImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //creating a popup menu
-                PopupMenu popup = new PopupMenu(view.getContext(), viewHolder.transactionItemDetailsImageView);
-                //inflating menu from xml resource
-                popup.inflate(R.menu.menu_main);
-                //adding click listener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                        }
-                        return false;
-                    }
-                });
-                //displaying the popup
-                popup.show();
-
-            }
-        });*/
-
         // set click initializer for item row
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

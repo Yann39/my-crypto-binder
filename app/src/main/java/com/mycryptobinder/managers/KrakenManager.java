@@ -11,6 +11,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.Base64;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.helpers.DatabaseHelper;
 import com.mycryptobinder.models.Exchange;
 import com.mycryptobinder.models.KrakenAsset;
@@ -48,6 +49,7 @@ public class KrakenManager {
     private SQLiteDatabase database;
     private static int offset = 0;
     private Properties properties;
+    private AppDatabase db;
 
     private static final Logger logger = Logger.getLogger(KrakenManager.class.getName());
 
@@ -58,6 +60,7 @@ public class KrakenManager {
     public KrakenManager open() throws SQLException {
         dbHelper = new DatabaseHelper(context);
         database = dbHelper.getWritableDatabase();
+        db = AppDatabase.getDatabase(context);
         properties = new Properties();
         try {
             InputStream inputStream = context.getAssets().open("myCryptoBinder.properties");
@@ -220,6 +223,27 @@ public class KrakenManager {
         List<String> list = new ArrayList<>();
         String[] columns = new String[]{DatabaseHelper.COLUMN_KRAKEN_ORDER_TX_ID};
         Cursor cursor = database.query(DatabaseHelper.TABLE_KRAKEN_TRADE_HISTORY, columns, null, null, null, null, null);
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    list.add(cursor.getString(0));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Get the list of all ledger ids from the database
+     *
+     * @return list of ledger ids as strings
+     */
+    public List<String> getLedgerIds() {
+        List<String> list = new ArrayList<>();
+        String[] columns = new String[]{DatabaseHelper.COLUMN_KRAKEN_LEDGER_ID};
+        Cursor cursor = database.query(DatabaseHelper.TABLE_KRAKEN_LEDGER, columns, null, null, null, null, null);
         if (cursor != null) {
             try {
                 while (cursor.moveToNext()) {
@@ -401,6 +425,70 @@ public class KrakenManager {
     }
     //endregion
 
+    //region Ledger
+
+    /**
+     * Insert a new ledger row into the database
+     *
+     * @param refId   The ledger ref id
+     * @param time    The date as Unix timestamp
+     * @param type    The type of order (trade/withdrawal/etc)
+     * @param aClass  The class (ie. currency)
+     * @param asset   The asset name
+     * @param amount  The total amount
+     * @param fee     The total fee
+     * @param balance The balance
+     */
+    public void insertLedgerInfo(String refId, Long time, String type, String aClass, String asset, Double amount, Double fee, Double balance) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_REF_ID, refId);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_TIME, time);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_TYPE, type);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_CLASS, aClass);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_ASSET, asset);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_AMOUNT, amount);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_FEE, fee);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_BALANCE, balance);
+        database.insert(DatabaseHelper.TABLE_KRAKEN_LEDGER, null, contentValues);
+    }
+
+    /**
+     * Update an existing ledger row in the database
+     *
+     * @param id   The ledger id
+     * @param refId   The ledger ref id
+     * @param time    The date as Unix timestamp
+     * @param type    The type of order (trade/withdrawal/etc)
+     * @param aClass  The class (ie. currency)
+     * @param asset   The asset name
+     * @param amount  The total amount
+     * @param fee     The total fee
+     * @param balance The balance
+     * @return An integer representing the number of rows affected
+     */
+    public int updateLedgerInfo(String id, String refId, Long time, String type, String aClass, String asset, Double amount, Double fee, Double balance) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_REF_ID, refId);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_TIME, time);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_TYPE, type);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_CLASS, aClass);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_ASSET, asset);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_AMOUNT, amount);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_FEE, fee);
+        contentValues.put(DatabaseHelper.COLUMN_KRAKEN_LEDGER_BALANCE, balance);
+        return database.update(DatabaseHelper.TABLE_KRAKEN_LEDGER, contentValues, DatabaseHelper.COLUMN_KRAKEN_LEDGER_ID + " = " + id, null);
+    }
+
+    /**
+     * Delete an existing ledger row from the database
+     *
+     * @param id The id of the ledger to delete
+     */
+    public void deleteTrade(String id) {
+        database.delete(DatabaseHelper.TABLE_KRAKEN_LEDGER, DatabaseHelper.COLUMN_KRAKEN_LEDGER_ID + "=" + id, null);
+    }
+    //endregion
+
     //endregion
 
     //region Kraken API calls
@@ -540,7 +628,6 @@ public class KrakenManager {
         return signature;
     }
 
-
     /**
      * Populate trade history table from remote exchange
      */
@@ -556,7 +643,8 @@ public class KrakenManager {
 
         String start = String.valueOf(cal.getTimeInMillis() / 1000);
         String domain = properties.getProperty("KRAKEN_API_BASE_URL");
-        String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");;
+        String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");
+        ;
         String nonce = String.valueOf(System.currentTimeMillis());
         String path = "/0/private/TradesHistory";
 
@@ -631,6 +719,110 @@ public class KrakenManager {
                             logger.info("==================> " + t.getOrderTxId() + " " + t.getPair() + " " + t.getTime() + " " + t.getType() + " " + t.getOrderType() + " " + t.getPrice() + " " + t.getCost() + " " + t.getFee() + " " + t.getVol() + " " + t.getMargin() + " " + t.getMisc());
                         }
 
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                logger.warning("Failed to call Kraken API : " + statusCode);
+                try {
+                    logger.warning("Message is : " + response.getString("error"));
+                } catch (JSONException jse) {
+                    jse.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Populate trade history table from remote exchange
+     */
+    public void populateLedgerInfo() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2016);
+        cal.set(Calendar.MONTH, Calendar.DECEMBER);
+        cal.set(Calendar.DAY_OF_MONTH, 13);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        String start = String.valueOf(cal.getTimeInMillis() / 1000);
+        String domain = properties.getProperty("KRAKEN_API_BASE_URL");
+        String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");
+        ;
+        String nonce = String.valueOf(System.currentTimeMillis());
+        String path = "/0/private/Ledgers";
+
+        RequestParams params = new RequestParams();
+        params.add("nonce", nonce);
+        params.add("start", start);
+        params.add("ofs", String.valueOf(offset));
+
+        String sign = calculateSignature(path, nonce, params.toString());
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader("API-Key", key);
+        client.addHeader("API-Sign", sign);
+
+        client.post(domain + path, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                logger.warning("Error");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+
+                // populate data from remote exchange
+                try {
+                    if (response.getJSONArray("error").length() > 0) {
+                        logger.warning("Error when trying to get Kraken trading history : " + response.getString("error"));
+                    } else {
+
+                        JSONObject json_data = response.getJSONObject("result").getJSONObject("ledger");
+
+                        if (json_data.length() > 0) {
+
+                            //get any existing trades
+                            List<String> ledgerIds = getLedgerIds();
+
+                            for (Iterator<String> rows = json_data.keys(); rows.hasNext(); ) {
+                                String id = rows.next();
+                                JSONObject json_row = json_data.getJSONObject(id);
+                                if (!ledgerIds.contains(id)) {
+                                    String refId = json_row.getString("refid");
+                                    Long time = Double.valueOf(json_row.getString("time")).longValue();
+                                    String type = json_row.getString("type");
+                                    String aClass = json_row.getString("aclass");
+                                    String asset = json_row.getString("asset");
+                                    Double amount = Double.parseDouble(json_row.getString("amount"));
+                                    Double fee = Double.parseDouble(json_row.getString("fee"));
+                                    Double balance = Double.parseDouble(json_row.getString("balance"));
+                                    insertLedgerInfo(refId, time, type, aClass, asset, amount, fee, balance);
+                                    logger.info("New Kraken ledger row has been inserted : " + id);
+                                }
+                            }
+
+                            offset = offset + 50;
+
+                            // delay 10ms to be sure the nonce will change
+                            new android.os.Handler().postDelayed(
+                                    new Runnable() {
+                                        public void run() {
+                                            populateLedgerInfo();
+                                        }
+                                    },
+                                    10
+                            );
+                        }
 
                     }
                 } catch (JSONException e) {

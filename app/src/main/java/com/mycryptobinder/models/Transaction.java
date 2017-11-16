@@ -20,7 +20,8 @@ public class Transaction {
     private Double quantity;
     private Double price;
     private Double total;
-    private Double sumQuantity;
+    private Double sumCurrency1;
+    private Double sumCurrency2;
     private String comment;
 
     public long getId() {
@@ -111,12 +112,20 @@ public class Transaction {
         this.total = total;
     }
 
-    public Double getSumQuantity() {
-        return sumQuantity;
+    public Double getSumCurrency1() {
+        return sumCurrency1;
     }
 
-    public void setSumQuantity(Double sumQuantity) {
-        this.sumQuantity = sumQuantity;
+    public void setSumCurrency1(Double sumCurrency1) {
+        this.sumCurrency1 = sumCurrency1;
+    }
+
+    public Double getSumCurrency2() {
+        return sumCurrency2;
+    }
+
+    public void setSumCurrency2(Double sumCurrency2) {
+        this.sumCurrency2 = sumCurrency2;
     }
 
     public String getComment() {

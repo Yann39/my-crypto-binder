@@ -25,11 +25,11 @@ public class ExchangeCardViewHolder extends RecyclerView.ViewHolder {
 
     public ExchangeCardViewHolder(View v) {
         super(v);
-        exchange_id_textView = (TextView) v.findViewById(R.id.exchange_card_exchange_id);
-        exchange_name_textView = (TextView) v.findViewById(R.id.exchange_card_exchange_name);
-        exchange_link_textView = (TextView) v.findViewById(R.id.exchange_card_exchange_link);
-        exchange_description_textView = (TextView) v.findViewById(R.id.exchange_card_exchange_description);
-        exchange_delete_imageButton = (ImageButton) v.findViewById(R.id.exchange_card_btn_delete);
+        exchange_id_textView = v.findViewById(R.id.exchange_card_exchange_id);
+        exchange_name_textView = v.findViewById(R.id.exchange_card_exchange_name);
+        exchange_link_textView = v.findViewById(R.id.exchange_card_exchange_link);
+        exchange_description_textView = v.findViewById(R.id.exchange_card_exchange_description);
+        exchange_delete_imageButton = v.findViewById(R.id.exchange_card_btn_delete);
     }
 
 }

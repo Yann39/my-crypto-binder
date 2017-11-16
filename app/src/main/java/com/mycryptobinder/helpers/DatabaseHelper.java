@@ -14,7 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "MYCRYPTOBINDER.DB";
 
     // Database version
-    private static final int DB_VERSION = 23;
+    private static final int DB_VERSION = 25;
 
     //region Table names
     public static final String TABLE_CURRENCIES = "CURRENCIES";
@@ -25,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_KRAKEN_ASSETPAIRS = "KRAKEN_ASSET_PAIRS";
     public static final String TABLE_KRAKEN_ASSETS = "KRAKEN_ASSETS";
     public static final String TABLE_KRAKEN_TRADE_HISTORY = "KRAKEN_TRADE_HISTORY";
+    public static final String TABLE_KRAKEN_LEDGER = "KRAKEN_LEDGER";
 
     public static final String TABLE_POLONIEX_ASSETS = "POLONIEX_ASSETS";
     public static final String TABLE_POLONIEX_TRADE_HISTORY = "POLONIEX_TRADE_HISTORY";
@@ -47,7 +48,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_TOTAL = "total";
-    public static final String COLUMN_SUM_QUANTITY = "sum_quantity";
+    public static final String COLUMN_SUM_CURRENCY1 = "sum_currency1";
+    public static final String COLUMN_SUM_CURRENCY2 = "sum_currency2";
     public static final String COLUMN_COMMENT = "comment";
 
     public static final String COLUMN_KRAKEN_ORDER_TX_ID = "order_tx_id";
@@ -66,6 +68,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_KRAKEN_BASE = "base";
     public static final String COLUMN_KRAKEN_QUOTE = "quote";
     public static final String COLUMN_KRAKEN_ASSETNAME = "assetname";
+    public static final String COLUMN_KRAKEN_LEDGER_ID = "id";
+    public static final String COLUMN_KRAKEN_LEDGER_REF_ID = "ref_id";
+    public static final String COLUMN_KRAKEN_LEDGER_TIME = "time";
+    public static final String COLUMN_KRAKEN_LEDGER_TYPE = "type";
+    public static final String COLUMN_KRAKEN_LEDGER_CLASS = "aclass";
+    public static final String COLUMN_KRAKEN_LEDGER_ASSET = "asset";
+    public static final String COLUMN_KRAKEN_LEDGER_AMOUNT = "amount";
+    public static final String COLUMN_KRAKEN_LEDGER_FEE = "fee";
+    public static final String COLUMN_KRAKEN_LEDGER_BALANCE = "balance";
 
     public static final String COLUMN_POLONIEX_ASSET_CODE = "code";
     public static final String COLUMN_POLONIEX_ASSET_NAME = "name";
@@ -118,7 +129,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_QUANTITY + " REAL NOT NULL, " +
             COLUMN_PRICE + " REAL NOT NULL, " +
             COLUMN_TOTAL + " REAL NOT NULL, " +
-            COLUMN_SUM_QUANTITY + " REAL NOT NULL, " +
+            COLUMN_SUM_CURRENCY1 + " REAL NOT NULL, " +
+            COLUMN_SUM_CURRENCY2 + " REAL NOT NULL, " +
             COLUMN_COMMENT + " TEXT, " +
             "FOREIGN KEY(" + COLUMN_EXCHANGE + ") REFERENCES " + TABLE_EXCHANGES + "(" + COLUMN_NAME + "), " +
             "FOREIGN KEY(" + COLUMN_CURRENCY1 + ") REFERENCES " + TABLE_CURRENCIES + "(" + COLUMN_ISO_CODE + "), " +
@@ -164,6 +176,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             COLUMN_KRAKEN_MARGIN + " REAL, " +
             COLUMN_KRAKEN_MISC + " TEXT)";
 
+    private static final String CREATE_TABLE_KRAKEN_LEDGER = "CREATE TABLE " + TABLE_KRAKEN_LEDGER + " (" +
+            COLUMN_KRAKEN_LEDGER_ID + " TEXT PRIMARY KEY NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_REF_ID + " TEXT NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_TIME + " NUMERIC NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_TYPE + " TEXT NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_CLASS + " TEXT NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_ASSET + " TEXT NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_AMOUNT + " REAL NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_FEE + " REAL NOT NULL, " +
+            COLUMN_KRAKEN_LEDGER_BALANCE + " REAL NOT NULL)";
+
     private static final String CREATE_TABLE_POLONIEX_ASSETS = "CREATE TABLE " + TABLE_POLONIEX_ASSETS + " (" +
             COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_POLONIEX_ASSET_CODE + " TEXT NOT NULL, " +
@@ -197,6 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_KRAKEN_ASSETPAIRS);
         db.execSQL(CREATE_TABLE_KRAKEN_ASSETS);
         db.execSQL(CREATE_TABLE_KRAKEN_TRADE_HISTORY);
+        db.execSQL(CREATE_TABLE_KRAKEN_LEDGER);
         db.execSQL(CREATE_TABLE_POLONIEX_ASSETS);
         db.execSQL(CREATE_TABLE_POLONIEX_TRADE_HISTORY);
     }
@@ -210,6 +234,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_ASSETPAIRS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_ASSETS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_TRADE_HISTORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_KRAKEN_LEDGER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_POLONIEX_ASSETS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_POLONIEX_TRADE_HISTORY);
         onCreate(db);

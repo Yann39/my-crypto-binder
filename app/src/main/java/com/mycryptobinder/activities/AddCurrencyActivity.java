@@ -1,6 +1,6 @@
 package com.mycryptobinder.activities;
 
-import android.content.Intent;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -12,7 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.managers.CurrencyManager;
+import com.mycryptobinder.entities.Currency;
+import com.mycryptobinder.viewmodels.AddCurrencyViewModel;
 
 /**
  * Activity responsible for new currency creation
@@ -22,6 +23,7 @@ import com.mycryptobinder.managers.CurrencyManager;
 
 public class AddCurrencyActivity extends AppCompatActivity {
 
+    private AddCurrencyViewModel addCurrencyViewModel;
     private EditText currencyNameEditText;
     private EditText currencyIsoCodeEditText;
     private EditText currencySymbolEditText;
@@ -29,7 +31,6 @@ public class AddCurrencyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_add_edit_currency);
 
         // add back arrow to toolbar
@@ -39,23 +40,27 @@ public class AddCurrencyActivity extends AppCompatActivity {
         }
 
         // get view components
-        currencyNameEditText = (EditText) findViewById(R.id.add_currency_name_editText);
-        currencyIsoCodeEditText = (EditText) findViewById(R.id.add_currency_iso_code_editText);
-        currencySymbolEditText = (EditText) findViewById(R.id.add_currency_symbol_editText);
-        Button createCurrencyButton = (Button) findViewById(R.id.btn_create_currency);
-        Button editCurrencyButton = (Button) findViewById(R.id.btn_update_currency);
+        currencyNameEditText = findViewById(R.id.add_currency_name_editText);
+        currencyIsoCodeEditText = findViewById(R.id.add_currency_iso_code_editText);
+        currencySymbolEditText = findViewById(R.id.add_currency_symbol_editText);
+        Button createCurrencyButton = findViewById(R.id.btn_create_currency);
+        Button editCurrencyButton = findViewById(R.id.btn_update_currency);
 
         // hide edit button and show create button
         editCurrencyButton.setVisibility(View.INVISIBLE);
         createCurrencyButton.setVisibility(View.VISIBLE);
 
+        // get the view model
+        addCurrencyViewModel = ViewModelProviders.of(this).get(AddCurrencyViewModel.class);
+
         // set click listener for the create currency button
         createCurrencyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get values
-                String name = currencyNameEditText.getText().toString();
+
+                // get field values
                 String isoCode = currencyIsoCodeEditText.getText().toString();
+                String name = currencyNameEditText.getText().toString();
                 String symbol = currencySymbolEditText.getText().toString();
 
                 // check mandatory fields
@@ -64,16 +69,11 @@ public class AddCurrencyActivity extends AppCompatActivity {
                 } else if (isoCode.trim().equals("")) {
                     currencyIsoCodeEditText.setError("ISO code is required!");
                 } else {
+                    // add record to the view model who will trigger the insert
+                    addCurrencyViewModel.addCurrency(new Currency(isoCode, name, symbol));
 
-                    // insert values into the database
-                    CurrencyManager currencyManager = new CurrencyManager(view.getContext());
-                    currencyManager.open();
-                    currencyManager.insert(name, isoCode, symbol);
-                    currencyManager.close();
-
-                    // back to currency list and clear all top activities
-                    Intent main = new Intent(AddCurrencyActivity.this, CurrencyListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(main);
+                    // close current activity and return to previous activity if there is any
+                    finish();
 
                     // show a notification about the created item
                     Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_currency_created, name), Toast.LENGTH_SHORT).show();
@@ -85,6 +85,7 @@ public class AddCurrencyActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // add the save/cancel buttons to the options menu
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.add_currency_action_bar, menu);
         return true;
@@ -94,8 +95,9 @@ public class AddCurrencyActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // handle back arrow click (close this activity and return to previous activity if there is any)
+        // back arrow click
         if (id == android.R.id.home) {
+            // close current activity and return to previous activity if there is any
             finish();
         }
 

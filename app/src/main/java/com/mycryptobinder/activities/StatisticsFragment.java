@@ -78,7 +78,7 @@ public class StatisticsFragment extends Fragment {
         dataSet.setColor(Color.BLUE);
         dataSet.setValueTextColor(Color.GREEN);
 
-        LineChart chart = (LineChart) view.findViewById(R.id.chart_example);
+        LineChart chart = view.findViewById(R.id.chart_example);
 
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);

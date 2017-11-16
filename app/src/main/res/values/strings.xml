@@ -12,6 +12,9 @@
     <string name="lbl_exchange_link">Link</string>
     <string name="lbl_exchange_description">Description</string>
 
+    <string name="lbl_app_setting_name">Name</string>
+    <string name="lbl_app_setting_value">Value</string>
+
     <string name="ph_currency_name">ex. Euro</string>
     <string name="ph_currency_iso_code">ex. EUR</string>
     <string name="ph_currency_symbol">ex. €</string>
@@ -20,8 +23,13 @@
     <string name="ph_exchange_link">Website</string>
     <string name="ph_exchange_description">Description</string>
 
+    <string name="ph_app_setting_name">ex. kraken_api_key</string>
+    <string name="ph_app_setting_value">ex. aaaa-bbbb-cccc-dddd</string>
+
     <string name="btn_add_currency">Add currency</string>
     <string name="btn_add_exchange">Add exchange</string>
+    <string name="btn_create_app_setting">Add application setting</string>
+    <string name="btn_update_app_setting">Update application setting</string>
     <string name="title_activity_main_tabs">MainTabsActivity</string>
 
     <string name="btn_create_currency">Create currency</string>
@@ -84,6 +92,8 @@
     <string name="msg_exchange_removed">Exchange %1$s has been removed</string>
     <string name="msg_exchange_updated">Exchange %1$s has been updated</string>
     <string name="msg_exchange_created">Exchange %1$s has been created</string>
+    <string name="msg_ico_created">ICO %1$s has been created</string>
+    <string name="msg_app_setting_created">Application setting %1$s has been created</string>
     <string name="msg_transaction_created">Transaction %1$s has been created</string>
     <string name="msg_transaction_updated">Transaction %1$s has been updated</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.mycryptobinder.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +12,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.managers.ExchangeManager;
+import com.mycryptobinder.viewmodels.AddExchangeViewModel;
 
 /**
  * Activity responsible for editing an existing exchange
@@ -21,6 +24,7 @@ import com.mycryptobinder.managers.ExchangeManager;
 
 public class EditExchangeActivity extends AppCompatActivity {
 
+    private AddExchangeViewModel addExchangeViewModel;
     private EditText exchangeNameEditText;
     private EditText exchangeLinkEditText;
     private EditText exchangeDescriptionEditText;
@@ -28,7 +32,6 @@ public class EditExchangeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_add_edit_exchange);
 
         // add back arrow to toolbar
@@ -38,11 +41,11 @@ public class EditExchangeActivity extends AppCompatActivity {
         }
 
         // get view components
-        exchangeNameEditText = (EditText) findViewById(R.id.add_exchange_name_editText);
-        exchangeLinkEditText = (EditText) findViewById(R.id.add_exchange_link_editText);
-        exchangeDescriptionEditText = (EditText) findViewById(R.id.add_exchange_description_editText);
-        Button createExchangeButton = (Button) findViewById(R.id.btn_create_exchange);
-        Button editExchangeButton = (Button) findViewById(R.id.btn_update_exchange);
+        exchangeNameEditText = findViewById(R.id.add_exchange_name_editText);
+        exchangeLinkEditText = findViewById(R.id.add_exchange_link_editText);
+        exchangeDescriptionEditText = findViewById(R.id.add_exchange_description_editText);
+        Button createExchangeButton = findViewById(R.id.btn_create_exchange);
+        Button editExchangeButton = findViewById(R.id.btn_update_exchange);
 
         // hide create button and show edit button
         createExchangeButton.setVisibility(View.INVISIBLE);
@@ -57,27 +60,31 @@ public class EditExchangeActivity extends AppCompatActivity {
         exchangeLinkEditText.setText(isoCode);
         exchangeDescriptionEditText.setText(symbol);
 
+        // get the view model
+        addExchangeViewModel = ViewModelProviders.of(this).get(AddExchangeViewModel.class);
+
         // set click listener for the update exchange button
         editExchangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get values
+                // get field values
                 String name = exchangeNameEditText.getText().toString();
                 String link = exchangeLinkEditText.getText().toString();
                 String description = exchangeDescriptionEditText.getText().toString();
 
-                // update values into the database
-                ExchangeManager exchangeManager = new ExchangeManager(view.getContext());
-                exchangeManager.open();
-                exchangeManager.update(name, link, description);
-                exchangeManager.close();
+                // check mandatory fields
+                if (name.trim().equals("")) {
+                    exchangeNameEditText.setError("Exchange name is required!");
+                } else {
+                    // add record to the view model who will trigger the insert
+                    addExchangeViewModel.updateExchange(new Exchange(name, link, description));
 
-                // update intent so all top activities are closed
-                Intent main = new Intent(EditExchangeActivity.this, ExchangeListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(main);
+                    // close current activity and return to previous activity if there is any
+                    finish();
 
-                // show a notification about the updated item
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_exchange_updated, name), Toast.LENGTH_SHORT).show();
+                    // show a notification about the created item
+                    Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_exchange_updated, name), Toast.LENGTH_SHORT).show();
+                }
             }
 
         });
@@ -87,8 +94,9 @@ public class EditExchangeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // handle back arrow click (close this activity and return to previous activity if there is any)
+        // back arrow click
         if (id == android.R.id.home) {
+            // close current activity and return to previous activity if there is any
             finish();
         }
 

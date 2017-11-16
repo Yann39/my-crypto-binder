@@ -1,34 +1,33 @@
 package com.mycryptobinder.activities;
 
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.PortfolioCardAdapter;
-import com.mycryptobinder.managers.CurrencyManager;
-import com.mycryptobinder.managers.ExchangeManager;
-import com.mycryptobinder.managers.KrakenManager;
-import com.mycryptobinder.managers.PoloniexManager;
-import com.mycryptobinder.managers.TransactionManager;
+import com.mycryptobinder.entities.Currency;
+import com.mycryptobinder.models.HoldingData;
+import com.mycryptobinder.models.Price;
+import com.mycryptobinder.service.CryptoCompareService;
+import com.mycryptobinder.viewmodels.PortfolioViewModel;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Fragment responsible for displaying portfolio
@@ -38,15 +37,10 @@ import java.util.Random;
 
 public class PortfolioFragment extends Fragment {
 
-    public PortfolioFragment() {
-        // required empty public constructor
-    }
+    private PortfolioCardAdapter portfolioCardAdapter;
+    private ProgressBar progressBar;
 
-    public static PortfolioFragment newInstance() {
-        PortfolioFragment fragment = new PortfolioFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    public PortfolioFragment() {
     }
 
     @Override
@@ -59,46 +53,65 @@ public class PortfolioFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
 
-        /*View view2 = inflater.inflate(R.layout.card_portfolio, container, false);
-        AppCompatImageView imageView = (AppCompatImageView) view2.findViewById(R.id.portfolio_card_currency_logo);
-        //int[] androidColors = getResources().getIntArray(R.array.currency_backgrounds);
-        //int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
-
-        TypedArray ar = getContext().getResources().obtainTypedArray(R.array.currency_backgrounds);
-        int len = ar.length();
-        int[] picArray = new int[len];
-        for (int i = 0; i < len; i++) {
-            picArray[i] = ar.getResourceId(i, 0);
-        }
-        ar.recycle();
-        int randomAndroidColor = picArray[new Random().nextInt(picArray.length)];
-
-        ContextCompat.getColor(getContext(), R.color.colorCurrency3);
-        imageView.setColorFilter(ContextCompat.getColor(getContext(), randomAndroidColor));
-        imageView.setSupportBackgroundTintList(ContextCompat.getColorStateList(getContext(), randomAndroidColor));
-        //DrawableCompat.setTint(imageView.getDrawable(), ContextCompat.getColor(getContext(), randomAndroidColor));
-        //imageView.invalidate();
-        //imageView.setSupportBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorBlue));
-        //ViewCompat.setBackgroundTintList(imageView, ContextCompat.getColorStateList(getContext(), randomAndroidColor));*/
-
         // prepare the recycler view with a linear layout
-        RecyclerView recList = (RecyclerView) view.findViewById(R.id.portfolio_recycler_view);
-        recList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this.getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
+        RecyclerView portfolioRecyclerView = view.findViewById(R.id.portfolio_recycler_view);
+        portfolioRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+        // initialize the adapter for the list
+        portfolioCardAdapter = new PortfolioCardAdapter(this.getContext(), new ArrayList<HoldingData>());
+        portfolioRecyclerView.setAdapter(portfolioCardAdapter);
+
+        // get view model
+        final PortfolioViewModel portfolioViewModel = ViewModelProviders.of(this).get(PortfolioViewModel.class);
+
+        // set total number of different currencies
+        int nbCurrencies = portfolioViewModel.getNbDifferentCurrencies();
+        TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
+        nbCoinTextView.setText(String.valueOf(nbCurrencies));
 
         // add horizontal separator between rows
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recList.getContext(), LinearLayoutManager.VERTICAL);
-        recList.addItemDecoration(mDividerItemDecoration);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(portfolioRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        portfolioRecyclerView.addItemDecoration(mDividerItemDecoration);
 
-        // get the adapter with last data set and apply it to the recycler view
-        CurrencyManager currencyManager = new CurrencyManager(this.getContext());
-        currencyManager.open();
-        PortfolioCardAdapter portfolioCardAdapter = new PortfolioCardAdapter(this.getContext(), currencyManager.getUsed());
-        portfolioCardAdapter.notifyDataSetChanged();
-        recList.setAdapter(portfolioCardAdapter);
-        currencyManager.close();
+        progressBar = view.findViewById(R.id.progress_bar);
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        // observe the used currencies list from the view model so the auto complete text will always be up to date
+        portfolioViewModel.getHoldings().observe(PortfolioFragment.this, new Observer<List<HoldingData>>() {
+            @Override
+            public void onChanged(@Nullable List<HoldingData> holdingDataList) {
+                for (HoldingData hd : holdingDataList) {
+                    hd.setIsoCode(curr.getIsoCode());
+                    hd.setName(curr.getName());
+                    hd.setSymbol(curr.getSymbol());
+                    hd.setQuantity(portfolioViewModel.getCurrencyQuantity(curr.getIsoCode()));
+
+                    try {
+                        CryptoCompareService cryptoCompareService = CryptoCompareService.retrofit.create(CryptoCompareService.class);
+                        Call<Price> call = cryptoCompareService.getCurrentPrice(curr.getIsoCode());
+                        call.enqueue(new Callback<Price>() {
+                            @Override
+                            public void onResponse(@Nullable Call<Price> call, @Nullable Response<Price> response) {
+                                Price price = response.body();
+                                if (price != null && price.getEur() != null) {
+                                    hd.setCurrentPrice(Double.parseDouble(price.getEur()));
+                                    portfolioCardAdapter.notifyDataSetChanged();
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@Nullable Call<Price> call, @Nullable Throwable t) {
+                                System.out.println("Failed: " + t.getLocalizedMessage());
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         return view;
     }

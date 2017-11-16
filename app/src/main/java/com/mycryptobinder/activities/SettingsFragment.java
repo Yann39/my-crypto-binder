@@ -52,8 +52,8 @@ public class SettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         // get the list view and add items
-        ListView listView = (ListView) view.findViewById(R.id.settings_listView);
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{"Currencies", "Exchanges"});
+        ListView listView = view.findViewById(R.id.settings_listView);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{"Currencies", "Exchanges", "AppSetting"});
         listView.setAdapter(adapter);
 
         // set click listener for list view items
@@ -72,11 +72,17 @@ public class SettingsFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), ExchangeListActivity.class);
                     startActivity(intent);
                 }
+
+                // exchanges item click
+                else if (position == 2) {
+                    Intent intent = new Intent(getActivity(), AppSettingListActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
-        Button synchronizeButton = (Button) view.findViewById(R.id.btn_synchronize);
-        checkBox = (CheckBox) view.findViewById(R.id.checkbox_clean_synchronize);
+        Button synchronizeButton = view.findViewById(R.id.btn_synchronize);
+        checkBox = view.findViewById(R.id.checkbox_clean_synchronize);
 
         // set click listener for the synchronize button
         synchronizeButton.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +117,9 @@ public class SettingsFragment extends Fragment {
                 km.populateTradeHistory();
                 pm.populateTradeHistory();
                 tm.populateTransactions();
+
+                km.populateLedgerInfo();
+
             }
         });
 

@@ -1,16 +1,10 @@
 package com.mycryptobinder.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 
-import com.mycryptobinder.R;
 import com.mycryptobinder.activities.IcoFragment;
 import com.mycryptobinder.activities.PortfolioFragment;
 import com.mycryptobinder.activities.SettingsFragment;
@@ -25,11 +19,8 @@ import com.mycryptobinder.activities.TransactionsFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    private Context context;
-
-    public SectionsPagerAdapter(FragmentManager fm, Context c) {
+    public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
-        context = c;
     }
 
     @Override

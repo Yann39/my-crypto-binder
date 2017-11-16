@@ -14,11 +14,12 @@ import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.activities.EditExchangeActivity;
+import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.managers.ExchangeManager;
-import com.mycryptobinder.models.Exchange;
 import com.mycryptobinder.viewholders.ExchangeCardViewHolder;
 
 import java.util.List;
+
 
 /**
  * Adapter class for exchange cards rendering
@@ -32,7 +33,7 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
     private List<Exchange> exchanges;
     private Context context;
 
-    public ExchangeCardAdapter(Context context, List<Exchange> exchanges) {
+    public ExchangeCardAdapter(List<Exchange> exchanges, Context context) {
         this.exchanges = exchanges;
         this.context = context;
     }
@@ -44,10 +45,14 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
         return new ExchangeCardViewHolder(v);
     }
 
+    public void addItems(List<Exchange> exchanges) {
+        this.exchanges = exchanges;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(final ExchangeCardViewHolder holder, int position) {
         // get text from the data set at this position and replace it in the view
-        //holder.exchange_id_textView.setText((String.valueOf(exchanges.get(holder.getAdapterPosition()).getId())));
         holder.exchange_name_textView.setText(exchanges.get(holder.getAdapterPosition()).getName());
         holder.exchange_link_textView.setText(exchanges.get(holder.getAdapterPosition()).getLink());
         holder.exchange_description_textView.setText(exchanges.get(holder.getAdapterPosition()).getDescription());
@@ -115,10 +120,10 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
             @Override
             public void onClick(View v) {
                 // get view elements
-                TextView idTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_id);
-                TextView nameTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_name);
-                TextView linkTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_link);
-                TextView descriptionTextView = (TextView) v.findViewById(R.id.exchange_card_exchange_description);
+                TextView idTextView = v.findViewById(R.id.exchange_card_exchange_id);
+                TextView nameTextView = v.findViewById(R.id.exchange_card_exchange_name);
+                TextView linkTextView = v.findViewById(R.id.exchange_card_exchange_link);
+                TextView descriptionTextView = v.findViewById(R.id.exchange_card_exchange_description);
 
                 // get element values
                 String id = idTextView.getText().toString();

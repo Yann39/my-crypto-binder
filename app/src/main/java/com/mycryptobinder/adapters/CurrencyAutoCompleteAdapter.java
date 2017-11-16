@@ -1,11 +1,12 @@
 package com.mycryptobinder.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
-import com.mycryptobinder.models.Currency;
+import com.mycryptobinder.entities.Currency;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
     private List<Currency> currencies;
     private List<Currency> filteredCurrencies;
 
-    public CurrencyAutoCompleteAdapter(Context context, int layoutResourceId, List<Currency> currencies) {
+    public CurrencyAutoCompleteAdapter(List<Currency> currencies, Context context, int layoutResourceId) {
         super(context, layoutResourceId);
         this.currencies = currencies;
         this.filteredCurrencies = currencies;
@@ -35,9 +36,15 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
 
     @Override
     public String getItem(int index) {
-        return filteredCurrencies.get(index).getIsoCode() + " (" + filteredCurrencies.get(index).getName() + ")";
+        return filteredCurrencies.get(index).getIsoCode();
     }
 
+    public void addItems(List<Currency> currencies) {
+        this.currencies = currencies;
+        notifyDataSetChanged();
+    }
+
+    @NonNull
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -58,6 +65,7 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
                 return filterResults;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results.count > 0) {

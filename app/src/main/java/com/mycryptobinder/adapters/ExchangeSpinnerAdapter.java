@@ -3,7 +3,7 @@ package com.mycryptobinder.adapters;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
-import com.mycryptobinder.models.Exchange;
+import com.mycryptobinder.entities.Exchange;
 
 import java.util.List;
 
@@ -18,9 +18,14 @@ public class ExchangeSpinnerAdapter extends ArrayAdapter<String> {
 
     private List<Exchange> exchanges;
 
-    public ExchangeSpinnerAdapter(Context context, int layoutResourceId, List<Exchange> exchanges) {
+    public ExchangeSpinnerAdapter(List<Exchange> exchanges, Context context, int layoutResourceId) {
         super(context, layoutResourceId);
         this.exchanges = exchanges;
+    }
+
+    public void addItems(List<Exchange> exchanges) {
+        this.exchanges = exchanges;
+        notifyDataSetChanged();
     }
 
     @Override
