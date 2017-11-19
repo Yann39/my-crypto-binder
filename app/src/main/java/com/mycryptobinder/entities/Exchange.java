@@ -3,6 +3,7 @@ package com.mycryptobinder.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Yann
@@ -13,6 +14,7 @@ import android.arch.persistence.room.PrimaryKey;
 public class Exchange {
 
     @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "name")
     private String name;
 

@@ -1,6 +1,7 @@
 package com.mycryptobinder.dao;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -24,16 +25,16 @@ public interface TransactionDao {
     LiveData<List<Transaction>> getAll();
 
     @Query("select count(1) from (select distinct currency1_iso_code from transactions union all select distinct currency2_iso_code from transactions) t")
-    int getNbDifferentCurrencies();
+    LiveData<Integer> getNbDifferentCurrencies();
 
-    @Query("select 'Kraken', kt.order_tx_id, ka1.alt_name, ka2.alt_name, kt.fee, kt.time, kt.type, kt.vol, kt.price, kt.cost, null " +
+    @Query("select kt.id, 'Kraken', kt.order_tx_id, ka1.alt_name, ka2.alt_name, kt.fee, kt.time, kt.type, kt.vol, kt.price, kt.cost, null " +
             "from kraken_trades kt " +
             "inner join kraken_asset_pairs kap on kt.pair = kap.asset_pair " +
             "inner join kraken_assets ka1 on kap.base = ka1.asset_name " +
             "inner join kraken_assets ka2 on kap.quote = ka2.asset_name")
     LiveData<List<Transaction>> getKrakenTransactions();
 
-    @Query("select 'Poloniex', pt.global_trade_id, " +
+    @Query("select pt.id, 'Poloniex', pt.global_trade_id, " +
             "replace(pt.pair, rtrim(pt.pair, replace(pt.pair, '_', '' )), ''), " +
             "replace(pt.pair, ltrim(pt.pair, replace(pt.pair, '_', '' )), ''), " +
             "pt.fee, pt.date, pt.type, pt.amount, pt.rate, pt.total, null " +
@@ -54,11 +55,10 @@ public interface TransactionDao {
             ") as T ")
     Double getCurrencyQuantity(String currencyCode);
 
-    @Query("select c.iso_code, c.name, c.symbol, 'quantity', 'currentPrice', 'currentValue' " +
+    @Query("select c.iso_code, c.name, c.symbol, 1.0, 2.0, 3.0 " +
             "from currencies c " +
             "inner join transactions t1 on c.iso_code = t1.currency1_iso_code " +
-            "inner join transactions t2 on c.iso_code = t2.currency2_iso_code " +
-            "where iso_code = :isoCode")
+            "inner join transactions t2 on c.iso_code = t2.currency2_iso_code ")
     LiveData<List<HoldingData>> getHoldings();
 
     @Insert

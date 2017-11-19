@@ -3,6 +3,7 @@ package com.mycryptobinder.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Yann
@@ -13,6 +14,7 @@ import android.arch.persistence.room.PrimaryKey;
 public class Currency {
 
     @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "iso_code")
     private String isoCode;
 
@@ -52,4 +54,24 @@ public class Currency {
         this.symbol = symbol;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Currency currency = (Currency) o;
+
+        if (isoCode != null ? !isoCode.equals(currency.isoCode) : currency.isoCode != null)
+            return false;
+        if (name != null ? !name.equals(currency.name) : currency.name != null) return false;
+        return symbol != null ? symbol.equals(currency.symbol) : currency.symbol == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = isoCode != null ? isoCode.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
+        return result;
+    }
 }

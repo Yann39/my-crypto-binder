@@ -80,19 +80,19 @@ public class PoloniexTrade {
         this.pair = pair;
     }
 
-    public long getGlobalTradeID() {
+    public Long getGlobalTradeID() {
         return globalTradeID;
     }
 
-    public void setGlobalTradeID(long globalTradeID) {
+    public void setGlobalTradeID(Long globalTradeID) {
         this.globalTradeID = globalTradeID;
     }
 
-    public long getTradeId() {
+    public Long getTradeId() {
         return tradeId;
     }
 
-    public void setTradeId(long tradeId) {
+    public void setTradeId(Long tradeId) {
         this.tradeId = tradeId;
     }
 

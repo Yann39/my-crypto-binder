@@ -1,6 +1,9 @@
 package com.mycryptobinder.adapters;
 
+import android.arch.paging.PagedListAdapter;
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,21 +22,40 @@ import java.util.List;
  * Created by Yann on 25/05/2017
  */
 
-public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHolder> {
+public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCardViewHolder> {
 
     private List<Currency> currencies;
-    private Context context;
+    private LayoutInflater layoutInflater;
+    private CurrencyCardViewHolder.CurrencyCardListener currencyCardListener;
 
-    public CurrencyCardAdapter(List<Currency> currencies, Context context) {
-        this.currencies = currencies;
-        this.context = context;
+    private static final DiffCallback<Currency> DIFF_CALLBACK = new DiffCallback<Currency>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Currency oldCurrency, @NonNull Currency newCurrency) {
+            // User properties may have changed if reloaded from the DB, but ID is fixed
+            return oldCurrency.getIsoCode().equals(newCurrency.getIsoCode());
+        }
+        @Override
+        public boolean areContentsTheSame(@NonNull Currency oldCurrency, @NonNull Currency newCurrency) {
+            // NOTE: if you use equals, your object must properly override Object#equals()
+            // Incorrectly returning false here will result in too many animations.
+            return oldCurrency.equals(newCurrency);
+        }
+    };
+
+    public CurrencyCardAdapter() {
+        super(DIFF_CALLBACK);
     }
+
+    /*public CurrencyCardAdapter(LayoutInflater layoutInflater, CurrencyCardViewHolder.CurrencyCardListener currencyCardListener) {
+        this.layoutInflater = layoutInflater;
+        this.currencyCardListener = currencyCardListener;
+    }*/
 
     @Override
     public CurrencyCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
-        View v = LayoutInflater.from(context).inflate(R.layout.card_currency, parent, false);
-        return new CurrencyCardViewHolder(v, this);
+        View v = layoutInflater.inflate(R.layout.card_currency, parent, false);
+        return new CurrencyCardViewHolder(v, currencyCardListener);
     }
 
     public void addItems(List<Currency> currencies) {
@@ -42,12 +64,19 @@ public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHo
     }
 
     @Override
-    public void onBindViewHolder(final CurrencyCardViewHolder holder, int position) {
+    public void onBindViewHolder(CurrencyCardViewHolder holder, int position) {
 
         // get text from the data set at this position and replace it in the view
-        holder.currency_name_textView.setText(currencies.get(holder.getAdapterPosition()).getName());
-        holder.currency_iso_code_textView.setText(currencies.get(holder.getAdapterPosition()).getIsoCode());
-        holder.currency_symbol_textView.setText(currencies.get(holder.getAdapterPosition()).getSymbol());
+        //holder.setItem(currencies.get(position));
+
+        Currency currency = getItem(position);
+        if (currency != null) {
+            holder.setItem(currency);
+        } else {
+            // Null defines a placeholder item - PagedListAdapter will automatically invalidate
+            // this row when the actual object is loaded from the database
+            //holder.clear();
+        }
 
     }
 
@@ -55,5 +84,8 @@ public class CurrencyCardAdapter extends RecyclerView.Adapter<CurrencyCardViewHo
     public int getItemCount() {
         return currencies.size();
     }
+
+
+
 
 }

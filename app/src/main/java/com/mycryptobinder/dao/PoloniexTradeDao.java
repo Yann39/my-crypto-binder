@@ -21,6 +21,9 @@ public interface PoloniexTradeDao {
     @Query("select * from poloniex_trades")
     LiveData<List<PoloniexTrade>> getAll();
 
+    @Query("select distinct global_trade_id from poloniex_trades")
+    LiveData<List<Long>> getTradeIds();
+
     @Insert
     void insert(PoloniexTrade... poloniexTrades);
 

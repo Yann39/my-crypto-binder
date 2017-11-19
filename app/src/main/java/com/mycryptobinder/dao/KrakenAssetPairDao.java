@@ -22,6 +22,9 @@ public interface KrakenAssetPairDao {
     @Query("select * from kraken_asset_pairs")
     LiveData<List<KrakenAssetPair>> getAll();
 
+    @Query("select distinct asset_pair from kraken_asset_pairs")
+    LiveData<List<String>> getPairs();
+
     @Insert
     void insert(KrakenAssetPair... krakenAssetPairs);
 

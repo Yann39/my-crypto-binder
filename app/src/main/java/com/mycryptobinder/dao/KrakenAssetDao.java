@@ -21,6 +21,9 @@ public interface KrakenAssetDao {
     @Query("select * from kraken_assets")
     LiveData<List<KrakenAsset>> getAll();
 
+    @Query("select asset_name from kraken_assets")
+    LiveData<List<String>> getName();
+
     @Insert
     void insert(KrakenAsset... krakenAssets);
 

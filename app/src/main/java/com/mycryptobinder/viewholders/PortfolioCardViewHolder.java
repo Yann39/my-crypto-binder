@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.models.HoldingData;
 
 /**
  * Provide a reference to the views for each data item
@@ -23,6 +24,14 @@ public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
     public TextView portfolio_holding_quantity_textView;
     public TextView portfolio_card_current_price;
     public TextView portfolio_card_price_24h_change;
+
+    public void setItem(HoldingData holdingData) {
+        portfolio_currency_iso_code_textView.setText(holdingData.getIsoCode());
+        portfolio_holding_total_value_textView.setText(String.valueOf(holdingData.getCurrentValue()*holdingData.getQuantity()));
+        portfolio_holding_quantity_textView.setText(String.valueOf(holdingData.getQuantity()));
+        portfolio_card_current_price.setText(String.valueOf(holdingData.getCurrentPrice()));
+        portfolio_card_price_24h_change.setText(String.valueOf(holdingData.getCurrentValue()));
+    }
 
     public PortfolioCardViewHolder(View v) {
         super(v);

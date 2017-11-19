@@ -3,6 +3,7 @@ package com.mycryptobinder.viewmodels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.paging.PagedList;
 import android.os.AsyncTask;
 
 import com.mycryptobinder.entities.AppDatabase;
@@ -19,15 +20,21 @@ public class CurrencyListViewModel extends AndroidViewModel {
 
     private final LiveData<List<Currency>> currencyList;
     private AppDatabase appDatabase;
+    private final LiveData<PagedList<Currency>> pagedCurrencyList;
 
     public CurrencyListViewModel(Application application) {
         super(application);
         appDatabase = AppDatabase.getDatabase(this.getApplication());
         currencyList = appDatabase.currencyDao().getAll();
+        pagedCurrencyList = appDatabase.currencyDao().getAllPaged().create(0, new PagedList.Config.Builder().setPageSize(50).setPrefetchDistance(50).build());
     }
 
     public LiveData<List<Currency>> getCurrencyList() {
         return currencyList;
+    }
+
+    public LiveData<PagedList<Currency>> getPagedCurrencyList() {
+        return pagedCurrencyList;
     }
 
     public void deleteItem(Currency currency) {

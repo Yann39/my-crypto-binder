@@ -13,9 +13,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.helpers.DatabaseHelper;
-import com.mycryptobinder.models.Exchange;
-import com.mycryptobinder.models.KrakenAsset;
-import com.mycryptobinder.models.KrakenAssetPair;
 import com.mycryptobinder.models.KrakenTrade;
 
 import org.json.JSONArray;
@@ -27,8 +24,10 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -80,32 +79,6 @@ public class KrakenManager {
 
     //region Asset pairs
 
-    /**
-     * Get the list of all asset pairs from the database
-     *
-     * @return list of KrakenAssetPair elements representing the asset pairs
-     */
-    public List<KrakenAssetPair> getAllAssetPairs() {
-        List<KrakenAssetPair> list = new ArrayList<>();
-        String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_KRAKEN_ASSETPAIR, DatabaseHelper.COLUMN_KRAKEN_ALTNAME, DatabaseHelper.COLUMN_KRAKEN_BASE, DatabaseHelper.COLUMN_KRAKEN_QUOTE};
-        Cursor cursor = database.query(DatabaseHelper.TABLE_KRAKEN_ASSETPAIRS, columns, null, null, null, null, null);
-        if (cursor != null) {
-            try {
-                while (cursor.moveToNext()) {
-                    KrakenAssetPair assPair = new KrakenAssetPair();
-                    assPair.setId(cursor.getLong(0));
-                    assPair.setAssetPair(cursor.getString(1));
-                    assPair.setAltName(cursor.getString(2));
-                    assPair.setBase(cursor.getString(3));
-                    assPair.setQuote(cursor.getString(4));
-                    list.add(assPair);
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        return list;
-    }
 
     /**
      * Get the list of all asset pairs from the database
@@ -130,31 +103,6 @@ public class KrakenManager {
     //endregion
 
     //region Assets
-
-    /**
-     * Get the list of all assets from the database
-     *
-     * @return list of KrakenAsset elements representing the assets
-     */
-    public List<KrakenAsset> getAllAssets() {
-        List<KrakenAsset> list = new ArrayList<>();
-        String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_KRAKEN_ASSETNAME, DatabaseHelper.COLUMN_KRAKEN_ALTNAME};
-        Cursor cursor = database.query(DatabaseHelper.TABLE_KRAKEN_ASSETS, columns, null, null, null, null, null);
-        if (cursor != null) {
-            try {
-                while (cursor.moveToNext()) {
-                    KrakenAsset asset = new KrakenAsset();
-                    asset.setId(cursor.getLong(0));
-                    asset.setAssetName(cursor.getString(1));
-                    asset.setAltName(cursor.getString(2));
-                    list.add(asset);
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        return list;
-    }
 
     /**
      * Get the list of all asset names from the database
@@ -494,116 +442,6 @@ public class KrakenManager {
     //region Kraken API calls
 
     /**
-     * Populate the Exchange table with the Kraken exchange
-     */
-    public void populateExchange() {
-        // insert exchange if it does not exist
-        String name = "Kraken";
-        String link = "https://www.kraken.com";
-        String description = "Kraken exchange";
-        ExchangeManager em = new ExchangeManager(context);
-        em.open();
-        Exchange ex = em.getByName(name);
-        boolean exist = ex != null && ex.getName() != null;
-        if (!exist) {
-            em.insert(name, link, description);
-            logger.info("Kraken exchange has been inserted : " + name);
-        }
-    }
-
-    /**
-     * Populate asset pairs table from remote exchange
-     */
-    public void populateAssetPairs() {
-
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(properties.getProperty("KRAKEN_API_PUBLIC_URL") + "AssetPairs", new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-
-                    //get any existing asset pairs
-                    List<String> assPairsNames = getAssetPairNames();
-
-                    JSONObject json_data = response.getJSONObject("result");
-                    for (Iterator<String> assetPairs = json_data.keys(); assetPairs.hasNext(); ) {
-                        String assetPair = assetPairs.next();
-
-                        // insert only if it does not already exists
-                        if (!assPairsNames.contains(assetPair)) {
-                            String altName = json_data.getJSONObject(assetPair).getString("altname");
-                            String base = json_data.getJSONObject(assetPair).getString("base");
-                            String quote = json_data.getJSONObject(assetPair).getString("quote");
-                            insertAssetPair(assetPair, altName, base, quote);
-                            logger.info("New Kraken asset pair has been inserted : " + assetPair);
-                        }
-
-                    }
-
-                    List<KrakenAssetPair> assPairs = getAllAssetPairs();
-                    for (KrakenAssetPair ap : assPairs) {
-                        logger.info("==================> " + ap.getAssetPair() + " " + ap.getAltName() + " " + ap.getBase() + " " + ap.getQuote());
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-            }
-        });
-    }
-
-    /**
-     * Populate assets table from remote exchange
-     */
-    public void populateAssets() {
-
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(properties.getProperty("KRAKEN_API_PUBLIC_URL") + "Assets", new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-
-                    //get any existing assets
-                    List<String> assNames = getAssetNames();
-
-                    JSONObject json_data = response.getJSONObject("result");
-                    for (Iterator<String> assets = json_data.keys(); assets.hasNext(); ) {
-                        String asset = assets.next();
-
-                        // insert only if it does not already exists
-                        if (!assNames.contains(asset)) {
-                            String altName = json_data.getJSONObject(asset).getString("altname");
-                            insertAsset(asset, altName);
-                            logger.info("New Kraken asset has been inserted : " + asset);
-                        }
-
-                    }
-
-                    List<KrakenAsset> asss = getAllAssets();
-                    for (KrakenAsset as : asss) {
-                        logger.info("==================> " + as.getAssetName() + " " + as.getAltName());
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-            }
-        });
-    }
-
-    /**
      * Calculate the signature for the Kraken API call
      * Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
      *
@@ -644,7 +482,7 @@ public class KrakenManager {
         String start = String.valueOf(cal.getTimeInMillis() / 1000);
         String domain = properties.getProperty("KRAKEN_API_BASE_URL");
         String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");
-        ;
+
         String nonce = String.valueOf(System.currentTimeMillis());
         String path = "/0/private/TradesHistory";
 
@@ -756,7 +594,7 @@ public class KrakenManager {
         String start = String.valueOf(cal.getTimeInMillis() / 1000);
         String domain = properties.getProperty("KRAKEN_API_BASE_URL");
         String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");
-        ;
+
         String nonce = String.valueOf(System.currentTimeMillis());
         String path = "/0/private/Ledgers";
 

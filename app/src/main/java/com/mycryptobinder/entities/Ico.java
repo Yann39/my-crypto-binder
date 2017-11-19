@@ -16,7 +16,7 @@ import java.util.Date;
  */
 
 @Entity(tableName = "icos", foreignKeys =
-@ForeignKey(entity = Exchange.class,
+@ForeignKey(entity = Currency.class,
         parentColumns = "iso_code",
         childColumns = "currency_iso_code"))
 public class Ico {

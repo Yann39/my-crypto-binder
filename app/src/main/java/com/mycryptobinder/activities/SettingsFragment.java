@@ -106,11 +106,11 @@ public class SettingsFragment extends Fragment {
                     em.reset();
                 }
 
-                km.populateExchange();
+                //km.populateExchange();
                 pm.populateExchange();
 
-                km.populateAssetPairs();
-                km.populateAssets();
+                //km.populateAssetPairs();
+                //km.populateAssets();
                 pm.populateAssets();
                 cm.populateCurrencies();
 

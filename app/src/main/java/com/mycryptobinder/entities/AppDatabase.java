@@ -13,6 +13,8 @@ import com.mycryptobinder.dao.IcoDao;
 import com.mycryptobinder.dao.KrakenAssetDao;
 import com.mycryptobinder.dao.KrakenAssetPairDao;
 import com.mycryptobinder.dao.KrakenTradeDao;
+import com.mycryptobinder.dao.PoloniexAssetDao;
+import com.mycryptobinder.dao.PoloniexTradeDao;
 import com.mycryptobinder.dao.TransactionDao;
 import com.mycryptobinder.helpers.DateTypeConverter;
 
@@ -21,7 +23,17 @@ import com.mycryptobinder.helpers.DateTypeConverter;
  * Created on 06/11/2017
  */
 
-@Database(entities = {AppSetting.class, KrakenAsset.class, KrakenAssetPair.class, KrakenTrade.class, Currency.class, Exchange.class, Ico.class, Transaction.class}, version = 2)
+@Database(entities = {
+        AppSetting.class,
+        KrakenAsset.class,
+        KrakenAssetPair.class,
+        KrakenTrade.class,
+        PoloniexAsset.class,
+        PoloniexTrade.class,
+        Currency.class,
+        Exchange.class,
+        Ico.class,
+        Transaction.class}, version = 3)
 @TypeConverters({DateTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -40,7 +52,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ExchangeDao exchangeDao();
 
     public abstract IcoDao icoDao();
+
     public abstract TransactionDao transactionDao();
+
+    public abstract PoloniexAssetDao poloniexAssetDao();
+
+    public abstract PoloniexTradeDao poloniexTradeDao();
 
     public static AppDatabase getDatabase(Context context) {
         if (INSTANCE == null) {

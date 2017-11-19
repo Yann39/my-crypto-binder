@@ -21,6 +21,9 @@ public interface KrakenTradeDao {
     @Query("select * from kraken_trades")
     LiveData<List<KrakenTrade>> getAll();
 
+    @Query("select distinct order_tx_id from kraken_trades")
+    LiveData<List<String>> getTradeIds();
+
     @Insert
     void insert(KrakenTrade... krakenTrades);
 

@@ -8,26 +8,42 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.Base64;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.LogInterface;
+import com.loopj.android.http.RequestParams;
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.PortfolioCardAdapter;
-import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.models.HoldingData;
-import com.mycryptobinder.models.Price;
-import com.mycryptobinder.service.CryptoCompareService;
+import com.mycryptobinder.models.KrakenTrade;
 import com.mycryptobinder.viewmodels.PortfolioViewModel;
+import com.mycryptobinder.viewmodels.SettingsViewModel;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Fragment responsible for displaying portfolio
@@ -38,7 +54,6 @@ import retrofit2.Response;
 public class PortfolioFragment extends Fragment {
 
     private PortfolioCardAdapter portfolioCardAdapter;
-    private ProgressBar progressBar;
 
     public PortfolioFragment() {
     }
@@ -65,53 +80,32 @@ public class PortfolioFragment extends Fragment {
         final PortfolioViewModel portfolioViewModel = ViewModelProviders.of(this).get(PortfolioViewModel.class);
 
         // set total number of different currencies
-        int nbCurrencies = portfolioViewModel.getNbDifferentCurrencies();
         TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
-        nbCoinTextView.setText(String.valueOf(nbCurrencies));
+        portfolioViewModel.getNbDifferentCurrencies().observe(PortfolioFragment.this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer nbDifferentCurrencies) {
+                nbCoinTextView.setText(String.valueOf(nbDifferentCurrencies));
+            }
+        });
 
         // add horizontal separator between rows
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(portfolioRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
         portfolioRecyclerView.addItemDecoration(mDividerItemDecoration);
 
-        progressBar = view.findViewById(R.id.progress_bar);
-
+        ProgressBar progressBar = view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
 
         // observe the used currencies list from the view model so the auto complete text will always be up to date
         portfolioViewModel.getHoldings().observe(PortfolioFragment.this, new Observer<List<HoldingData>>() {
             @Override
             public void onChanged(@Nullable List<HoldingData> holdingDataList) {
-                for (HoldingData hd : holdingDataList) {
-                    hd.setIsoCode(curr.getIsoCode());
-                    hd.setName(curr.getName());
-                    hd.setSymbol(curr.getSymbol());
-                    hd.setQuantity(portfolioViewModel.getCurrencyQuantity(curr.getIsoCode()));
-
-                    try {
-                        CryptoCompareService cryptoCompareService = CryptoCompareService.retrofit.create(CryptoCompareService.class);
-                        Call<Price> call = cryptoCompareService.getCurrentPrice(curr.getIsoCode());
-                        call.enqueue(new Callback<Price>() {
-                            @Override
-                            public void onResponse(@Nullable Call<Price> call, @Nullable Response<Price> response) {
-                                Price price = response.body();
-                                if (price != null && price.getEur() != null) {
-                                    hd.setCurrentPrice(Double.parseDouble(price.getEur()));
-                                    portfolioCardAdapter.notifyDataSetChanged();
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@Nullable Call<Price> call, @Nullable Throwable t) {
-                                System.out.println("Failed: " + t.getLocalizedMessage());
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                portfolioCardAdapter.addItems(holdingDataList);
+                progressBar.setVisibility(View.GONE);
             }
         });
+
+        final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+        settingsViewModel.populateDatabase();
 
         return view;
     }
