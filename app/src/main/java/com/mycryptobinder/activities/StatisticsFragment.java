@@ -12,8 +12,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.mycryptobinder.R;
-import com.mycryptobinder.managers.TransactionManager;
-import com.mycryptobinder.models.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,17 +45,7 @@ public class StatisticsFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        // open database connections
-        TransactionManager transactionManager = new TransactionManager(this.getContext());
-        transactionManager.open();
-
-        List<Transaction> transactions = transactionManager.getAll();
         List<Entry> entries = new ArrayList<>();
-
-        /*for (Transaction data : transactions) {
-            // turn your data into Entry objects
-            entries.add(new Entry((float)data.getDate().getTime(), data.getPrice().floatValue()));
-        }*/
         entries.add(new Entry(1F, 1252.457F));
         entries.add(new Entry(2F, 1042.11F));
         entries.add(new Entry(3F, 1430.15475F));

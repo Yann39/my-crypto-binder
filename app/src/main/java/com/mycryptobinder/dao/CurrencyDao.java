@@ -38,14 +38,14 @@ public interface CurrencyDao {
 
     @Query("select pa.asset_code as iso_code, pa.asset_name as name, null as symbol " +
             "from poloniex_assets pa " +
-            "left join currencies c on pa.asset_code = c.iso_code " +
-            "where pa.asset_code is null")
+            "left join currencies c on c.iso_code = pa.asset_code " +
+            "where c.iso_code is null")
     LiveData<List<Currency>> getFromPoloniex();
 
-    @Query("select ka.alt_name as iso_code, null as name, null as synbol " +
+    @Query("select ka.alt_name as iso_code, null as name, null as symbol " +
             "from kraken_assets ka " +
-            "left join currencies c on ka.alt_name = c.iso_code " +
-            "where ka.alt_name is null")
+            "left join currencies c on c.iso_code = ka.alt_name " +
+            "where c.iso_code is null")
     LiveData<List<Currency>> getFromKraken();
 
     @Insert

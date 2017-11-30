@@ -1,5 +1,6 @@
 package com.mycryptobinder.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,11 +14,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.managers.CurrencyManager;
-import com.mycryptobinder.managers.ExchangeManager;
-import com.mycryptobinder.managers.KrakenManager;
-import com.mycryptobinder.managers.PoloniexManager;
-import com.mycryptobinder.managers.TransactionManager;
+import com.mycryptobinder.viewmodels.SettingsViewModel;
 
 /**
  * Fragment responsible for displaying settings
@@ -81,6 +78,8 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+
         Button synchronizeButton = view.findViewById(R.id.btn_synchronize);
         checkBox = view.findViewById(R.id.checkbox_clean_synchronize);
 
@@ -88,37 +87,8 @@ public class SettingsFragment extends Fragment {
         synchronizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                KrakenManager km = new KrakenManager(view.getContext());
-                PoloniexManager pm = new PoloniexManager(view.getContext());
-                TransactionManager tm = new TransactionManager(view.getContext());
-                CurrencyManager cm = new CurrencyManager(view.getContext());
-                ExchangeManager em = new ExchangeManager(view.getContext());
 
-                km.open();
-                pm.open();
-                tm.open();
-                cm.open();
-                em.open();
-
-                if (checkBox.isChecked()) {
-                    tm.reset();
-                    cm.reset();
-                    em.reset();
-                }
-
-                //km.populateExchange();
-                pm.populateExchange();
-
-                //km.populateAssetPairs();
-                //km.populateAssets();
-                pm.populateAssets();
-                cm.populateCurrencies();
-
-                km.populateTradeHistory();
-                pm.populateTradeHistory();
-                tm.populateTransactions();
-
-                km.populateLedgerInfo();
+                settingsViewModel.populateDatabase();
 
             }
         });

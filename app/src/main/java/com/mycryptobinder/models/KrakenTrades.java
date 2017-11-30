@@ -16,7 +16,7 @@ public class KrakenTrades {
     public List<String> error;
 
     @SerializedName("result")
-    public Map<String, KrakenTradeValue> result;
+    public KrakenTradeTrades result;
 
     public List<String> getError() {
         return error;
@@ -26,11 +26,11 @@ public class KrakenTrades {
         this.error = error;
     }
 
-    public Map<String, KrakenTradeValue> getResult() {
+    public KrakenTradeTrades getResult() {
         return result;
     }
 
-    public void setResult(Map<String, KrakenTradeValue> result) {
+    public void setResult(KrakenTradeTrades result) {
         this.result = result;
     }
 }

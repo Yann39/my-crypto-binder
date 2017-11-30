@@ -10,7 +10,7 @@ public class KrakenTradeValue {
     private long id;
     private String orderTxId;
     private String pair;
-    private Long time;
+    private Double time;
     private String type;
     private String orderType;
     private Double price;
@@ -44,11 +44,11 @@ public class KrakenTradeValue {
         this.pair = pair;
     }
 
-    public Long getTime() {
+    public Double getTime() {
         return time;
     }
 
-    public void setTime(Long time) {
+    public void setTime(Double time) {
         this.time = time;
     }
 

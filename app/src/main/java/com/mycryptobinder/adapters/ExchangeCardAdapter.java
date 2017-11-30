@@ -10,12 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.activities.EditExchangeActivity;
 import com.mycryptobinder.entities.Exchange;
-import com.mycryptobinder.managers.ExchangeManager;
 import com.mycryptobinder.viewholders.ExchangeCardViewHolder;
 
 import java.util.List;
@@ -79,7 +77,7 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        String item = exchanges.get(position).getName();
+                        /*String item = exchanges.get(position).getName();
 
                         // delete from the database
                         ExchangeManager em = new ExchangeManager(context);
@@ -100,7 +98,7 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
 
                         // show a notification about the removed item
                         Toast.makeText(context, context.getResources().getString(R.string.msg_exchange_removed, itemName), Toast.LENGTH_SHORT).show();
-
+*/
                         dialog.dismiss();
                     }
                 });

@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.entities.Exchange;
-import com.mycryptobinder.managers.ExchangeManager;
 import com.mycryptobinder.viewmodels.AddExchangeViewModel;
 
 /**

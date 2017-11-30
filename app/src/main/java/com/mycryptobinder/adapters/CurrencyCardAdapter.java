@@ -85,7 +85,4 @@ public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCard
         return currencies.size();
     }
 
-
-
-
 }

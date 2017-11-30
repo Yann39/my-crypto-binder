@@ -1,11 +1,13 @@
 package com.mycryptobinder.activities;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,7 +23,11 @@ import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.TransactionListAdapter;
-import com.mycryptobinder.managers.TransactionManager;
+import com.mycryptobinder.entities.Transaction;
+import com.mycryptobinder.viewmodels.TransactionsViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment responsible for displaying transactions
@@ -71,29 +77,23 @@ public class TransactionsFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_transactions, container, false);
 
-        // get view elements
-        transactionsRecyclerView = view.findViewById(R.id.transactions_list_recycler_view);
-        transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
-        transactionsPairColumnHeaderText = view.findViewById(R.id.transactions_pair_column_header_text);
-        transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
-        transactionsQuantityColumnHeaderText = view.findViewById(R.id.transactions_quantity_column_header_text);
-        transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
-        transactionsPriceColumnHeaderText = view.findViewById(R.id.transactions_price_column_header_text);
-        transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
-        transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
+        // prepare the recycler view with a linear layout
+        RecyclerView transactionsRecyclerView = view.findViewById(R.id.transactions_list_recycler_view);
+        transactionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        // set linear layout for recycler view
-        transactionsLayoutManager = new LinearLayoutManager(getActivity());
-        transactionsRecyclerView.setLayoutManager(transactionsLayoutManager);
-
-        // open database connections
-        TransactionManager transactionManager = new TransactionManager(this.getContext());
-        transactionManager.open();
-
-        // get the adapter with last data set and apply it to the recycler view
-        transactionListAdapter = new TransactionListAdapter(transactionManager.getAll());
-        transactionListAdapter.notifyDataSetChanged();
+        // initialize the adapter for the list
+        transactionListAdapter = new TransactionListAdapter(this.getContext(), new ArrayList<Transaction>());
         transactionsRecyclerView.setAdapter(transactionListAdapter);
+
+        // get view model
+        final TransactionsViewModel transactionsViewModel = ViewModelProviders.of(this).get(TransactionsViewModel.class);
+
+        transactionsViewModel.getTransactionList().observe(TransactionsFragment.this, new Observer<List<Transaction>>() {
+            @Override
+            public void onChanged(@Nullable List<Transaction> transactionList) {
+                transactionListAdapter.addItems(transactionList);
+            }
+        });
 
         // add horizontal separator between rows
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(transactionsRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
@@ -108,6 +108,16 @@ public class TransactionsFragment extends Fragment {
                 startActivityForResult(add_trans, 1);
             }
         });
+
+        // get view elements
+        transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
+        transactionsPairColumnHeaderText = view.findViewById(R.id.transactions_pair_column_header_text);
+        transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
+        transactionsQuantityColumnHeaderText = view.findViewById(R.id.transactions_quantity_column_header_text);
+        transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
+        transactionsPriceColumnHeaderText = view.findViewById(R.id.transactions_price_column_header_text);
+        transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
+        transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
 
         // prepare drawables (change color)
         caretDown = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_more_black_24px);

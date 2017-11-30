@@ -3,14 +3,9 @@ package com.mycryptobinder.viewmodels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.Base64;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Exchange;
@@ -26,36 +21,30 @@ import com.mycryptobinder.models.KrakenAssetPairValue;
 import com.mycryptobinder.models.KrakenAssetPairs;
 import com.mycryptobinder.models.KrakenAssetValue;
 import com.mycryptobinder.models.KrakenAssets;
+import com.mycryptobinder.models.KrakenTradeValue;
+import com.mycryptobinder.models.KrakenTrades;
 import com.mycryptobinder.models.PoloniexAssetValue;
 import com.mycryptobinder.models.PoloniexTradeValue;
 import com.mycryptobinder.service.KrakenService;
 import com.mycryptobinder.service.PoloniexService;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import cz.msebera.android.httpclient.Header;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Yann
@@ -66,14 +55,25 @@ public class SettingsViewModel extends AndroidViewModel {
 
     private final LiveData<Integer> nbDifferentCurrencies;
     private final LiveData<List<HoldingData>> holdings;
-    private AppDatabase appDatabase;
-    private static final Logger logger = Logger.getLogger(SettingsViewModel.class.getName());
+    private static AppDatabase appDatabase;
+    private static Properties properties;
+    private SimpleDateFormat sdf;
 
     public SettingsViewModel(Application application) {
         super(application);
         appDatabase = AppDatabase.getDatabase(this.getApplication());
         nbDifferentCurrencies = appDatabase.transactionDao().getNbDifferentCurrencies();
         holdings = appDatabase.transactionDao().getHoldings();
+        properties = new Properties();
+        try {
+            InputStream inputStream = getApplication().getBaseContext().getAssets().open("myCryptoBinder.properties");
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        UtilsHelper uh = new UtilsHelper(getApplication().getBaseContext());
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", uh.getCurrentLocale());
     }
 
     public LiveData<List<HoldingData>> getHoldings() {
@@ -85,25 +85,17 @@ public class SettingsViewModel extends AndroidViewModel {
     }
 
     public void populateDatabase() {
-        new populateDatabaseAsyncTask(appDatabase, getApplication().getBaseContext()).execute();
+        new populateDatabaseAsyncTask(appDatabase, sdf).execute();
     }
 
     private static class populateDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
         private AppDatabase db;
-        private Properties properties;
-        private Context context;
         private static int offset = 0;
+        private SimpleDateFormat sdf;
 
-        populateDatabaseAsyncTask(AppDatabase appDatabase, Context context) {
+        populateDatabaseAsyncTask(AppDatabase appDatabase, SimpleDateFormat sdf) {
             this.db = appDatabase;
-            this.context = context;
-            properties = new Properties();
-            try {
-                InputStream inputStream = context.getAssets().open("myCryptoBinder.properties");
-                properties.load(inputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.sdf = sdf;
         }
 
         /**
@@ -131,144 +123,6 @@ public class SettingsViewModel extends AndroidViewModel {
             return signature;
         }
 
-        public void populateKrakenTradeHistory() {
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.YEAR, 2016);
-            cal.set(Calendar.MONTH, Calendar.DECEMBER);
-            cal.set(Calendar.DAY_OF_MONTH, 13);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            String start = String.valueOf(cal.getTimeInMillis() / 1000);
-            String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");
-
-            String nonce = String.valueOf(System.currentTimeMillis());
-            String path = "/0/private/TradesHistory";
-
-            RequestParams params = new RequestParams();
-            params.add("nonce", nonce);
-            params.add("start", start);
-            params.add("ofs", String.valueOf(offset));
-
-            String sign = calculateKrakenSignature(path, nonce, params.toString());
-
-            /*//KrakenBody krakenBody = new KrakenBody();
-            //krakenBody.setNonce(nonce);
-            //krakenBody.setStart(start);
-            //krakenBody.setOfs(String.valueOf(offset));
-
-            Map<String, String> headerMap = new HashMap<>();
-            headerMap.put("API-Key", key);
-            headerMap.put("API-Sign", sign);
-
-            KrakenService krakenService = KrakenService.retrofit.create(KrakenService.class);
-            Call<KrakenTrades> call = krakenService.getTradeHistory(headerMap, nonce);
-            call.enqueue(new Callback<KrakenTrades>() {
-                @Override
-                public void onResponse(@Nullable Call<KrakenTrades> call, @Nullable Response<KrakenTrades> response) {
-                    KrakenTrades krakenTrades = response.body();
-                    offset = offset + 50;
-
-                    // delay 10ms to be sure the nonce will change
-                    new android.os.Handler().postDelayed(
-                            new Runnable() {
-                                public void run() {
-                                    populateTradeHistory();
-                                }
-                            },
-                            10
-                    );
-                }
-
-                @Override
-                public void onFailure(@Nullable Call<KrakenTrades> call, @Nullable Throwable t) {
-                    System.out.println("Failed: " + t.getLocalizedMessage());
-                }
-            });*/
-
-            AsyncHttpClient client = new AsyncHttpClient();
-            client.addHeader("API-Key", key);
-            client.addHeader("API-Sign", sign);
-            client.post("https://api.kraken.com" + path, params, new JsonHttpResponseHandler() {
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    logger.warning("Error");
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-                    // populate data from remote exchange
-                    try {
-                        if (response.getJSONArray("error").length() > 0) {
-                            logger.warning("Error when trying to get Kraken trading history : " + response.getString("error"));
-                        } else {
-
-                            JSONObject json_data = response.getJSONObject("result").getJSONObject("trades");
-
-                            if (json_data.length() > 0) {
-
-                                //get any existing trades
-                                List<String> tradeIds = db.krakenTradeDao().getTradeIds().getValue();
-
-                                List<KrakenTrade> krakenTradeEntities = new ArrayList<>();
-                                for (Iterator<String> rows = json_data.keys(); rows.hasNext(); ) {
-                                    JSONObject json_row = json_data.getJSONObject(rows.next());
-                                    String orderTxId = json_row.getString("ordertxid");
-                                    if (tradeIds == null || !tradeIds.contains(orderTxId)) {
-                                        String pair = json_row.getString("pair");
-                                        Long time = Double.valueOf(json_row.getString("time")).longValue();
-                                        String type = json_row.getString("type");
-                                        String orderType = json_row.getString("ordertype");
-                                        Double price = Double.parseDouble(json_row.getString("price"));
-                                        Double cost = Double.parseDouble(json_row.getString("cost"));
-                                        Double fee = Double.parseDouble(json_row.getString("fee"));
-                                        Double vol = Double.parseDouble(json_row.getString("vol"));
-                                        Double margin = Double.parseDouble(json_row.getString("margin"));
-                                        String misc = json_row.getString("misc");
-                                        krakenTradeEntities.add(new KrakenTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc));
-                                    }
-                                }
-
-                                KrakenTrade[] krakenTradesArray = new KrakenTrade[krakenTradeEntities.size()];
-                                krakenTradesArray = krakenTradeEntities.toArray(krakenTradesArray);
-                                db.krakenTradeDao().insert(krakenTradesArray);
-
-                                offset = offset + 50;
-
-                                // delay 10ms to be sure the nonce will change
-                                new android.os.Handler().postDelayed(
-                                        new Runnable() {
-                                            public void run() {
-                                                populateKrakenTradeHistory();
-                                            }
-                                        },
-                                        10
-                                );
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
-                    // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                    logger.warning("Failed to call Kraken API : " + statusCode);
-                    try {
-                        logger.warning("Message is : " + response.getString("error"));
-                    } catch (JSONException jse) {
-                        jse.printStackTrace();
-                    }
-                }
-            });
-        }
-
         /**
          * Calculate the signature for the Poloniex API call
          * Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
@@ -289,7 +143,13 @@ public class SettingsViewModel extends AndroidViewModel {
             return signature;
         }
 
-        static String bytesToHex(byte[] bytes) {
+        /**
+         * Convert a byte array to an hexadecimal String
+         *
+         * @param bytes The byte array to convert
+         * @return The converted byte array as String
+         */
+        private String bytesToHex(byte[] bytes) {
             char[] hexArray = "0123456789ABCDEF".toCharArray();
             char[] hexChars = new char[bytes.length * 2];
             for (int j = 0; j < bytes.length; j++) {
@@ -301,134 +161,179 @@ public class SettingsViewModel extends AndroidViewModel {
         }
 
         /**
-         * Populate trade history table from remote exchange
+         *
          */
-        public void populatePoloniexTradeHistory() {
+        private void populateKrakenTradeHistory() {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.YEAR, 2016);
-            cal.set(Calendar.MONTH, 12);
-            cal.set(Calendar.DAY_OF_MONTH, 26);
+            cal.set(Calendar.MONTH, Calendar.DECEMBER);
+            cal.set(Calendar.DAY_OF_MONTH, 13);
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
-            String start = String.valueOf(cal.getTime().getTime() / 1000);
-
-            String domain = properties.getProperty("POLONIEX_API_BASE_URL");
-            String key = properties.getProperty("POLONIEX_API_PUBLIC_KEY");
+            String start = String.valueOf(cal.getTimeInMillis() / 1000);
+            String key = properties.getProperty("KRAKEN_API_PUBLIC_KEY");
             String nonce = String.valueOf(System.currentTimeMillis());
-
-            RequestParams params = new RequestParams();
-            params.add("command", "returnTradeHistory");
-            params.add("start", start);
-            params.add("currencyPair", "all");
-            params.add("nonce", nonce);
-
-            String sign = calculatePoloniexSignature(params.toString());
+            String path = "/0/private/TradesHistory";
+            String parameters = "start=" + start + "&ofs=" + offset + "&nonce=" + nonce;
+            String sign = calculateKrakenSignature(path, nonce, parameters);
 
             Map<String, String> headerMap = new HashMap<>();
             headerMap.put("API-Key", key);
             headerMap.put("API-Sign", sign);
 
+            Map<String, String> paramsMap = new HashMap<>();
+            paramsMap.put("nonce", nonce);
+            paramsMap.put("start", start);
+            paramsMap.put("ofs", String.valueOf(offset));
+            try {
+                KrakenService krakenService = KrakenService.retrofit.create(KrakenService.class);
+                Call<KrakenTrades> call = krakenService.getTradeHistory(headerMap, paramsMap);
+                KrakenTrades krakenTrades = call.execute().body();
+
+                // if it returned something without error
+                if (krakenTrades != null && krakenTrades.getError().size() < 1) {
+
+                    //get any existing asset
+                    List<String> trades = appDatabase.krakenTradeDao().getTradeIds().getValue();
+
+                    List<KrakenTrade> krakenTradeEntities = new ArrayList<>();
+                    for (Map.Entry<String, KrakenTradeValue> entry : krakenTrades.getResult().getTrades().entrySet()) {
+                        String trade = entry.getKey();
+
+                        // keep only if it does not already exists
+                        if (trades == null || !trades.contains(trade)) {
+                            KrakenTradeValue krakenTradeValue = entry.getValue();
+                            String orderTxId = krakenTradeValue.getOrderTxId();
+                            String pair = krakenTradeValue.getPair();
+                            Double time = krakenTradeValue.getTime();
+                            String type = krakenTradeValue.getType();
+                            String orderType = krakenTradeValue.getOrderType();
+                            Double price = krakenTradeValue.getPrice();
+                            Double cost = krakenTradeValue.getCost();
+                            Double fee = krakenTradeValue.getFee();
+                            Double vol = krakenTradeValue.getVol();
+                            Double margin = krakenTradeValue.getMargin();
+                            String misc = krakenTradeValue.getMisc();
+                            krakenTradeEntities.add(new KrakenTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc));
+                        }
+                    }
+
+                    // insert into the database
+                    KrakenTrade[] krakenTradeArray = new KrakenTrade[krakenTradeEntities.size()];
+                    krakenTradeArray = krakenTradeEntities.toArray(krakenTradeArray);
+                    appDatabase.krakenTradeDao().insert(krakenTradeArray);
+
+                    offset = offset + 50;
+                    populateKrakenTradeHistory();
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /**
+         * Populate trade history table from remote exchange
+         */
+        private void populatePoloniexTradeHistory(Date startDate) {
+
+            String start = String.valueOf(startDate.getTime() / 1000);
+            String key = properties.getProperty("POLONIEX_API_PUBLIC_KEY");
+            String nonce = String.valueOf(System.currentTimeMillis());
+            String parameters = "currencyPair=all&command=returnTradeHistory&start=" + start + "&limit=10000&nonce=" + nonce;
+            String sign = calculatePoloniexSignature(parameters);
+
+            Map<String, String> headerMap = new HashMap<>();
+            headerMap.put("Key", key);
+            headerMap.put("Sign", sign);
 
             Map<String, String> paramsMap = new HashMap<>();
             paramsMap.put("command", "returnTradeHistory");
-            paramsMap.put("start", start);
             paramsMap.put("currencyPair", "all");
+            paramsMap.put("start", start);
             paramsMap.put("nonce", nonce);
+            paramsMap.put("limit", "10000");
 
-            PoloniexService poloniexService = PoloniexService.retrofit.create(PoloniexService.class);
-            Call<Map<String, List<PoloniexTradeValue>>> call = poloniexService.getTradeHistory(headerMap, paramsMap);
-            call.enqueue(new Callback<Map<String, List<PoloniexTradeValue>>>() {
-                @Override
-                public void onResponse(@Nullable Call<Map<String, List<PoloniexTradeValue>>> call, @Nullable Response<Map<String, List<PoloniexTradeValue>>> response) {
-                    if (response != null) {
-                        Map<String, List<PoloniexTradeValue>> poloniexTrades = response.body();
-                    }
+            try {
+                PoloniexService poloniexService = PoloniexService.retrofit.create(PoloniexService.class);
+                Call<Map<String, List<PoloniexTradeValue>>> call = poloniexService.getTradeHistory(headerMap, paramsMap);
+                //todo return {"error":"Invalid API key\/secret pair."} if error so it raises Expected BEGIN_ARRAY but was STRING
+                Map<String, List<PoloniexTradeValue>> poloniexTrades = call.execute().body();
 
-                }
+                // if it returned something without error
+                if (poloniexTrades != null && !poloniexTrades.isEmpty()) {
+                    int cpt = 0;
+                    Date highestDate = startDate;
 
-                @Override
-                public void onFailure(@Nullable Call<Map<String, List<PoloniexTradeValue>>> call, @Nullable Throwable t) {
-                    System.out.println("Failed: " + t.getLocalizedMessage());
-                }
-            });
+                    // get any existing trades
+                    List<Long> trades = db.poloniexTradeDao().getTradeIds().getValue();
 
-            /*AsyncHttpClient client = new AsyncHttpClient();
-            client.addHeader("Key", key);
-            client.addHeader("Sign", sign);
-            client.post(domain, params, new JsonHttpResponseHandler() {
+                    List<PoloniexTrade> poloniexTradeEntities = new ArrayList<>();
+                    for (Map.Entry<String, List<PoloniexTradeValue>> entry : poloniexTrades.entrySet()) {
+                        String pair = entry.getKey();
+                        for (PoloniexTradeValue poloniexTradeValue : entry.getValue()) {
+                            Long globalTradeId = poloniexTradeValue.getGlobalTradeID();
+                            // keep only if it does not already exists
+                            if (trades == null || !trades.contains(globalTradeId)) {
+                                //get all values as strings
+                                String tradeIdStr = poloniexTradeValue.getTradeId();
+                                String dateStr = poloniexTradeValue.getDate();
+                                String rateStr = poloniexTradeValue.getRate();
+                                String amountStr = poloniexTradeValue.getAmount();
+                                String totalStr = poloniexTradeValue.getTotal();
+                                String feeStr = poloniexTradeValue.getFee();
+                                String orderNumberStr = poloniexTradeValue.getOrderNumber();
+                                String type = poloniexTradeValue.getType();
+                                String category = poloniexTradeValue.getCategory();
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    UtilsHelper uh = new UtilsHelper(context);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", uh.getCurrentLocale());
+                                Long tradeId = Long.parseLong(tradeIdStr);
+                                Date date = sdf.parse(dateStr);
+                                Double rate = Double.parseDouble(rateStr);
+                                Double amount = Double.parseDouble(amountStr);
+                                Double total = Double.parseDouble(totalStr);
+                                Double fee = Double.parseDouble(feeStr);
+                                Long orderNumber = Long.parseLong(orderNumberStr);
 
-                    //get any existing trades
-                    List<Long> tradeIds = db.poloniexTradeDao().getTradeIds().getValue();
-
-                    // populate data from remote exchange
-                    try {
-                        for (Iterator<String> rows = response.keys(); rows.hasNext(); ) {
-                            String curr = rows.next();
-                            if (curr.equals("error")) {
-                                logger.warning("Error when trying to get Poloniex trading history : " + response.getString("error"));
-                            } else {
-                                JSONArray json_arr = response.getJSONArray(curr);
-                                List<PoloniexTrade> poloniexTradeEntities = new ArrayList<>();
-                                for (int i = 0; i < json_arr.length(); i++) {
-                                    JSONObject json_data = json_arr.getJSONObject(i);
-                                    Long globalTradeId = json_data.getLong("globalTradeID");
-                                    if (tradeIds == null || !tradeIds.contains(globalTradeId)) {
-                                        Long tradeId = json_data.getLong("tradeID");
-                                        Date date = sdf.parse(json_data.getString("date"));
-                                        Double rate = json_data.getDouble("rate");
-                                        Double amount = json_data.getDouble("amount");
-                                        Double total = Double.parseDouble(json_data.getString("total"));
-                                        Double fee = Double.parseDouble(json_data.getString("fee"));
-                                        Long orderNumber = json_data.getLong("orderNumber");
-                                        String type = json_data.getString("type");
-                                        String category = json_data.getString("category");
-                                        poloniexTradeEntities.add(new PoloniexTrade(curr, globalTradeId, tradeId, date, rate, amount, total, fee, orderNumber, type, category));
-                                    }
+                                if (highestDate.before(date)) {
+                                    highestDate = date;
                                 }
-                                PoloniexTrade[] poloniexTradesArray = new PoloniexTrade[poloniexTradeEntities.size()];
-                                poloniexTradesArray = poloniexTradeEntities.toArray(poloniexTradesArray);
-                                db.poloniexTradeDao().insert(poloniexTradesArray);
+
+                                poloniexTradeEntities.add(new PoloniexTrade(pair, globalTradeId, tradeId, date, rate, amount, total, fee, orderNumber, type, category));
                             }
+                            cpt++;
                         }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
 
-                }
+                    // insert into the database
+                    PoloniexTrade[] poloniexTradesArray = new PoloniexTrade[poloniexTradeEntities.size()];
+                    poloniexTradesArray = poloniexTradeEntities.toArray(poloniexTradesArray);
+                    db.poloniexTradeDao().insert(poloniexTradesArray);
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
-                    // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                    logger.warning("Failed to call Poloniex API : " + statusCode);
-                    try {
-                        logger.warning("Message is : " + response.getString("error"));
-                    } catch (JSONException jse) {
-                        jse.printStackTrace();
+                    // API result is limited to 10000 entries maximum, so if result contains 10000 entries, call it again with a start time corresponding to the highest found trade date
+                    if (cpt > 10000) {
+                        populatePoloniexTradeHistory(highestDate);
                     }
                 }
-            });*/
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+            }
+
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
 
-            //region Kraken
-
-            // insert Kraken exchange if it does not exist
+            //region insert Kraken exchange
             if (db.exchangeDao().getByName("Kraken") == null) {
                 db.exchangeDao().insert(new Exchange("Kraken", "https://www.kraken.com", "Kraken exchange"));
             }
+            //endregion
 
-            // insert asset pairs from Kraken API
+            //region insert Kraken asset pairs from API
             try {
 
                 // API synchronous call
@@ -464,8 +369,9 @@ public class SettingsViewModel extends AndroidViewModel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //endregion
 
-            // insert assets from Kraken API
+            //region insert Kraken assets from API
             try {
 
                 // API synchronous call
@@ -499,34 +405,37 @@ public class SettingsViewModel extends AndroidViewModel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //endregion
 
-            // insert currencies from Kraken table
+            //region insert Kraken trade history from API
+            populateKrakenTradeHistory();
+            //endregion
+
+            //region insert Kraken currencies from assets
             List<Currency> krakenCurrencyList = db.currencyDao().getFromKraken().getValue();
             if (krakenCurrencyList != null) {
                 Currency[] currencyArray = new Currency[krakenCurrencyList.size()];
                 currencyArray = krakenCurrencyList.toArray(currencyArray);
                 db.currencyDao().insert(currencyArray);
             }
+            //endregion
 
-            /*populateTradeHistory();
-
-            // insert transaction from Kraken table
+            //region insert Kraken transactions from trade history
             List<Transaction> transactionList = db.transactionDao().getKrakenTransactions().getValue();
             if (transactionList != null) {
                 Transaction[] transactionArray = new Transaction[transactionList.size()];
                 transactionArray = transactionList.toArray(transactionArray);
                 db.transactionDao().insert(transactionArray);
-            }*/
+            }
             //endregion
 
-            //region Poloniex
-
-            // insert Poloniex exchange if it does not exist
+            //region insert Poloniex exchange
             if (db.exchangeDao().getByName("Poloniex") == null) {
                 db.exchangeDao().insert(new Exchange("Poloniex", "https://www.poloniex.com", "Poloniex exchange"));
             }
+            //endregion
 
-            // insert assets from Poloniex API
+            //region insert Poloniex assets from API
             try {
 
                 // API synchronous call
@@ -560,17 +469,31 @@ public class SettingsViewModel extends AndroidViewModel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //endregion
 
-            // insert currencies from Poloniex tables
+            //region insert Poloniex trade history from API
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 2016);
+            cal.set(Calendar.MONTH, Calendar.DECEMBER);
+            cal.set(Calendar.DAY_OF_MONTH, 26);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            populatePoloniexTradeHistory(cal.getTime());
+            //endregion
+
+            //region insert Poloniex currencies from assets
             List<Currency> poloniexCurrencyList = db.currencyDao().getFromPoloniex().getValue();
             if (poloniexCurrencyList != null) {
                 Currency[] currencyArray2 = new Currency[poloniexCurrencyList.size()];
                 currencyArray2 = poloniexCurrencyList.toArray(currencyArray2);
                 db.currencyDao().insert(currencyArray2);
             }
+            //endregion
 
-            populatePoloniexTradeHistory();
-
+            //region insert Poloniex transactions from trade history
             List<Transaction> transactionList2 = db.transactionDao().getPoloniexTransactions().getValue();
             if (transactionList2 != null) {
                 Transaction[] transactionArray2 = new Transaction[transactionList2.size()];

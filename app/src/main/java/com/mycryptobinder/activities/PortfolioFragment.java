@@ -104,9 +104,6 @@ public class PortfolioFragment extends Fragment {
             }
         });
 
-        final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
-        settingsViewModel.populateDatabase();
-
         return view;
     }
 

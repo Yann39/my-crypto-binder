@@ -26,14 +26,10 @@ import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.entities.Transaction;
 import com.mycryptobinder.helpers.UtilsHelper;
-import com.mycryptobinder.managers.CurrencyManager;
-import com.mycryptobinder.managers.ExchangeManager;
-import com.mycryptobinder.managers.TransactionManager;
 import com.mycryptobinder.viewmodels.AddTransactionViewModel;
 import com.mycryptobinder.viewmodels.CurrencyListViewModel;
 import com.mycryptobinder.viewmodels.ExchangeListViewModel;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

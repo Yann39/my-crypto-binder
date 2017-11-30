@@ -12,7 +12,7 @@ public class PoloniexTradeValue {
     @SerializedName("globalTradeID")
     private Long globalTradeID;
 
-    @SerializedName("tradeId")
+    @SerializedName("tradeID")
     private String tradeId;
 
     @SerializedName("date")

@@ -13,12 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.adapters.CurrencyCardAdapter;
 import com.mycryptobinder.adapters.ExchangeCardAdapter;
-import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Exchange;
-import com.mycryptobinder.managers.ExchangeManager;
-import com.mycryptobinder.viewmodels.CurrencyListViewModel;
 import com.mycryptobinder.viewmodels.ExchangeListViewModel;
 
 import java.util.ArrayList;
@@ -51,7 +47,7 @@ public class ExchangeListActivity extends AppCompatActivity {
         exchangeListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // initialize the adapter for the list
-        exchangeCardAdapter = new ExchangeCardAdapter(new ArrayList<Exchange>(),this);
+        exchangeCardAdapter = new ExchangeCardAdapter(new ArrayList<Exchange>(), this);
         exchangeListRecyclerView.setAdapter(exchangeCardAdapter);
 
         // get view model

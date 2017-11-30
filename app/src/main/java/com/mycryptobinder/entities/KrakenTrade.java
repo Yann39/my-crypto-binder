@@ -22,7 +22,7 @@ public class KrakenTrade {
     private String pair;
 
     @ColumnInfo(name = "time")
-    private Long time;
+    private Double time;
 
     @ColumnInfo(name = "type")
     private String type;
@@ -48,7 +48,7 @@ public class KrakenTrade {
     @ColumnInfo(name = "misc")
     private String misc;
 
-    public KrakenTrade(String orderTxId, String pair, Long time, String type, String orderType, Double price, Double cost, Double fee, Double vol, Double margin, String misc) {
+    public KrakenTrade(String orderTxId, String pair, Double time, String type, String orderType, Double price, Double cost, Double fee, Double vol, Double margin, String misc) {
         this.orderTxId = orderTxId;
         this.pair = pair;
         this.time = time;
@@ -86,11 +86,11 @@ public class KrakenTrade {
         this.pair = pair;
     }
 
-    public Long getTime() {
+    public Double getTime() {
         return time;
     }
 
-    public void setTime(Long time) {
+    public void setTime(Double time) {
         this.time = time;
     }
 

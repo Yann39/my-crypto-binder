@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.entities.Currency;
-import com.mycryptobinder.managers.CurrencyManager;
 import com.mycryptobinder.viewmodels.AddCurrencyViewModel;
 
 /**
