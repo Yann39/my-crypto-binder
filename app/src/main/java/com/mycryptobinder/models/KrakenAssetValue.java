@@ -10,13 +10,13 @@ import com.google.gson.annotations.SerializedName;
 public class KrakenAssetValue {
 
     @SerializedName("altname")
-    public String altname;
+    public String altName;
 
-    public String getAltname() {
-        return altname;
+    public String getAltName() {
+        return altName;
     }
 
-    public void setAltname(String altname) {
-        this.altname = altname;
+    public void setAltName(String altName) {
+        this.altName = altName;
     }
 }

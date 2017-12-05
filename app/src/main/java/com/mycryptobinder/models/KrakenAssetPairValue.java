@@ -12,20 +12,16 @@ import java.util.List;
 public class KrakenAssetPairValue {
 
     @SerializedName("altname")
-    public String altname;
-
-    @SerializedName("base")
+    public String altName;
     public String base;
-
-    @SerializedName("quote")
     public String quote;
 
-    public String getAltname() {
-        return altname;
+    public String getAltName() {
+        return altName;
     }
 
-    public void setAltname(String altname) {
-        this.altname = altname;
+    public void setAltName(String altName) {
+        this.altName = altName;
     }
 
     public String getBase() {

@@ -1,9 +1,6 @@
 package com.mycryptobinder.models;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Yann
@@ -12,10 +9,7 @@ import java.util.Map;
 
 public class KrakenTrades {
 
-    @SerializedName("error")
     public List<String> error;
-
-    @SerializedName("result")
     public KrakenTradeTrades result;
 
     public List<String> getError() {

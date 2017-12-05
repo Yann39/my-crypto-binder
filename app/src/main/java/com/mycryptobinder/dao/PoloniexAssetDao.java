@@ -22,7 +22,7 @@ public interface PoloniexAssetDao {
     LiveData<List<PoloniexAsset>> getAll();
 
     @Query("select distinct asset_code from poloniex_assets")
-    LiveData<List<String>> getCodes();
+    List<String> getCodes();
 
     @Insert
     void insert(PoloniexAsset... poloniexAssets);

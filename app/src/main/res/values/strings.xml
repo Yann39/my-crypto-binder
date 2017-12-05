@@ -96,4 +96,5 @@
     <string name="msg_app_setting_created">Application setting %1$s has been created</string>
     <string name="msg_transaction_created">Transaction %1$s has been created</string>
     <string name="msg_transaction_updated">Transaction %1$s has been updated</string>
+    <string name="transaction_pair">%1$s/%2$s</string>
 </resources>

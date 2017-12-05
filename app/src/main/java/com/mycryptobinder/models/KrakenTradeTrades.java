@@ -1,7 +1,5 @@
 package com.mycryptobinder.models;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Map;
 
 /**
@@ -11,10 +9,7 @@ import java.util.Map;
 
 public class KrakenTradeTrades {
 
-    @SerializedName("trades")
     public Map<String, KrakenTradeValue> trades;
-
-    @SerializedName("count")
     public Integer count;
 
     public Map<String, KrakenTradeValue> getTrades() {

@@ -12,7 +12,7 @@ import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.SectionsPagerAdapter;
 
 /**
- * Main activity responsible for displaying the application main content
+ * Main activity, defined as the application entry point
  * <p>
  * Created by Yann
  * Created on 21/05/2017
@@ -29,14 +29,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // create the adapter that will return a fragment for each of the primary sections of the activity.
+        // create the adapter that will return a fragment for each of the primary sections of the activity
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // set up the ViewPager with the sections adapter.
         ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // set up the tabs layout
+        // set up tab layout
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);

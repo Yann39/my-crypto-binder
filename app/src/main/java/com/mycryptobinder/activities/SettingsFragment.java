@@ -1,8 +1,10 @@
 package com.mycryptobinder.activities;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.viewmodels.SettingsViewModel;
@@ -79,6 +83,22 @@ public class SettingsFragment extends Fragment {
         });
 
         final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+
+        TextView synchronizeLogEditText = view.findViewById(R.id.synchronize_log_editText);
+        settingsViewModel.getCurrentLogs().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                synchronizeLogEditText.setText(s);
+            }
+        });
+
+        ProgressBar synchronizeLogProgressBar = view.findViewById(R.id.synchronize_log_progressBar);
+        settingsViewModel.getPercentDone().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer percent) {
+                synchronizeLogProgressBar.setProgress(percent);
+            }
+        });
 
         Button synchronizeButton = view.findViewById(R.id.btn_synchronize);
         checkBox = view.findViewById(R.id.checkbox_clean_synchronize);

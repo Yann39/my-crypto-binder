@@ -1,5 +1,7 @@
 package com.mycryptobinder.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Yann
  * Created on 07/09/2017
@@ -8,10 +10,12 @@ package com.mycryptobinder.models;
 public class KrakenTradeValue {
 
     private long id;
+    @SerializedName("ordertxid")
     private String orderTxId;
     private String pair;
     private Double time;
     private String type;
+    @SerializedName("ordertype")
     private String orderType;
     private Double price;
     private Double cost;

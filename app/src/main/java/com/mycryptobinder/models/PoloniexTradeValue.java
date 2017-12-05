@@ -9,34 +9,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class PoloniexTradeValue {
 
-    @SerializedName("globalTradeID")
     private Long globalTradeID;
-
     @SerializedName("tradeID")
     private String tradeId;
-
-    @SerializedName("date")
     private String date;
-
-    @SerializedName("rate")
     private String rate;
-
-    @SerializedName("amount")
     private String amount;
-
-    @SerializedName("total")
     private String total;
-
-    @SerializedName("fee")
     private String fee;
-
-    @SerializedName("orderNumber")
     private String orderNumber;
-
-    @SerializedName("type")
     private String type;
-
-    @SerializedName("category")
     private String category;
 
     public Long getGlobalTradeID() {

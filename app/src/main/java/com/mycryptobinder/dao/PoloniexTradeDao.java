@@ -22,7 +22,7 @@ public interface PoloniexTradeDao {
     LiveData<List<PoloniexTrade>> getAll();
 
     @Query("select distinct global_trade_id from poloniex_trades")
-    LiveData<List<Long>> getTradeIds();
+    List<Long> getTradeIds();
 
     @Insert
     void insert(PoloniexTrade... poloniexTrades);

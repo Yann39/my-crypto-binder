@@ -17,7 +17,7 @@ import java.util.List;
 
 public class TransactionsViewModel extends AndroidViewModel {
 
-    private AppDatabase appDatabase;
+    private final AppDatabase appDatabase;
     private final LiveData<List<Transaction>> transactionList;
 
     public TransactionsViewModel(Application application) {

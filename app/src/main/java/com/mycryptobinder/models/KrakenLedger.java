@@ -1,5 +1,7 @@
 package com.mycryptobinder.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 /**
@@ -10,9 +12,11 @@ import java.util.Date;
 public class KrakenLedger {
 
     private String id;
+    @SerializedName("refid")
     private String refId;
     private Date time;
     private String type;
+    @SerializedName("aclass")
     private String aClass;
     private String asset;
     private Double amount;

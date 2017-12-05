@@ -14,7 +14,7 @@ import com.mycryptobinder.entities.AppSetting;
 
 public class AddAppSettingsViewModel extends AndroidViewModel {
 
-    private AppDatabase appDatabase;
+    private final AppDatabase appDatabase;
 
     public AddAppSettingsViewModel(Application application) {
         super(application);

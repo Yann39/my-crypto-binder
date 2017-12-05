@@ -37,23 +37,17 @@ import java.util.List;
 
 public class TransactionsFragment extends Fragment {
 
-    protected RecyclerView transactionsRecyclerView;
-    protected RecyclerView.LayoutManager transactionsLayoutManager;
-    protected TransactionListAdapter transactionListAdapter;
-    protected boolean col0Asc = false;
-    protected boolean col1Asc = false;
-    protected boolean col2Asc = false;
-    protected boolean col3Asc = false;
-    protected TextView transactionsPairColumnHeaderText;
-    protected LinearLayout transactionsPairColumnHeader;
-    protected TextView transactionsQuantityColumnHeaderText;
-    protected LinearLayout transactionsQuantityColumnHeader;
-    protected TextView transactionsPriceColumnHeaderText;
-    protected LinearLayout transactionsPriceColumnHeader;
-    protected TextView transactionsTotalColumnHeaderText;
-    protected LinearLayout transactionsTotalColumnHeader;
-    protected Drawable caretDown;
-    protected Drawable caretUp;
+    private boolean col0Asc = false;
+    private boolean col1Asc = false;
+    private boolean col2Asc = false;
+    private boolean col3Asc = false;
+    private TransactionListAdapter transactionListAdapter;
+    private TextView transactionsPairColumnHeaderText;
+    private TextView transactionsQuantityColumnHeaderText;
+    private TextView transactionsPriceColumnHeaderText;
+    private TextView transactionsTotalColumnHeaderText;
+    private Drawable caretDown;
+    private Drawable caretUp;
 
     public TransactionsFragment() {
         // required empty public constructor
@@ -74,7 +68,7 @@ public class TransactionsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        // inflate the layout for this fragment
+        // inflate the layout (create a new view)
         View view = inflater.inflate(R.layout.fragment_transactions, container, false);
 
         // prepare the recycler view with a linear layout
@@ -82,16 +76,18 @@ public class TransactionsFragment extends Fragment {
         transactionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         // initialize the adapter for the list
-        transactionListAdapter = new TransactionListAdapter(this.getContext(), new ArrayList<Transaction>());
+        transactionListAdapter = new TransactionListAdapter(this.getContext(), new ArrayList<>());
         transactionsRecyclerView.setAdapter(transactionListAdapter);
 
         // get view model
         final TransactionsViewModel transactionsViewModel = ViewModelProviders.of(this).get(TransactionsViewModel.class);
 
+        // observe the transactions data from the view model so it will always be up to date in the UI
         transactionsViewModel.getTransactionList().observe(TransactionsFragment.this, new Observer<List<Transaction>>() {
             @Override
             public void onChanged(@Nullable List<Transaction> transactionList) {
-                transactionListAdapter.addItems(transactionList);
+                // update data in the adapter
+                transactionListAdapter.setItems(transactionList);
             }
         });
 
@@ -110,13 +106,13 @@ public class TransactionsFragment extends Fragment {
         });
 
         // get view elements
-        transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
+        LinearLayout transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
         transactionsPairColumnHeaderText = view.findViewById(R.id.transactions_pair_column_header_text);
-        transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
+        LinearLayout transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
         transactionsQuantityColumnHeaderText = view.findViewById(R.id.transactions_quantity_column_header_text);
-        transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
+        LinearLayout transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
         transactionsPriceColumnHeaderText = view.findViewById(R.id.transactions_price_column_header_text);
-        transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
+        LinearLayout transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
         transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
 
         // prepare drawables (change color)

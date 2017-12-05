@@ -60,7 +60,7 @@ public class CurrencyListActivity extends AppCompatActivity implements CurrencyC
                 currencyCardAdapter.addItems(currencies);
             }
         });*/
-        currencyListViewModel.getPagedCurrencyList().observe(this, pagedList -> currencyCardAdapter.addItems(pagedList));
+        currencyListViewModel.getPagedCurrencyList().observe(this, pagedList -> currencyCardAdapter.setList(pagedList));
 
         // set click listener for the add currency button
         FloatingActionButton button = findViewById(R.id.btn_add_currency);

@@ -25,28 +25,25 @@ import java.util.List;
 public class TransactionListAdapter extends RecyclerView.Adapter<TransactionListViewHolder> {
 
     private List<Transaction> transactions;
-    private Context context;
+    private final Context context;
 
     public TransactionListAdapter(Context context, List<Transaction> transactions) {
         this.transactions = transactions;
         this.context = context;
     }
 
-    // Create new views (invoked by the layout manager)
-    @Override
-    public TransactionListViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view.
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_item_transaction, viewGroup, false);
-
-        return new TransactionListViewHolder(v);
-    }
-
-    public void addItems(List<Transaction> transactions) {
+    public void setItems(List<Transaction> transactions) {
         this.transactions = transactions;
         notifyDataSetChanged();
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    @Override
+    public TransactionListViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        // inflate the layout (create a new view)
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_item_transaction, viewGroup, false);
+        return new TransactionListViewHolder(v);
+    }
+
     @Override
     public void onBindViewHolder(final TransactionListViewHolder viewHolder, final int position) {
 
@@ -54,7 +51,7 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
-        // get element from your data set at this position and replace the contents of the view with that element
+        // set right arrow icon depending on transaction type
         viewHolder.transactionItemPairTextView.setCompoundDrawablePadding(5);
         if (transactions.get(position).getType().equals("buy")) {
             viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_right_green, 0, 0, 0);
@@ -62,12 +59,11 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
             viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_red, 0, 0, 0);
         }
 
-
         // get text from the data set at this position and replace it in the view
-        viewHolder.transactionItemPairTextView.setText(transactions.get(position).getCurrency1IsoCode() + "/" + transactions.get(position).getCurrency2IsoCode());
-        viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity()));
-        viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice()));
-        viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal()));
+        viewHolder.transactionItemPairTextView.setText(context.getResources().getString(R.string.transaction_pair, transactions.get(position).getCurrency1IsoCode(), transactions.get(position).getCurrency2IsoCode()));
+        viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity() != null ? transactions.get(position).getQuantity() : 0));
+        viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice().doubleValue()));
+        viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal() != null ? transactions.get(position).getTotal() : 0));
 
         // set click initializer for item row
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +73,7 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
                 // position of the clicked item
                 final int position = viewHolder.getAdapterPosition();
 
-                // store element values in the intent so we can access them later
+                // store element values in the intent so we can access them later in the other activity
                 Intent edit_trans = new Intent(v.getContext(), EditTransactionActivity.class);
                 edit_trans.putExtra("id", transactions.get(position).getId());
                 edit_trans.putExtra("type", transactions.get(position).getType());
@@ -94,7 +90,6 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         });
     }
 
-    // Return the size of your data set (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return transactions.size();

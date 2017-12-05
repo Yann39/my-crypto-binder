@@ -1,7 +1,5 @@
 package com.mycryptobinder.models;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Created by Yann
  * Created on 09/09/2017
@@ -9,7 +7,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class PoloniexAssetValue {
 
-    @SerializedName("name")
     private String name;
 
     public String getName() {

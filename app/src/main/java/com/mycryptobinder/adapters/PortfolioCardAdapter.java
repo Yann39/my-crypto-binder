@@ -27,24 +27,24 @@ import java.util.Random;
 
 public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardViewHolder> {
 
-    private List<HoldingData> hdList;
+    private List<HoldingData> holdingData;
     private Context context;
     private DecimalFormat df;
 
     public PortfolioCardAdapter(Context context, List<HoldingData> hdList) {
-        this.hdList = hdList;
+        this.holdingData = hdList;
         this.context = context;
         df = new DecimalFormat("#.##");
     }
 
-    public void addItems(List<HoldingData> holdingData) {
-        this.hdList = holdingData;
+    public void setItems(List<HoldingData> holdingData) {
+        this.holdingData = holdingData;
         notifyDataSetChanged();
     }
 
     @Override
     public PortfolioCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
+        // inflate the layout (create a new view)
         View v = LayoutInflater.from(context).inflate(R.layout.card_portfolio, parent, false);
 
         // get a random color from a predefined color array and apply it to the image view background drawable
@@ -64,21 +64,21 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
 
     @Override
     public void onBindViewHolder(final PortfolioCardViewHolder holder, int position) {
-        HoldingData hd = hdList.get(position);
+        HoldingData hd = holdingData.get(position);
 
-        Double quantity = hdList.get(position).getQuantity();
-        Double currentPrice = hdList.get(position).getCurrentPrice();
+        Double quantity = holdingData.get(position).getQuantity();
+        Double currentPrice = holdingData.get(position).getCurrentPrice();
 
         holder.portfolio_currency_iso_code_textView.setText(hd.getIsoCode());
-        holder.portfolio_holding_quantity_textView.setText(currentPrice != null ? df.format(quantity) : "0.00");
-        holder.portfolio_card_price_24h_change.setText(currentPrice != null ? df.format(8.56) : "0.00");
-        holder.portfolio_holding_total_value_textView.setText(currentPrice != null ? df.format(quantity * currentPrice) : "0.00");
+        holder.portfolio_holding_quantity_textView.setText(quantity != null ? df.format(quantity) : "0.00");
+        holder.portfolio_card_price_24h_change.setText(df.format(8.56));
+        holder.portfolio_holding_total_value_textView.setText((quantity != null && currentPrice != null) ? df.format(quantity * currentPrice) : "0.00");
         holder.portfolio_card_current_price.setText(currentPrice != null ? df.format(currentPrice) : "0.00");
     }
 
     @Override
     public int getItemCount() {
-        return hdList.size();
+        return holdingData.size();
     }
 
 }

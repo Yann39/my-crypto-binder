@@ -24,9 +24,12 @@ import java.util.List;
 
 public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCardViewHolder> {
 
-    private List<Currency> currencies;
-    private LayoutInflater layoutInflater;
+    /*private List<Currency> currencies;*/
     private CurrencyCardViewHolder.CurrencyCardListener currencyCardListener;
+
+    public CurrencyCardAdapter() {
+        super(DIFF_CALLBACK);
+    }
 
     private static final DiffCallback<Currency> DIFF_CALLBACK = new DiffCallback<Currency>() {
         @Override
@@ -42,10 +45,6 @@ public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCard
         }
     };
 
-    public CurrencyCardAdapter() {
-        super(DIFF_CALLBACK);
-    }
-
     /*public CurrencyCardAdapter(LayoutInflater layoutInflater, CurrencyCardViewHolder.CurrencyCardListener currencyCardListener) {
         this.layoutInflater = layoutInflater;
         this.currencyCardListener = currencyCardListener;
@@ -54,13 +53,9 @@ public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCard
     @Override
     public CurrencyCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View v = layoutInflater.inflate(R.layout.card_currency, parent, false);
         return new CurrencyCardViewHolder(v, currencyCardListener);
-    }
-
-    public void addItems(List<Currency> currencies) {
-        this.currencies = currencies;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -80,9 +75,9 @@ public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCard
 
     }
 
-    @Override
+    /*@Override
     public int getItemCount() {
         return currencies.size();
-    }
+    }*/
 
 }
