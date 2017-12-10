@@ -12,10 +12,14 @@ import android.widget.ImageView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.models.HoldingData;
+import com.mycryptobinder.models.Price;
 import com.mycryptobinder.viewholders.PortfolioCardViewHolder;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -30,15 +34,22 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
     private List<HoldingData> holdingData;
     private Context context;
     private DecimalFormat df;
+    private Map<String, Price> prices;
 
-    public PortfolioCardAdapter(Context context, List<HoldingData> hdList) {
+    public PortfolioCardAdapter(Context context, List<HoldingData> hdList, Map<String, Price> prices) {
         this.holdingData = hdList;
         this.context = context;
+        this.prices = prices;
         df = new DecimalFormat("#.##");
     }
 
     public void setItems(List<HoldingData> holdingData) {
         this.holdingData = holdingData;
+        notifyDataSetChanged();
+    }
+
+    public void setPrices(Map<String, Price> prices) {
+        this.prices = prices;
         notifyDataSetChanged();
     }
 
@@ -69,11 +80,20 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
         Double quantity = holdingData.get(position).getQuantity();
         Double currentPrice = holdingData.get(position).getCurrentPrice();
 
+        String eurValueStr = "0.00";
+        String eurTotalValueStr = "0.00";
+        if (prices.get(hd.getIsoCode()) != null) {
+            eurValueStr = prices.get(hd.getIsoCode()).getEur();
+            Double eurValue = Double.parseDouble(eurValueStr);
+            eurTotalValueStr = df.format(quantity * eurValue);
+        }
+
         holder.portfolio_currency_iso_code_textView.setText(hd.getIsoCode());
         holder.portfolio_holding_quantity_textView.setText(quantity != null ? df.format(quantity) : "0.00");
         holder.portfolio_card_price_24h_change.setText(df.format(8.56));
-        holder.portfolio_holding_total_value_textView.setText((quantity != null && currentPrice != null) ? df.format(quantity * currentPrice) : "0.00");
-        holder.portfolio_card_current_price.setText(currentPrice != null ? df.format(currentPrice) : "0.00");
+        holder.portfolio_holding_total_value_textView.setText(eurTotalValueStr);
+        holder.portfolio_card_current_price.setText(eurValueStr);
+
     }
 
     @Override

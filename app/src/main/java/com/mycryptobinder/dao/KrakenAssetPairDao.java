@@ -6,7 +6,6 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.mycryptobinder.entities.KrakenAsset;
 import com.mycryptobinder.entities.KrakenAssetPair;
 
 import java.util.List;
@@ -31,4 +30,6 @@ public interface KrakenAssetPairDao {
     @Delete
     void delete(KrakenAssetPair krakenAssetPair);
 
+    @Query("delete from kraken_asset_pairs")
+    void deleteAll();
 }

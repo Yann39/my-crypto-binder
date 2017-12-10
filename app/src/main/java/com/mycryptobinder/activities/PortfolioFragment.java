@@ -9,6 +9,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -17,10 +18,13 @@ import android.widget.TextView;
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.PortfolioCardAdapter;
 import com.mycryptobinder.models.HoldingData;
+import com.mycryptobinder.models.Price;
 import com.mycryptobinder.viewmodels.PortfolioViewModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Fragment responsible for displaying portfolio data
@@ -31,6 +35,7 @@ import java.util.List;
 public class PortfolioFragment extends Fragment {
 
     private PortfolioCardAdapter portfolioCardAdapter;
+    private PortfolioViewModel portfolioViewModel;
 
     public PortfolioFragment() {
     }
@@ -38,6 +43,7 @@ public class PortfolioFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -50,24 +56,18 @@ public class PortfolioFragment extends Fragment {
         portfolioRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         // initialize the adapter for the list
-        portfolioCardAdapter = new PortfolioCardAdapter(this.getContext(), new ArrayList<>());
+        portfolioCardAdapter = new PortfolioCardAdapter(this.getContext(), new ArrayList<>(), new HashMap<>());
         portfolioRecyclerView.setAdapter(portfolioCardAdapter);
-
-        // get view model
-        final PortfolioViewModel portfolioViewModel = ViewModelProviders.of(this).get(PortfolioViewModel.class);
-
-        // set total number of different currencies
-        TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
-        portfolioViewModel.getNbDifferentCurrencies().observe(PortfolioFragment.this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer nbDifferentCurrencies) {
-                nbCoinTextView.setText(String.valueOf(nbDifferentCurrencies));
-            }
-        });
 
         // add horizontal separator between rows
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(portfolioRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
         portfolioRecyclerView.addItemDecoration(mDividerItemDecoration);
+
+        // get view model
+        portfolioViewModel = ViewModelProviders.of(this).get(PortfolioViewModel.class);
+
+        // set total number of different currencies
+        TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
 
         // display a progress bar while loading holdings data
         ProgressBar progressBar = view.findViewById(R.id.progress_bar);
@@ -84,7 +84,43 @@ public class PortfolioFragment extends Fragment {
             }
         });
 
+        // observe the current prices data from the view model so it will always be up to date in the UI
+        portfolioViewModel.getCurrentPrices().observe(this, new Observer<Map<String, Price>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, Price> prices) {
+                // update data in the adapter
+                portfolioCardAdapter.setPrices(prices);
+                // hide the progress bar
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+
+        // observe the current prices data from the view model so it will always be up to date in the UI
+        portfolioViewModel.getDifferentCurrencies().observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(@Nullable List<String> differentCurrencies) {
+                nbCoinTextView.setText(String.valueOf(differentCurrencies != null ? differentCurrencies.size() : "0"));
+                // update data in the adapter
+                portfolioViewModel.setCurrencyCodes(differentCurrencies);
+                // hide the progress bar
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                portfolioViewModel.refresh();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        return true;
     }
 
 }

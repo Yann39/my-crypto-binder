@@ -96,7 +96,7 @@ public class SettingsFragment extends Fragment {
         settingsViewModel.getPercentDone().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer percent) {
-                synchronizeLogProgressBar.setProgress(percent);
+                synchronizeLogProgressBar.setProgress(percent != null ? percent : 0);
             }
         });
 
@@ -108,7 +108,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                settingsViewModel.populateDatabase();
+                settingsViewModel.populateDatabase(checkBox.isChecked());
 
             }
         });

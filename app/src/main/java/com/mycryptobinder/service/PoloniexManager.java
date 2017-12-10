@@ -213,7 +213,7 @@ public class PoloniexManager {
      */
     public int populateExchange() {
         if (appDatabase.exchangeDao().getByName("Poloniex") == null) {
-            appDatabase.exchangeDao().insert(new Exchange("Kraken", "https://www.poloniex.com", "Poloniex exchange"));
+            appDatabase.exchangeDao().insert(new Exchange("Poloniex", "https://www.poloniex.com", "Poloniex exchange"));
             return 1;
         } else {
             return 0;
@@ -295,6 +295,14 @@ public class PoloniexManager {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * delete all data
+     */
+    public void deleteAll() {
+        appDatabase.poloniexTradeDao().deleteAll();
+        appDatabase.poloniexAssetDao().deleteAll();
     }
 
 }

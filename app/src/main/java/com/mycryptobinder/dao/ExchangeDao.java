@@ -34,4 +34,7 @@ public interface ExchangeDao {
     @Delete
     void delete(Exchange exchange);
 
+    @Query("delete from exchanges;")
+    void deleteAll();
+
 }

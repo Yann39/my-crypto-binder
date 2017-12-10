@@ -312,4 +312,13 @@ public class KrakenManager {
         }
     }
 
+    /**
+     * delete all data
+     */
+    public void deleteAll() {
+        appDatabase.krakenTradeDao().deleteAll();
+        appDatabase.krakenAssetDao().deleteAll();
+        appDatabase.krakenAssetPairDao().deleteAll();
+    }
+
 }

@@ -11,6 +11,7 @@ import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.service.KrakenManager;
 import com.mycryptobinder.service.PoloniexManager;
+import com.mycryptobinder.service.PortfolioManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,8 +26,9 @@ public class SettingsViewModel extends AndroidViewModel {
 
     private static MutableLiveData<String> logs;
     private static MutableLiveData<Integer> percentDone;
-    private static KrakenManager km;
-    private static PoloniexManager pm;
+    private static KrakenManager krakenManager;
+    private static PoloniexManager poloniexManager;
+    private static PortfolioManager portfolioManager;
     private final SimpleDateFormat sdfLog;
     private final AppDatabase appDatabase;
 
@@ -35,10 +37,11 @@ public class SettingsViewModel extends AndroidViewModel {
         appDatabase = AppDatabase.getDatabase(this.getApplication());
         logs = new MutableLiveData<>();
         percentDone = new MutableLiveData<>();
-        km = new KrakenManager(getApplication().getBaseContext());
-        pm = new PoloniexManager(getApplication().getBaseContext());
+        krakenManager = new KrakenManager(getApplication().getBaseContext());
+        poloniexManager = new PoloniexManager(getApplication().getBaseContext());
+        portfolioManager = new PortfolioManager(getApplication().getBaseContext());
         UtilsHelper uh = new UtilsHelper(getApplication().getBaseContext());
-        sdfLog = new SimpleDateFormat("k:m:ss", uh.getCurrentLocale());
+        sdfLog = new SimpleDateFormat("k:mm:ss", uh.getCurrentLocale());
     }
 
     public MutableLiveData<String> getCurrentLogs() {
@@ -53,19 +56,17 @@ public class SettingsViewModel extends AndroidViewModel {
         return appDatabase.transactionDao().getHoldings();
     }
 
-    public LiveData<Integer> getNbDifferentCurrencies() {
-        return appDatabase.transactionDao().getNbDifferentCurrencies();
-    }
-
-    public void populateDatabase() {
-        new populateDatabaseAsyncTask(sdfLog).execute();
+    public void populateDatabase(boolean reset) {
+        new populateDatabaseAsyncTask(reset, sdfLog).execute();
     }
 
     private static class populateDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
         private SimpleDateFormat sdfLog;
+        private boolean reset;
 
-        populateDatabaseAsyncTask(SimpleDateFormat sdfLog) {
+        populateDatabaseAsyncTask(boolean reset, SimpleDateFormat sdfLog) {
             this.sdfLog = sdfLog;
+            this.reset = reset;
         }
 
         private void logInfo(String message) {
@@ -77,15 +78,24 @@ public class SettingsViewModel extends AndroidViewModel {
 
             percentDone.postValue(2);
 
+            if (reset) {
+                logInfo("Deleting data...");
+                krakenManager.deleteAll();
+                poloniexManager.deleteAll();
+                portfolioManager.deleteAll();
+                logInfo("All data has been cleared");
+            }
+            percentDone.postValue(10);
+
             // insert Kraken trade history from API
             logInfo("Collecting trade history from Kraken API...");
-            int nbIns = km.populateTradeHistory();
+            int nbIns = krakenManager.populateTradeHistory();
             logInfo(nbIns + " new trades inserted");
             percentDone.postValue(30);
 
             //insert Kraken exchange
             logInfo("Creating Kraken exchange...");
-            nbIns = km.populateExchange();
+            nbIns = krakenManager.populateExchange();
             if (nbIns > 0) {
                 logInfo("Kraken exchange created successfully");
             } else {
@@ -95,37 +105,37 @@ public class SettingsViewModel extends AndroidViewModel {
 
             // insert Kraken asset pairs from API
             logInfo("Collecting asset pairs from Kraken API...");
-            nbIns = km.populateAssetPairs();
+            nbIns = krakenManager.populateAssetPairs();
             logInfo(nbIns + " new asset pairs inserted");
             percentDone.postValue(37);
 
             // insert Kraken assets from API
             logInfo("Collecting assets from Kraken API...");
-            nbIns = km.populateAssets();
+            nbIns = krakenManager.populateAssets();
             logInfo(nbIns + " new assets inserted");
             percentDone.postValue(42);
 
             // insert Kraken currencies from assets
             logInfo("Inserting currencies from Kraken assets...");
-            nbIns = km.populateCurrencies();
+            nbIns = krakenManager.populateCurrencies();
             logInfo(nbIns + " currencies inserted");
             percentDone.postValue(47);
 
             // insert Kraken transactions from trade history
             logInfo("Inserting transactions from Kraken trade history...");
-            nbIns = km.populateTransactions();
+            nbIns = krakenManager.populateTransactions();
             logInfo(nbIns + " transactions inserted");
             percentDone.postValue(52);
 
             // insert Poloniex trade history from API
             logInfo("Collecting trade history from Poloniex API...");
-            nbIns = pm.populateTradeHistory();
+            nbIns = poloniexManager.populateTradeHistory();
             logInfo(nbIns + " new trades inserted");
             percentDone.postValue(82);
 
             // insert Poloniex exchange
             logInfo("Creating Poloniex exchange...");
-            nbIns = pm.populateExchange();
+            nbIns = poloniexManager.populateExchange();
             if (nbIns > 0) {
                 logInfo("Poloniex exchange created successfully");
             } else {
@@ -135,19 +145,19 @@ public class SettingsViewModel extends AndroidViewModel {
 
             // insert Poloniex assets from API
             logInfo("Inserting currencies from Poloniex assets...");
-            nbIns = pm.populateAssets();
+            nbIns = poloniexManager.populateAssets();
             logInfo(nbIns + " currencies inserted");
             percentDone.postValue(89);
 
             // insert Poloniex currencies from assets
             logInfo("Inserting currencies from Poloniex assets...");
-            nbIns = pm.populateCurrencies();
+            nbIns = poloniexManager.populateCurrencies();
             logInfo(nbIns + " currencies inserted");
             percentDone.postValue(94);
 
             // insert Poloniex transactions from trade history
             logInfo("Inserting transactions from Poloniex trade history...");
-            nbIns = pm.populateTransactions();
+            nbIns = poloniexManager.populateTransactions();
             logInfo(nbIns + " transactions inserted");
             percentDone.postValue(100);
 

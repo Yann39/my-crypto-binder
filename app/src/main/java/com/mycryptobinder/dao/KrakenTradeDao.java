@@ -30,4 +30,7 @@ public interface KrakenTradeDao {
     @Delete
     void delete(KrakenTrade krakenTrade);
 
+    @Query("delete from kraken_trades")
+    void deleteAll();
+
 }

@@ -57,4 +57,7 @@ public interface CurrencyDao {
     @Delete
     void delete(Currency currency);
 
+    @Query("delete from currencies;")
+    void deleteAll();
+
 }

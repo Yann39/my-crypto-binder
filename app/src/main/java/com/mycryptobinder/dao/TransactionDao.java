@@ -7,6 +7,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Transaction;
 import com.mycryptobinder.models.HoldingData;
 
@@ -23,9 +24,9 @@ public interface TransactionDao {
     @Query("select * from transactions")
     LiveData<List<Transaction>> getAll();
 
-    @Query("select count(1) from (select distinct currency1_iso_code from transactions " +
-            "union all select distinct currency2_iso_code from transactions) t")
-    LiveData<Integer> getNbDifferentCurrencies();
+    @Query("select currency1_iso_code from transactions union select currency2_iso_code " +
+            "from transactions")
+    LiveData<List<String>> getDifferentCurrencies();
 
     @Query("select null as id, 'Kraken' as exchange_name, kt.order_tx_id as transaction_id, " +
             "ka1.alt_name as currency1_iso_code, ka2.alt_name as currency2_iso_code, kt.fee, " +
@@ -63,10 +64,23 @@ public interface TransactionDao {
             ") as T ")
     Double getCurrencyQuantity(String currencyCode);
 
-    @Query("select c.iso_code as isoCode, c.name, c.symbol, 1.0 as quantity, 2.0 as currentPrice, 3.0 as currentValue " +
+    @Query("select iso_code as isoCode, name, symbol, " +
+            "(select sum(total) from ( " +
+            "select sum(quantity * case when type = 'buy' then 1 else -1 end) as Total " +
+            "from transactions where currency1_iso_code = c.iso_code " +
+            "union all " +
+            "select sum(total * case when type = 'buy' then -1 else 1 end) as Total " +
+            "from transactions where currency2_iso_code = c.iso_code " +
+            ") as T) as quantity, " +
+            "(select sum(total) from ( " +
+            "select total * case when type = 'buy' then 1 else -1 end as Total " +
+            "from transactions where currency1_iso_code = c.iso_code " +
+            "union all " +
+            "select total * case when type = 'buy' then -1 else 1 end as Total " +
+            "from transactions where currency2_iso_code = c.iso_code " +
+            ") as T) as currentPrice, 0 as currentValue " +
             "from currencies c " +
-            "inner join transactions t1 on c.iso_code = t1.currency1_iso_code " +
-            "inner join transactions t2 on c.iso_code = t2.currency2_iso_code ")
+            "where quantity is not null")
     LiveData<List<HoldingData>> getHoldings();
 
     @Insert
@@ -77,5 +91,8 @@ public interface TransactionDao {
 
     @Delete
     void delete(Transaction transaction);
+
+    @Query("delete from transactions")
+    void deleteAll();
 
 }

@@ -30,4 +30,7 @@ public interface PoloniexAssetDao {
     @Delete
     void delete(PoloniexAsset poloniexAsset);
 
+    @Query("delete from poloniex_assets")
+    void deleteAll();
+
 }
