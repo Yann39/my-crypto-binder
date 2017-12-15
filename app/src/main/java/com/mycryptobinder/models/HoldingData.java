@@ -11,8 +11,6 @@ public class HoldingData {
     private String name;
     private String symbol;
     private Double quantity;
-    private Double currentPrice;
-    private Double currentValue;
 
     public String getIsoCode() {
         return isoCode;
@@ -44,21 +42,5 @@ public class HoldingData {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
-    }
-
-    public Double getCurrentPrice() {
-        return currentPrice;
-    }
-
-    public void setCurrentPrice(Double currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-    public Double getCurrentValue() {
-        return currentValue;
-    }
-
-    public void setCurrentValue(Double currentValue) {
-        this.currentValue = currentValue;
     }
 }

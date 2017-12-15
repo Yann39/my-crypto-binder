@@ -1,35 +1,29 @@
 package com.mycryptobinder.activities;
 
 import android.app.DatePickerDialog;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.CurrencyAutoCompleteAdapter;
-import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Ico;
 import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.viewmodels.AddIcoViewModel;
 import com.mycryptobinder.viewmodels.CurrencyListViewModel;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Activity responsible for new ICO creation
@@ -66,63 +60,46 @@ public class AddIcoActivity extends AppCompatActivity {
         CurrencyListViewModel currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
 
         // initialize currencies spinner adapter
-        currencyAutoCompleteAdapter1 = new CurrencyAutoCompleteAdapter(new ArrayList<Currency>(), addIcoCurrencySpinner.getContext(), android.R.layout.simple_dropdown_item_1line);
+        currencyAutoCompleteAdapter1 = new CurrencyAutoCompleteAdapter(new ArrayList<>(), addIcoCurrencySpinner.getContext(), android.R.layout.simple_dropdown_item_1line);
         currencyAutoCompleteAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_item);
         addIcoCurrencySpinner.setAdapter(currencyAutoCompleteAdapter1);
 
-        // observe the currency list from the view model so the currency spinner will always be up to date
-        currencyListViewModel.getCurrencyList().observe(AddIcoActivity.this, new Observer<List<Currency>>() {
-            @Override
-            public void onChanged(@Nullable List<Currency> currencies) {
-                currencyAutoCompleteAdapter1.addItems(currencies);
-            }
-        });
+        // observe the currency list from the view model so the currency spinner is always up to date
+        currencyListViewModel.getCurrencyList().observe(AddIcoActivity.this, currencies -> currencyAutoCompleteAdapter1.addItems(currencies));
 
         // set date format that will be used for date pickers
         UtilsHelper uh = new UtilsHelper(getApplicationContext());
         sdf = new SimpleDateFormat("dd/MM/yyyy", uh.getCurrentLocale());
 
         // set focus listener to display a date picker on ICO date field focus
-        addIcoDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    // get current date to initialize the date picker
-                    Calendar c = Calendar.getInstance();
+        addIcoDateEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // get current date to initialize the date picker
+                Calendar c = Calendar.getInstance();
 
-                    // open the date picker
-                    new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            // format the date and display it in the related text box
-                            Calendar c = Calendar.getInstance();
-                            c.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
-                            addIcoDateEditText.setText(sdf.format(c.getTime()));
-                        }
-                    }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
-                }
+                // open the date picker
+                new DatePickerDialog(v.getContext(), (view, year, monthOfYear, dayOfMonth) -> {
+                    // format the date and display it in the related text box
+                    Calendar c1 = Calendar.getInstance();
+                    c1.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
+                    addIcoDateEditText.setText(sdf.format(c1.getTime()));
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
         // set focus listener to display a date picker on token date field focus
-        addIcoTokenDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    // get current date to initialize the date picker
-                    Calendar c = Calendar.getInstance();
+        addIcoTokenDateEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // get current date to initialize the date picker
+                Calendar c = Calendar.getInstance();
 
-                    // open the date picker
-                    new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            // format the date and display it in the related text box
-                            Calendar c = Calendar.getInstance();
-                            c.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
-                            addIcoTokenDateEditText.setText(sdf.format(c.getTime()));
-                        }
-                    }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
-                }
+                // open the date picker
+                new DatePickerDialog(v.getContext(), (view, year, monthOfYear, dayOfMonth) -> {
+                    // format the date and display it in the related text box
+                    Calendar c12 = Calendar.getInstance();
+                    c12.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
+                    addIcoTokenDateEditText.setText(sdf.format(c12.getTime()));
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 

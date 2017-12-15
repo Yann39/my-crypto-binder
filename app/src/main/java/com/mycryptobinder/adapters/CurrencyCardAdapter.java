@@ -24,11 +24,11 @@ import java.util.List;
 
 public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCardViewHolder> {
 
-    /*private List<Currency> currencies;*/
-    private CurrencyCardViewHolder.CurrencyCardListener currencyCardListener;
+    private View.OnClickListener clickListener;
 
-    public CurrencyCardAdapter() {
+    public CurrencyCardAdapter(View.OnClickListener clickListener) {
         super(DIFF_CALLBACK);
+        this.clickListener = clickListener;
     }
 
     private static final DiffCallback<Currency> DIFF_CALLBACK = new DiffCallback<Currency>() {
@@ -45,39 +45,22 @@ public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCard
         }
     };
 
-    /*public CurrencyCardAdapter(LayoutInflater layoutInflater, CurrencyCardViewHolder.CurrencyCardListener currencyCardListener) {
-        this.layoutInflater = layoutInflater;
-        this.currencyCardListener = currencyCardListener;
-    }*/
-
     @Override
     public CurrencyCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View v = layoutInflater.inflate(R.layout.card_currency, parent, false);
-        return new CurrencyCardViewHolder(v, currencyCardListener);
+        return new CurrencyCardViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(CurrencyCardViewHolder holder, int position) {
 
-        // get text from the data set at this position and replace it in the view
-        //holder.setItem(currencies.get(position));
-
         Currency currency = getItem(position);
         if (currency != null) {
             holder.setItem(currency);
-        } else {
-            // Null defines a placeholder item - PagedListAdapter will automatically invalidate
-            // this row when the actual object is loaded from the database
-            //holder.clear();
+            holder.currency_delete_imageButton.setOnClickListener(clickListener);
         }
 
     }
-
-    /*@Override
-    public int getItemCount() {
-        return currencies.size();
-    }*/
-
 }

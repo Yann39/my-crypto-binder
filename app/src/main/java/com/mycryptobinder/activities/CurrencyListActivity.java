@@ -26,7 +26,7 @@ import com.mycryptobinder.viewmodels.CurrencyListViewModel;
  * Created by Yann on 24/05/2017
  */
 
-public class CurrencyListActivity extends AppCompatActivity implements CurrencyCardViewHolder.CurrencyCardListener {
+public class CurrencyListActivity extends AppCompatActivity implements View.OnClickListener {
 
     private CurrencyCardAdapter currencyCardAdapter;
     private CurrencyListViewModel currencyListViewModel;
@@ -47,29 +47,20 @@ public class CurrencyListActivity extends AppCompatActivity implements CurrencyC
         currencyListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // initialize the adapter for the list
-        currencyCardAdapter = new CurrencyCardAdapter(/*getLayoutInflater(),this*/);
+        currencyCardAdapter = new CurrencyCardAdapter(this);
         currencyListRecyclerView.setAdapter(currencyCardAdapter);
 
         // get view model
         currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
 
-        // observe the currency list from the view model so it will always be up to date
-        /*currencyListViewModel.getCurrencyList().observe(CurrencyListActivity.this, new Observer<List<Currency>>() {
-            @Override
-            public void onChanged(@Nullable List<Currency> currencies) {
-                currencyCardAdapter.addItems(currencies);
-            }
-        });*/
+        // observe the currency list from the view model so it is always up to date
         currencyListViewModel.getPagedCurrencyList().observe(this, pagedList -> currencyCardAdapter.setList(pagedList));
 
         // set click listener for the add currency button
         FloatingActionButton button = findViewById(R.id.btn_add_currency);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), AddCurrencyActivity.class);
-                startActivity(intent);
-            }
+        button.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), AddCurrencyActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -87,17 +78,12 @@ public class CurrencyListActivity extends AppCompatActivity implements CurrencyC
     }
 
     @Override
-    public void onDeleteButtonClicked(Currency currency) {
+    public void onClick(View view) {
+        Currency currency = (Currency) view.getTag();
         // show a confirm dialog
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle(getResources().getString(R.string.lbl_confirmation));
-
-        // because Html.fromHtml is deprecated in last Android versions
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            alert.setMessage(Html.fromHtml(getResources().getString(R.string.dialog_delete_currency_message, " <b>" + currency.getName() + "</b>"), Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            alert.setMessage(Html.fromHtml(getResources().getString(R.string.dialog_delete_currency_message, " <b>" + currency.getName() + "</b>")));
-        }
+        alert.setMessage(Html.fromHtml(getResources().getString(R.string.dialog_delete_currency_message, " <b>" + currency.getName() + "</b>")));
 
         Context context = this;
 

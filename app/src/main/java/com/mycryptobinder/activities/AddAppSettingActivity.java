@@ -44,29 +44,25 @@ public class AddAppSettingActivity extends AppCompatActivity {
         addAppSettingsViewModel = ViewModelProviders.of(this).get(AddAppSettingsViewModel.class);
 
         // set click listener for the create app setting button
-        createAppSettingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        createAppSettingButton.setOnClickListener(view -> {
+            // get field values
+            String settingName = appSettingNameEditText.getText().toString();
+            String settingValue = appSettingValueEditText.getText().toString();
 
-                // get field values
-                String settingName = appSettingNameEditText.getText().toString();
-                String settingValue = appSettingValueEditText.getText().toString();
+            // check mandatory fields
+            if (settingName.trim().equals("")) {
+                appSettingNameEditText.setError("Setting name is required!");
+            } else if (settingValue.trim().equals("")) {
+                appSettingValueEditText.setError("Setting value is required!");
+            } else {
+                // add record to the view model who will trigger the insert
+                addAppSettingsViewModel.addAppSetting(new AppSetting(settingName, settingValue));
 
-                // check mandatory fields
-                if (settingName.trim().equals("")) {
-                    appSettingNameEditText.setError("Setting name is required!");
-                } else if (settingValue.trim().equals("")) {
-                    appSettingValueEditText.setError("Setting value is required!");
-                } else {
-                    // add record to the view model who will trigger the insert
-                    addAppSettingsViewModel.addAppSetting(new AppSetting(settingName, settingValue));
+                // close current activity and return to previous activity if there is any
+                finish();
 
-                    // close current activity and return to previous activity if there is any
-                    finish();
-
-                    // show a notification about the created item
-                    Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_app_setting_created, settingName), Toast.LENGTH_SHORT).show();
-                }
+                // show a notification about the created item
+                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_app_setting_created, settingName), Toast.LENGTH_SHORT).show();
             }
         });
     }

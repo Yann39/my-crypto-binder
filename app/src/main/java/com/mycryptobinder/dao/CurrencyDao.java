@@ -27,15 +27,6 @@ public interface CurrencyDao {
     @Query("select * from currencies")
     LivePagedListProvider<Integer, Currency> getAllPaged();
 
-    @Query("select * from currencies where iso_code = :isoCode")
-    Currency getByIsoCode(String isoCode);
-
-    @Query("select c.* " +
-            "from currencies c " +
-            "inner join transactions t1 on c.iso_code = t1.currency1_iso_code " +
-            "inner join transactions t2 on c.iso_code = t2.currency2_iso_code ")
-    LiveData<List<Currency>> getUsed();
-
     @Query("select pa.asset_code as iso_code, pa.asset_name as name, null as symbol " +
             "from poloniex_assets pa " +
             "left join currencies c on c.iso_code = pa.asset_code " +

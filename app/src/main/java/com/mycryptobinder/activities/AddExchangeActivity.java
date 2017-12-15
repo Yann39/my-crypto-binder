@@ -52,28 +52,24 @@ public class AddExchangeActivity extends AppCompatActivity {
         addExchangeViewModel = ViewModelProviders.of(this).get(AddExchangeViewModel.class);
 
         // set click listener for the create exchange button
-        createExchangeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        createExchangeButton.setOnClickListener(view -> {
+            // get field values
+            String name = exchangeNameEditText.getText().toString();
+            String link = exchangeLinkEditText.getText().toString();
+            String description = exchangeDescriptionEditText.getText().toString();
 
-                // get field values
-                String name = exchangeNameEditText.getText().toString();
-                String link = exchangeLinkEditText.getText().toString();
-                String description = exchangeDescriptionEditText.getText().toString();
+            // check mandatory fields
+            if (name.trim().equals("")) {
+                exchangeNameEditText.setError("Exchange name is required!");
+            } else {
+                // add record to the view model who will trigger the insert
+                addExchangeViewModel.addExchange(new Exchange(name, link, description));
 
-                // check mandatory fields
-                if (name.trim().equals("")) {
-                    exchangeNameEditText.setError("Exchange name is required!");
-                } else {
-                    // add record to the view model who will trigger the insert
-                    addExchangeViewModel.addExchange(new Exchange(name, link, description));
+                // close current activity and return to previous activity if there is any
+                finish();
 
-                    // close current activity and return to previous activity if there is any
-                    finish();
-
-                    // show a notification about the created item
-                    Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_exchange_created, name), Toast.LENGTH_SHORT).show();
-                }
+                // show a notification about the created item
+                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_exchange_created, name), Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -24,10 +24,11 @@ public class CurrencyCardViewHolder extends RecyclerView.ViewHolder implements V
 
     public TextView currency_name_textView;
     public TextView currency_iso_code_textView;
+    public ImageView currency_delete_imageButton;
     public TextView currency_symbol_textView;
     public List<Currency> currencies;
     private Currency currency;
-    private CurrencyCardListener currencyCardListener;
+    //private CurrencyCardListener currencyCardListener;
 
     public interface CurrencyCardListener {
         void onDeleteButtonClicked(Currency item);
@@ -40,23 +41,23 @@ public class CurrencyCardViewHolder extends RecyclerView.ViewHolder implements V
         currency_symbol_textView.setText(currency.getSymbol());
     }
 
-    public CurrencyCardViewHolder(View view, final CurrencyCardListener currencyCardListener) {
+    public CurrencyCardViewHolder(View view/*, final CurrencyCardListener currencyCardListener*/) {
         super(view);
-        this.currencyCardListener = currencyCardListener;
+        //this.currencyCardListener = currencyCardListener;
         view.setOnClickListener(this);
 
         currency_name_textView = view.findViewById(R.id.currency_card_currency_name);
         currency_iso_code_textView = view.findViewById(R.id.currency_card_currency_iso_code);
         currency_symbol_textView = view.findViewById(R.id.currency_card_currency_symbol);
-        ImageView currency_delete_imageButton = view.findViewById(R.id.currency_card_btn_delete);
+        currency_delete_imageButton = view.findViewById(R.id.currency_card_btn_delete);
 
         // delete button click
-        currency_delete_imageButton.setOnClickListener(new View.OnClickListener() {
+        /*currency_delete_imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 currencyCardListener.onDeleteButtonClicked(currency);
             }
-        });
+        });*/
     }
 
     @Override

@@ -13,12 +13,6 @@
         android:background="@color/colorDark80"
         android:padding="5dp">
 
-        <TextView
-            android:id="@+id/portfolio_card_currency_id"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="invisible" />
-
         <ImageView
             android:id="@+id/portfolio_card_currency_logo"
             android:layout_width="wrap_content"
