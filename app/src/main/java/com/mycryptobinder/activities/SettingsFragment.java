@@ -1,15 +1,12 @@
 package com.mycryptobinder.activities;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -58,60 +55,40 @@ public class SettingsFragment extends Fragment {
         listView.setAdapter(adapter);
 
         // set click listener for list view items
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
 
-                // currencies item click
-                if (position == 0) {
-                    Intent intent = new Intent(getActivity(), CurrencyListActivity.class);
-                    startActivity(intent);
-                }
+            // currencies item click
+            if (position == 0) {
+                Intent intent = new Intent(getActivity(), CurrencyListActivity.class);
+                startActivity(intent);
+            }
 
-                // exchanges item click
-                else if (position == 1) {
-                    Intent intent = new Intent(getActivity(), ExchangeListActivity.class);
-                    startActivity(intent);
-                }
+            // exchanges item click
+            else if (position == 1) {
+                Intent intent = new Intent(getActivity(), ExchangeListActivity.class);
+                startActivity(intent);
+            }
 
-                // exchanges item click
-                else if (position == 2) {
-                    Intent intent = new Intent(getActivity(), AppSettingListActivity.class);
-                    startActivity(intent);
-                }
+            // app settings item click
+            else if (position == 2) {
+                Intent intent = new Intent(getActivity(), AppSettingListActivity.class);
+                startActivity(intent);
             }
         });
 
         final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
 
         TextView synchronizeLogEditText = view.findViewById(R.id.synchronize_log_editText);
-        settingsViewModel.getCurrentLogs().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                synchronizeLogEditText.setText(s);
-            }
-        });
+        settingsViewModel.getCurrentLogs().observe(this, s -> synchronizeLogEditText.setText(s));
 
         ProgressBar synchronizeLogProgressBar = view.findViewById(R.id.synchronize_log_progressBar);
-        settingsViewModel.getPercentDone().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer percent) {
-                synchronizeLogProgressBar.setProgress(percent != null ? percent : 0);
-            }
-        });
+        settingsViewModel.getPercentDone().observe(this, percent -> synchronizeLogProgressBar.setProgress(percent != null ? percent : 0));
 
         Button synchronizeButton = view.findViewById(R.id.btn_synchronize);
         checkBox = view.findViewById(R.id.checkbox_clean_synchronize);
 
         // set click listener for the synchronize button
-        synchronizeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                settingsViewModel.populateDatabase(checkBox.isChecked());
-
-            }
-        });
+        synchronizeButton.setOnClickListener(view12 -> settingsViewModel.populateDatabase(checkBox.isChecked()));
 
         return view;
     }

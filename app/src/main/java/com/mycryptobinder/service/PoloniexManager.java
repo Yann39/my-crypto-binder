@@ -109,7 +109,8 @@ public class PoloniexManager {
 
         String start = String.valueOf(startTime);
         String nonce = String.valueOf(System.currentTimeMillis());
-        String parameters = "currencyPair=all&command=returnTradeHistory&start=" + start + "&limit=10000&nonce=" + nonce;
+        //String parameters = "currencyPair=all&command=returnTradeHistory&start=" + start + "&limit=10000&nonce=" + nonce;
+        String parameters = "currencyPair=all&start=" + start + "&limit=10000&nonce=" + nonce + "&command=returnTradeHistory";
         String sign = calculatePoloniexSignature(parameters);
 
         Map<String, String> headerMap = new HashMap<>();

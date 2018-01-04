@@ -1,24 +1,19 @@
 package com.mycryptobinder.activities;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.ExchangeCardAdapter;
-import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.viewmodels.ExchangeListViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Activity responsible for displaying the list of exchanges
@@ -47,28 +42,20 @@ public class ExchangeListActivity extends AppCompatActivity {
         exchangeListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // initialize the adapter for the list
-        exchangeCardAdapter = new ExchangeCardAdapter(new ArrayList<Exchange>(), this);
+        exchangeCardAdapter = new ExchangeCardAdapter(new ArrayList<>(), this);
         exchangeListRecyclerView.setAdapter(exchangeCardAdapter);
 
         // get view model
         ExchangeListViewModel exchangeListViewModel = ViewModelProviders.of(this).get(ExchangeListViewModel.class);
 
         // observe the application settings list from the view model so it will always be up to date
-        exchangeListViewModel.getExchangeList().observe(ExchangeListActivity.this, new Observer<List<Exchange>>() {
-            @Override
-            public void onChanged(@Nullable List<Exchange> exchanges) {
-                exchangeCardAdapter.addItems(exchanges);
-            }
-        });
+        exchangeListViewModel.getExchangeList().observe(ExchangeListActivity.this, exchanges -> exchangeCardAdapter.addItems(exchanges));
 
         // set click listener for the add exchange button
         FloatingActionButton button = findViewById(R.id.btn_add_exchange);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent add_exc = new Intent(view.getContext(), AddExchangeActivity.class);
-                startActivity(add_exc);
-            }
+        button.setOnClickListener(view -> {
+            Intent add_exc = new Intent(view.getContext(), AddExchangeActivity.class);
+            startActivity(add_exc);
         });
     }
 

@@ -62,31 +62,27 @@ public class EditCurrencyActivity extends AppCompatActivity {
         addCurrencyViewModel = ViewModelProviders.of(this).get(AddCurrencyViewModel.class);
 
         // set click listener for the update currency button
-        editCurrencyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // get field values
-                String isoCode = currencyIsoCodeEditText.getText().toString();
-                String name = currencyNameEditText.getText().toString();
-                String symbol = currencySymbolEditText.getText().toString();
+        editCurrencyButton.setOnClickListener(view -> {
+            // get field values
+            String isoCode1 = currencyIsoCodeEditText.getText().toString();
+            String name1 = currencyNameEditText.getText().toString();
+            String symbol1 = currencySymbolEditText.getText().toString();
 
-                // check mandatory fields
-                if (name.trim().equals("")) {
-                    currencyNameEditText.setError("Currency name is required!");
-                } else if (isoCode.trim().equals("")) {
-                    currencyIsoCodeEditText.setError("ISO code is required!");
-                } else {
-                    // add record to the view model who will trigger the insert
-                    addCurrencyViewModel.updateCurrency(new Currency(isoCode, name, symbol));
+            // check mandatory fields
+            if (name1.trim().equals("")) {
+                currencyNameEditText.setError("Currency name is required!");
+            } else if (isoCode1.trim().equals("")) {
+                currencyIsoCodeEditText.setError("ISO code is required!");
+            } else {
+                // add record to the view model who will trigger the insert
+                addCurrencyViewModel.updateCurrency(new Currency(isoCode1, name1, symbol1));
 
-                    // close current activity and return to previous activity if there is any
-                    finish();
+                // close current activity and return to previous activity if there is any
+                finish();
 
-                    // show a notification about the created item
-                    Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_currency_updated, name), Toast.LENGTH_SHORT).show();
-                }
+                // show a notification about the created item
+                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_currency_updated, name1), Toast.LENGTH_SHORT).show();
             }
-
         });
     }
 

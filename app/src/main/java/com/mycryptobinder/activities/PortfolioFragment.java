@@ -1,9 +1,7 @@
 package com.mycryptobinder.activities;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,14 +15,10 @@ import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.PortfolioCardAdapter;
-import com.mycryptobinder.models.HoldingData;
-import com.mycryptobinder.models.Price;
 import com.mycryptobinder.viewmodels.PortfolioViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Fragment responsible for displaying portfolio data
@@ -74,37 +68,28 @@ public class PortfolioFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
 
         // observe the holding data from the view model so it will always be up to date in the UI
-        portfolioViewModel.getHoldings().observe(PortfolioFragment.this, new Observer<List<HoldingData>>() {
-            @Override
-            public void onChanged(@Nullable List<HoldingData> holdingDataList) {
-                // update data in the adapter
-                portfolioCardAdapter.setItems(holdingDataList);
-                // hide the progress bar
-                progressBar.setVisibility(View.GONE);
-            }
+        portfolioViewModel.getHoldings().observe(PortfolioFragment.this, holdingDataList -> {
+            // update data in the adapter
+            portfolioCardAdapter.setItems(holdingDataList);
+            // hide the progress bar
+            progressBar.setVisibility(View.GONE);
         });
 
         // observe the current prices data from the view model so it will always be up to date in the UI
-        portfolioViewModel.getCurrentPrices().observe(this, new Observer<Map<String, Price>>() {
-            @Override
-            public void onChanged(@Nullable Map<String, Price> prices) {
-                // update data in the adapter
-                portfolioCardAdapter.setPrices(prices);
-                // hide the progress bar
-                progressBar.setVisibility(View.GONE);
-            }
+        portfolioViewModel.getCurrentPrices().observe(this, prices -> {
+            // update data in the adapter
+            portfolioCardAdapter.setPrices(prices);
+            // hide the progress bar
+            progressBar.setVisibility(View.GONE);
         });
 
         // observe the current prices data from the view model so it will always be up to date in the UI
-        portfolioViewModel.getDifferentCurrencies().observe(this, new Observer<List<String>>() {
-            @Override
-            public void onChanged(@Nullable List<String> differentCurrencies) {
-                nbCoinTextView.setText(String.valueOf(differentCurrencies != null ? differentCurrencies.size() : "0"));
-                // update data in the adapter
-                portfolioViewModel.setCurrencyCodes(differentCurrencies);
-                // hide the progress bar
-                progressBar.setVisibility(View.GONE);
-            }
+        portfolioViewModel.getDifferentCurrencies().observe(this, differentCurrencies -> {
+            nbCoinTextView.setText(String.valueOf(differentCurrencies != null ? differentCurrencies.size() : "0"));
+            // update data in the adapter
+            portfolioViewModel.setCurrencyCodes(differentCurrencies);
+            // hide the progress bar
+            progressBar.setVisibility(View.GONE);
         });
 
         return view;
@@ -112,7 +97,7 @@ public class PortfolioFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_refresh:
                 portfolioViewModel.refresh();
                 break;

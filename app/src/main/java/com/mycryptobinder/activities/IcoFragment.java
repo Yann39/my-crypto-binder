@@ -41,12 +41,9 @@ public class IcoFragment extends Fragment {
 
         // set click listener for the add ico button
         Button button = view.findViewById(R.id.btn_add_ico);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent add_ico = new Intent(view.getContext(), AddIcoActivity.class);
-                startActivity(add_ico);
-            }
+        button.setOnClickListener(view1 -> {
+            Intent add_ico = new Intent(view1.getContext(), AddIcoActivity.class);
+            startActivity(add_ico);
         });
 
         return view;
