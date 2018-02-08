@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2018 by Yann39.
+ *
+ * This file is part of MyCryptoBinder.
+ *
+ * MyCryptoBinder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MyCryptoBinder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.mycryptobinder.dao;
 
 import android.arch.lifecycle.LiveData;
@@ -12,11 +31,6 @@ import com.mycryptobinder.entities.Transaction;
 import com.mycryptobinder.models.HoldingData;
 
 import java.util.List;
-
-/**
- * Created by Yann
- * Created on 06/11/2017
- */
 
 @Dao
 public interface TransactionDao {
@@ -43,7 +57,13 @@ public interface TransactionDao {
             "replace(pt.pair, ltrim(pt.pair, replace(pt.pair, '_', '' )), '') as currency2_iso_code, " +
             "pt.fee, pt.date, pt.type, pt.amount as quantity, pt.rate as price, pt.total, " +
             "null as sum_currency1, null as sum_currency2, null as comment " +
-            "from poloniex_trades pt ")
+            "from poloniex_trades pt " +
+            "union all " +
+            "select null as id, 'Poloniex' as exchange_name, pd.tx_id as transaction_id, " +
+            "pd.currency as currency1_iso_code, null as currency2_iso_code, " +
+            "null as fee, pd.timestamp as date, 'deposit' as type, pd.amount as quantity, null as price, null as total, " +
+            "null as sum_currency1, null as sum_currency2, null as comment " +
+            "from poloniex_deposits pd ")
     List<Transaction> getPoloniexTransactions();
 
     @Query("select sum(total) from ( " +

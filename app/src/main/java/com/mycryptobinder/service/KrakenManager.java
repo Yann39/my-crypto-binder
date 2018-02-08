@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2018 by Yann39.
+ *
+ * This file is part of MyCryptoBinder.
+ *
+ * MyCryptoBinder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MyCryptoBinder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.mycryptobinder.service;
 
 import android.content.Context;
@@ -32,11 +51,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import retrofit2.Call;
-
-/**
- * Created by Yann
- * Created on 04/12/2017
- */
 
 public class KrakenManager {
 
@@ -107,7 +121,8 @@ public class KrakenManager {
 
         String start = String.valueOf(startTime);
         String nonce = String.valueOf(System.currentTimeMillis());
-        String parameters = "start=" + start + "&ofs=" + offset + "&nonce=" + nonce;
+        //use alphabetical order as it must be in the same order as POST body parameters
+        String parameters = "nonce=" + nonce + "&ofs=" + offset + "&start=" + start;
         String sign = calculateKrakenSignature(path, nonce, parameters);
 
         Map<String, String> headerMap = new HashMap<>();
@@ -128,7 +143,7 @@ public class KrakenManager {
         }
 
         // if it returned something without error
-        if (krakenTrades != null && krakenTrades.getError().size() < 1) {
+        if (krakenTrades != null && krakenTrades.getError().size() < 1 && krakenTrades.getResult() != null && krakenTrades.getResult().getTrades().size() > 0) {
 
             //get any existing asset
             List<String> trades = appDatabase.krakenTradeDao().getTradeIds();
@@ -150,6 +165,12 @@ public class KrakenManager {
                     Double vol = krakenTradeValue.getVol();
                     Double margin = krakenTradeValue.getMargin();
                     String misc = krakenTradeValue.getMisc();
+
+                    // Kraken BTC is named as XBT, change it...
+                    if (pair.contains("XBT")) {
+                        pair = pair.replaceAll("XBT", "BTC");
+                    }
+
                     krakenTradeEntities.add(new KrakenTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc));
                 }
             }
@@ -214,6 +235,11 @@ public class KrakenManager {
             for (Map.Entry<String, KrakenAssetPairValue> entry : krakenAssetPairs.getResult().entrySet()) {
                 String assetPair = entry.getKey();
 
+                // Kraken BTC is named as XBT, change it...
+                if (assetPair.contains("XBT")) {
+                    assetPair = assetPair.replaceAll("XBT", "BTC");
+                }
+
                 // keep only if it does not already exists
                 if (assetPairs == null || !assetPairs.contains(assetPair)) {
                     KrakenAssetPairValue krakenAssetPairValue = entry.getValue();
@@ -259,6 +285,11 @@ public class KrakenManager {
 
             for (Map.Entry<String, KrakenAssetValue> entry : krakenAssets.getResult().entrySet()) {
                 String asset = entry.getKey();
+
+                // Kraken BTC is named as XBT, change it...
+                if (asset.contains("XBT")) {
+                    asset = asset.replaceAll("XBT", "BTC");
+                }
 
                 // keep only if it does not already exists
                 if (assets == null || !assets.contains(asset)) {

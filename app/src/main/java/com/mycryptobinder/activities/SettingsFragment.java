@@ -1,6 +1,24 @@
+/*
+ * Copyright (c) 2018 by Yann39.
+ *
+ * This file is part of MyCryptoBinder.
+ *
+ * MyCryptoBinder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MyCryptoBinder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.mycryptobinder.activities;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,24 +26,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.mycryptobinder.R;
-import com.mycryptobinder.viewmodels.SettingsViewModel;
-
-/**
- * Fragment responsible for displaying settings
- * <p>
- * Created by Yann on 21/05/2017
- */
 
 public class SettingsFragment extends Fragment {
-
-    private CheckBox checkBox;
 
     public SettingsFragment() {
         // required empty public constructor
@@ -51,7 +56,7 @@ public class SettingsFragment extends Fragment {
 
         // get the list view and add items
         ListView listView = view.findViewById(R.id.settings_listView);
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{"Currencies", "Exchanges", "AppSetting"});
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{"Currencies", "Exchanges", "AppSetting", "Synchronize with exchanges"});
         listView.setAdapter(adapter);
 
         // set click listener for list view items
@@ -74,21 +79,13 @@ public class SettingsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), AppSettingListActivity.class);
                 startActivity(intent);
             }
+
+            // synchronize with exchanges item click
+            else if (position == 3) {
+                Intent intent = new Intent(getActivity(), SynchronizeExchangesActivity.class);
+                startActivity(intent);
+            }
         });
-
-        final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
-
-        TextView synchronizeLogEditText = view.findViewById(R.id.synchronize_log_editText);
-        settingsViewModel.getCurrentLogs().observe(this, s -> synchronizeLogEditText.setText(s));
-
-        ProgressBar synchronizeLogProgressBar = view.findViewById(R.id.synchronize_log_progressBar);
-        settingsViewModel.getPercentDone().observe(this, percent -> synchronizeLogProgressBar.setProgress(percent != null ? percent : 0));
-
-        Button synchronizeButton = view.findViewById(R.id.btn_synchronize);
-        checkBox = view.findViewById(R.id.checkbox_clean_synchronize);
-
-        // set click listener for the synchronize button
-        synchronizeButton.setOnClickListener(view12 -> settingsViewModel.populateDatabase(checkBox.isChecked()));
 
         return view;
     }

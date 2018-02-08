@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2018 by Yann39.
+ *
+ * This file is part of MyCryptoBinder.
+ *
+ * MyCryptoBinder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MyCryptoBinder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.mycryptobinder.service;
 
 import android.content.Context;
@@ -6,10 +25,13 @@ import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.entities.PoloniexAsset;
+import com.mycryptobinder.entities.PoloniexDeposit;
 import com.mycryptobinder.entities.PoloniexTrade;
+import com.mycryptobinder.entities.PoloniexWithdrawal;
 import com.mycryptobinder.entities.Transaction;
 import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.PoloniexAssetValue;
+import com.mycryptobinder.models.PoloniexDepositsWithdrawals;
 import com.mycryptobinder.models.PoloniexTradeValue;
 
 import java.io.IOException;
@@ -28,11 +50,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import retrofit2.Call;
 
-/**
- * Created by Yann
- * Created on 04/12/2017
- */
-
 public class PoloniexManager {
 
     private static Properties properties;
@@ -41,6 +58,8 @@ public class PoloniexManager {
     private static String key;
     private static PoloniexService poloniexService;
     private static List<PoloniexTrade> poloniexTradeEntities;
+    private static List<PoloniexDeposit> poloniexDepositEntities;
+    private static List<PoloniexWithdrawal> poloniexWithdrawalEntities;
     private static long startTime;
 
     public PoloniexManager(Context context) {
@@ -57,6 +76,8 @@ public class PoloniexManager {
         key = properties.getProperty("POLONIEX_API_PUBLIC_KEY");
         poloniexService = PoloniexService.retrofit.create(PoloniexService.class);
         poloniexTradeEntities = new ArrayList<>();
+        poloniexDepositEntities = new ArrayList<>();
+        poloniexWithdrawalEntities = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2016);
         cal.set(Calendar.MONTH, Calendar.DECEMBER);
@@ -105,18 +126,22 @@ public class PoloniexManager {
         return new String(hexChars);
     }
 
+    /**
+     * Get Poloniex trade history
+     */
     private void getPoloniexTrades() {
 
         String start = String.valueOf(startTime);
-        String nonce = String.valueOf(System.currentTimeMillis());
-        //String parameters = "currencyPair=all&command=returnTradeHistory&start=" + start + "&limit=10000&nonce=" + nonce;
-        String parameters = "currencyPair=all&start=" + start + "&limit=10000&nonce=" + nonce + "&command=returnTradeHistory";
+        String nonce = String.valueOf((new Date()).getTime());
+        //use alphabetical order as it must be in the same order as POST body parameters
+        String parameters = "command=returnTradeHistory&currencyPair=all&limit=10000&nonce=" + nonce + "&start=" + start;
         String sign = calculatePoloniexSignature(parameters);
 
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Key", key);
         headerMap.put("Sign", sign);
 
+        //here order doesn't matter as we will order them in an interceptor while sending request
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("command", "returnTradeHistory");
         paramsMap.put("currencyPair", "all");
@@ -187,6 +212,96 @@ public class PoloniexManager {
             }
         }
 
+    }
+
+    /**
+     * Insert deposits and withdrawals from Poloniex exchange API
+     *
+     * @return The number of deposits and withdrawals inserted
+     */
+    public int populateDepositsWithdrawals() {
+
+        String start = String.valueOf(startTime);
+        String end = String.valueOf(Calendar.getInstance().getTimeInMillis() / 1000);
+        String nonce = String.valueOf(System.currentTimeMillis());
+        //use alphabetical order as it must be in the same order as POST body parameters
+        String parameters = "command=returnDepositsWithdrawals&end=" + end + "&nonce=" + nonce + "&start=" + start;
+        String sign = calculatePoloniexSignature(parameters);
+
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put("Key", key);
+        headerMap.put("Sign", sign);
+
+        //here order doesn't matter as we will order them in an interceptor while sending request
+        Map<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("command", "returnDepositsWithdrawals");
+        paramsMap.put("start", start);
+        paramsMap.put("end", end);
+        paramsMap.put("nonce", nonce);
+
+        PoloniexDepositsWithdrawals poloniexDepositsWithdrawals = null;
+        try {
+            Call<PoloniexDepositsWithdrawals> call = poloniexService.getDepositsWithdrawals(headerMap, paramsMap);
+            //todo return {"error":"Invalid API key\/secret pair."} if error so it raises Expected BEGIN_ARRAY but was STRING
+            poloniexDepositsWithdrawals = call.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // if it returned something without error
+        if (poloniexDepositsWithdrawals != null) {
+
+            // get any existing deposits
+            List<String> deposits = appDatabase.poloniexDepositDao().getTxIds();
+
+            for (com.mycryptobinder.models.PoloniexDeposit entry : poloniexDepositsWithdrawals.getDeposits()) {
+                String transactionId = entry.getTxId();
+                // keep only if it does not already exists
+                if (deposits == null || !deposits.contains(transactionId)) {
+                    //get all values
+                    String address = entry.getAddress();
+                    String currency = entry.getCurrency();
+                    long timestamp = entry.getTimestamp();
+                    String status = entry.getStatus();
+                    String amountStr = entry.getAmount();
+                    Double amount = Double.parseDouble(amountStr);
+
+                    poloniexDepositEntities.add(new PoloniexDeposit(transactionId, currency, address, amount, timestamp, status));
+                }
+            }
+
+            // insert into the database
+            PoloniexDeposit[] poloniexDepositArray = new PoloniexDeposit[poloniexDepositEntities.size()];
+            poloniexDepositArray = poloniexDepositEntities.toArray(poloniexDepositArray);
+            appDatabase.poloniexDepositDao().insert(poloniexDepositArray);
+
+            // get any existing withdrawals
+            List<Long> withdrawals = appDatabase.poloniexWithdrawalDao().getWithdrawalNumbers();
+
+            for (com.mycryptobinder.models.PoloniexWithdrawal entry : poloniexDepositsWithdrawals.getWithdrawals()) {
+                long withdrawalNumber = entry.getWithdrawalNumber();
+                // keep only if it does not already exists
+                if (withdrawals == null || !withdrawals.contains(withdrawalNumber)) {
+                    //get all values
+                    String address = entry.getAddress();
+                    String currency = entry.getCurrency();
+                    long timestamp = entry.getTimestamp();
+                    String status = entry.getStatus();
+                    String amountStr = entry.getAmount();
+                    Double amount = Double.parseDouble(amountStr);
+
+                    poloniexWithdrawalEntities.add(new PoloniexWithdrawal(withdrawalNumber, currency, address, amount, timestamp, status));
+                }
+            }
+
+            // insert into the database
+            PoloniexWithdrawal[] poloniexWithdrawalArray = new PoloniexWithdrawal[poloniexWithdrawalEntities.size()];
+            poloniexWithdrawalArray = poloniexWithdrawalEntities.toArray(poloniexWithdrawalArray);
+            appDatabase.poloniexWithdrawalDao().insert(poloniexWithdrawalArray);
+
+        }
+
+        return poloniexDepositEntities.size() + poloniexWithdrawalEntities.size();
 
     }
 

@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2018 by Yann39.
+ *
+ * This file is part of MyCryptoBinder.
+ *
+ * MyCryptoBinder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MyCryptoBinder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.mycryptobinder.adapters;
 
 import android.content.Context;
@@ -12,30 +31,22 @@ import android.widget.ImageView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.models.HoldingData;
-import com.mycryptobinder.models.Price;
+import com.mycryptobinder.models.PricesFull;
 import com.mycryptobinder.viewholders.PortfolioCardViewHolder;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-/**
- * Adapter class for portfolio cards rendering
- * It acts as a bridge between an AdapterView and the underlying data for that view
- * <p>
- * Created by Yann on 08/11/2017
- */
 
 public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardViewHolder> {
 
     private List<HoldingData> holdingData;
     private Context context;
-    private Map<String, Price> prices;
+    private PricesFull pricesFull;
 
-    public PortfolioCardAdapter(Context context, List<HoldingData> hdList, Map<String, Price> prices) {
+    public PortfolioCardAdapter(Context context, List<HoldingData> hdList, PricesFull pricesFull) {
         this.holdingData = hdList;
         this.context = context;
-        this.prices = prices;
+        this.pricesFull = pricesFull;
     }
 
     public void setItems(List<HoldingData> holdingData) {
@@ -43,8 +54,8 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
         notifyDataSetChanged();
     }
 
-    public void setPrices(Map<String, Price> prices) {
-        this.prices = prices;
+    public void setPricesFull(PricesFull pricesFull) {
+        this.pricesFull = pricesFull;
         notifyDataSetChanged();
     }
 
@@ -73,7 +84,7 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
 
         HoldingData hd = holdingData.get(position);
         if (hd != null) {
-            holder.setItem(hd, prices);
+            holder.setItem(hd, pricesFull);
         } else {
             // Null defines a placeholder item - PagedListAdapter will automatically invalidate
             // this row when the actual object is loaded from the database

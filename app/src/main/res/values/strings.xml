@@ -78,14 +78,17 @@
     <string name="title_portfolio">Portfolio</string>
     <string name="title_add_currency">Add new currency</string>
     <string name="title_add_exchange">Add new exchange</string>
+    <string name="title_add_app_setting">Add app setting</string>
     <string name="title_add_transaction">Add new transaction</string>
     <string name="title_add_ico">Add new ICO investment</string>
     <string name="title_edit_currency">Edit currency</string>
     <string name="title_edit_exchange">Edit exchange</string>
     <string name="title_edit_transaction">Edit transaction</string>
     <string name="title_edit_ico">Edit ICO investment</string>
+    <string name="title_app_setting_list">App setting list</string>
     <string name="title_currency_list">Currency list</string>
     <string name="title_exchange_list">Exchange list</string>
+    <string name="title_exchange_synchronization">Exchange synchronization</string>
 
     <string name="msg_currency_removed">Currency %1$s has been removed</string>
     <string name="msg_currency_updated">Currency %1$s has been updated</string>

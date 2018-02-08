@@ -37,10 +37,10 @@
                 android:id="@+id/portfolio_total_value_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="15984.25"
+                android:text="€ 0.00"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="25sp" />
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -57,7 +57,7 @@
                 android:id="@+id/portfolio_last24_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Change"
+                android:text="Change 24h"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="15sp" />
@@ -116,8 +116,9 @@
             android:id="@+id/portfolio_currency_column_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:gravity="center_vertical">
+            android:layout_weight="3"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp">
 
             <TextView
                 android:id="@+id/portfolio_currency_column_header_text"
@@ -131,14 +132,15 @@
             android:id="@+id/portfolio_quantity_column_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:gravity="center_vertical">
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp">
 
             <TextView
                 android:id="@+id/portfolio_quantity_column_header_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="QTY"
+                android:text="HOLDING"
                 android:textColor="@color/white" />
         </LinearLayout>
 
@@ -146,8 +148,9 @@
             android:id="@+id/portfolio_holding_column_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:gravity="center_vertical">
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp">
 
             <TextView
                 android:id="@+id/portfolio_holding_column_header_text"

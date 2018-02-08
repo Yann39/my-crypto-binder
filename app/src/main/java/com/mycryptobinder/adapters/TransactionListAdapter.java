@@ -1,5 +1,23 @@
-package com.mycryptobinder.adapters;
+/*
+ * Copyright (c) 2018 by Yann39.
+ *
+ * This file is part of MyCryptoBinder.
+ *
+ * MyCryptoBinder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MyCryptoBinder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
+ */
 
+package com.mycryptobinder.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +37,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Provide views to RecyclerView with data from mDataSet.
- */
 public class TransactionListAdapter extends RecyclerView.Adapter<TransactionListViewHolder> {
 
     private List<Transaction> transactions;
@@ -57,12 +72,16 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
             viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_right_green, 0, 0, 0);
         } else if (transactions.get(position).getType().equals("sell")) {
             viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_red, 0, 0, 0);
+        } else if (transactions.get(position).getType().equals("deposit")) {
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_right_blue, 0, 0, 0);
+        } else if (transactions.get(position).getType().equals("withdrawal")) {
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_orange, 0, 0, 0);
         }
 
         // get text from the data set at this position and replace it in the view
         viewHolder.transactionItemPairTextView.setText(context.getResources().getString(R.string.transaction_pair, transactions.get(position).getCurrency1IsoCode(), transactions.get(position).getCurrency2IsoCode()));
         viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity() != null ? transactions.get(position).getQuantity() : 0));
-        viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice().doubleValue()));
+        viewHolder.transactionItemPriceTextView.setText(transactions.get(position).getPrice() != null ? df.format(transactions.get(position).getPrice().doubleValue()) : "");
         viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal() != null ? transactions.get(position).getTotal() : 0));
 
         // set click initializer for item row
