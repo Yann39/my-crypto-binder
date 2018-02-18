@@ -22,21 +22,30 @@ package com.mycryptobinder.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "transactions", foreignKeys = {
-        @ForeignKey(entity = Exchange.class,
-                parentColumns = "name",
-                childColumns = "exchange_name"),
-        @ForeignKey(entity = Currency.class,
-                parentColumns = "iso_code",
-                childColumns = "currency1_iso_code"),
-        @ForeignKey(entity = Currency.class,
-                parentColumns = "iso_code",
-                childColumns = "currency2_iso_code")
-})
+@Entity(
+        tableName = "transactions",
+        foreignKeys = {
+            @ForeignKey(entity = Exchange.class,
+                    parentColumns = "name",
+                    childColumns = "exchange_name"),
+            @ForeignKey(entity = Currency.class,
+                    parentColumns = "iso_code",
+                    childColumns = "currency1_iso_code"),
+            @ForeignKey(entity = Currency.class,
+                    parentColumns = "iso_code",
+                    childColumns = "currency2_iso_code")
+        },
+        indices = {
+            @Index("exchange_name"),
+            @Index("currency1_iso_code"),
+            @Index("currency2_iso_code")
+        }
+)
 public class Transaction {
 
     @PrimaryKey(autoGenerate = true)

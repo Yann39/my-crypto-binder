@@ -20,8 +20,8 @@
 package com.mycryptobinder.service;
 
 import android.content.Context;
+import android.util.Base64;
 
-import com.loopj.android.http.Base64;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.entities.Exchange;

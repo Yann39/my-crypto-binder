@@ -51,7 +51,7 @@ import com.mycryptobinder.helpers.DateTypeConverter;
         Currency.class,
         Exchange.class,
         Ico.class,
-        Transaction.class}, version = 11)
+        Transaction.class}, version = 13, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 

@@ -91,14 +91,7 @@ public interface TransactionDao {
             "union all " +
             "select sum(total * case when type = 'buy' then -1 else 1 end) as Total " +
             "from transactions where currency2_iso_code = c.iso_code " +
-            ") as T) as quantity, " +
-            "(select sum(total) from ( " +
-            "select total * case when type = 'buy' then 1 else -1 end as Total " +
-            "from transactions where currency1_iso_code = c.iso_code " +
-            "union all " +
-            "select total * case when type = 'buy' then -1 else 1 end as Total " +
-            "from transactions where currency2_iso_code = c.iso_code " +
-            ") as T) as currentPrice, 0 as currentValue " +
+            ") as T) as quantity " +
             "from currencies c " +
             "where quantity is not null")
     LiveData<List<HoldingData>> getHoldings();
