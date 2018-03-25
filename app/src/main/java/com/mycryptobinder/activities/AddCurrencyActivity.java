@@ -22,6 +22,7 @@ package com.mycryptobinder.activities;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,6 +46,10 @@ public class AddCurrencyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_currency);
+
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -75,9 +80,9 @@ public class AddCurrencyActivity extends AppCompatActivity {
 
             // check mandatory fields
             if (name.trim().equals("")) {
-                currencyNameEditText.setError("Currency name is required!");
+                currencyNameEditText.setError(getString(R.string.error_currency_name_required));
             } else if (isoCode.trim().equals("")) {
-                currencyIsoCodeEditText.setError("ISO code is required!");
+                currencyIsoCodeEditText.setError(getString(R.string.error_currency_iso_code_required));
             } else {
                 // add record to the view model who will trigger the insert
                 addCurrencyViewModel.addCurrency(new Currency(isoCode, name, symbol));
@@ -86,7 +91,7 @@ public class AddCurrencyActivity extends AppCompatActivity {
                 finish();
 
                 // show a notification about the created item
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_currency_created, name), Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), getString(R.string.success_currency_created, name), Toast.LENGTH_SHORT).show();
             }
         });
 

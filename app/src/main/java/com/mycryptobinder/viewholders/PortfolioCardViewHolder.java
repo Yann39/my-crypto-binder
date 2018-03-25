@@ -29,7 +29,6 @@ import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.models.PricesFull;
 
 import java.text.DecimalFormat;
-import java.util.Formatter;
 
 public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
 

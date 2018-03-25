@@ -38,17 +38,26 @@ public class Exchange {
     @ColumnInfo(name = "description")
     private String description;
 
-    public Exchange(String name, String link, String description) {
+    @ColumnInfo(name = "public_api_key")
+    private String publicApiKey;
+
+    @ColumnInfo(name = "private_api_key")
+    private String privateApiKey;
+
+    public Exchange(@NonNull String name, String link, String description, String publicApiKey, String privateApiKey) {
         this.name = name;
         this.link = link;
         this.description = description;
+        this.publicApiKey = publicApiKey;
+        this.privateApiKey = privateApiKey;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
@@ -68,4 +77,19 @@ public class Exchange {
         this.description = description;
     }
 
+    public String getPublicApiKey() {
+        return publicApiKey;
+    }
+
+    public void setPublicApiKey(String publicApiKey) {
+        this.publicApiKey = publicApiKey;
+    }
+
+    public String getPrivateApiKey() {
+        return privateApiKey;
+    }
+
+    public void setPrivateApiKey(String privateApiKey) {
+        this.privateApiKey = privateApiKey;
+    }
 }

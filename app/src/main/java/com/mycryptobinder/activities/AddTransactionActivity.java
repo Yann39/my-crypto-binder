@@ -21,8 +21,10 @@ package com.mycryptobinder.activities;
 
 import android.app.DatePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -65,6 +67,10 @@ public class AddTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_transaction);
+
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -114,16 +120,16 @@ public class AddTransactionActivity extends AppCompatActivity {
         transactionTypeBuyRadioButton.setOnClickListener(v -> {
             TextView transactionCurrency1TextView = findViewById(R.id.transaction_currency1_textview);
             TextView transactionCurrency2TextView = findViewById(R.id.transaction_currency2_textview);
-            transactionCurrency1TextView.setText(v.getResources().getString(R.string.lbl_transaction_currency1_buy));
-            transactionCurrency2TextView.setText(v.getResources().getString(R.string.lbl_transaction_currency2_with));
+            transactionCurrency1TextView.setText(getString(R.string.label_transaction_currency1_buy));
+            transactionCurrency2TextView.setText(getString(R.string.label_transaction_currency2_with));
         });
 
         // set click listener on the Sell radio button
         transactionTypeSellRadioButton.setOnClickListener(v -> {
             TextView transactionCurrency1TextView = findViewById(R.id.transaction_currency1_textview);
             TextView transactionCurrency2TextView = findViewById(R.id.transaction_currency2_textview);
-            transactionCurrency1TextView.setText(v.getResources().getString(R.string.lbl_transaction_currency1_sell));
-            transactionCurrency2TextView.setText(v.getResources().getString(R.string.lbl_transaction_currency2_for));
+            transactionCurrency1TextView.setText(getString(R.string.label_transaction_currency1_sell));
+            transactionCurrency2TextView.setText(getString(R.string.label_transaction_currency2_for));
         });
 
         // set date format that will be used for date pickers
@@ -195,46 +201,44 @@ public class AddTransactionActivity extends AppCompatActivity {
 
             // check mandatory fields
             if (currency1 == null || currency1.trim().equals("")) {
-                transactionCurrency1AutoCompleteText.setError("Currency1 is required!");
+                transactionCurrency1AutoCompleteText.setError(getString(R.string.error_transaction_currency1_required));
             } else if (currency2 == null || currency2.trim().equals("")) {
-                transactionCurrency2AutoCompleteText.setError("Currency2 is required!");
+                transactionCurrency2AutoCompleteText.setError(getString(R.string.error_transaction_currency2_required));
             } else if (exchange == null || exchange.trim().equals("")) {
-                //todo setError on spinner not possible
+                // setError on spinner not possible, so I use a fake TextView
+                TextView errorText = (TextView) transactionExchangeSpinner.getSelectedView();
+                errorText.setError("Anything here, just to add the icon");
+                errorText.setTextColor(Color.RED);
+                errorText.setText(getString(R.string.error_transaction_exchange_required));
             } else if (txId.trim().equals("")) {
-                transactionTxIdEditText.setError("Transaction ID is required!");
+                transactionTxIdEditText.setError(getString(R.string.error_transaction_id_required));
             } else if (quantityStr.trim().equals("")) {
-                transactionQuantityEditText.setError("Quantity is required!");
+                transactionQuantityEditText.setError(getString(R.string.error_transaction_quantity_required));
             } else if (quantity == null) {
-                transactionQuantityEditText.setError("Quantity is invalid!");
+                transactionQuantityEditText.setError(getString(R.string.error_transaction_quantity_not_valid));
             } else if (priceStr.trim().equals("")) {
-                transactionPriceEditText.setError("Price is required!");
+                transactionPriceEditText.setError(getString(R.string.error_transaction_price_required));
             } else if (price == null) {
-                transactionPriceEditText.setError("Price is invalid!");
+                transactionPriceEditText.setError(getString(R.string.error_transaction_price_not_valid));
             } else if (feeStr.trim().equals("")) {
-                transactionFeeEditText.setError("Fee is required!");
+                transactionFeeEditText.setError(getString(R.string.error_transaction_fee_required));
             } else if (fee == null) {
-                transactionFeeEditText.setError("Fee is invalid!");
+                transactionFeeEditText.setError(getString(R.string.error_transaction_fee_not_valid));
             } else if (totalStr.trim().equals("")) {
-                transactionTotalEditText.setError("Total is required!");
+                transactionTotalEditText.setError(getString(R.string.error_transaction_total_required));
             } else if (total == null) {
-                transactionTotalEditText.setError("Total is invalid!");
+                transactionTotalEditText.setError(getString(R.string.error_transaction_total_not_valid));
             } else if (type.trim().equals("")) {
-                radioButton.setError("Type is required!");
+                radioButton.setError(getString(R.string.error_transaction_type_required));
             } else {
-
-                // calculate the totals
-                // todo totals for all next transactions should be recomputed...
-                double totalCurrency1 = addTransactionViewModel.getCurrencyTotal(currency1) + quantity;
-                double totalCurrency2 = addTransactionViewModel.getCurrencyTotal(currency1) + quantity;
-
                 // add record to the view model who will trigger the insert
-                addTransactionViewModel.addTransaction(new Transaction(exchange, txId, currency1, currency2, fee, date, type, quantity, price, total, totalCurrency1, totalCurrency2, comment));
+                addTransactionViewModel.addTransaction(new Transaction(exchange, txId, currency1, currency2, fee, date, type, quantity, price, total, comment));
 
                 // close current activity and return to previous activity if there is any
                 finish();
 
                 // show a notification about the created item
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_transaction_created, currency1 + "/" + currency2), Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), getString(R.string.success_transaction_created, currency1 + "/" + currency2), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -243,8 +247,9 @@ public class AddTransactionActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // handle back arrow click (close this activity and return to previous activity if there is any)
+        // back arrow click
         if (id == android.R.id.home) {
+            // close current activity and return to previous activity if there is any
             finish();
         }
 

@@ -36,7 +36,7 @@ public class AppSettingListViewModel extends AndroidViewModel {
 
     public AppSettingListViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
         settingsList = appDatabase.settingsDao().getAll();
     }
 

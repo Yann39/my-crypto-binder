@@ -13,9 +13,9 @@
         <item name="android:statusBarColor">@color/primaryDark</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme.WithActionBar">
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowNoTitle">false</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

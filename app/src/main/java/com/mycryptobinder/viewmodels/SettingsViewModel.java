@@ -28,9 +28,9 @@ import android.os.AsyncTask;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.HoldingData;
-import com.mycryptobinder.service.KrakenManager;
-import com.mycryptobinder.service.PoloniexManager;
-import com.mycryptobinder.service.PortfolioManager;
+import com.mycryptobinder.managers.KrakenManager;
+import com.mycryptobinder.managers.PoloniexManager;
+import com.mycryptobinder.managers.PortfolioManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,7 +48,7 @@ public class SettingsViewModel extends AndroidViewModel {
 
     public SettingsViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
         logs = new MutableLiveData<>();
         percentDone = new MutableLiveData<>();
         krakenManager = new KrakenManager(getApplication().getBaseContext());
@@ -90,6 +90,7 @@ public class SettingsViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Void... voids) {
 
+            //todo check that API keys are defined before continuing
             percentDone.postValue(2);
 
             if (reset) {
@@ -114,16 +115,6 @@ public class SettingsViewModel extends AndroidViewModel {
             int nbIns = krakenManager.populateTradeHistory();
             logInfo(nbIns + " new trades inserted");
             percentDone.postValue(30);
-
-            //insert Kraken exchange
-            logInfo("Creating Kraken exchange...");
-            nbIns = krakenManager.populateExchange();
-            if (nbIns > 0) {
-                logInfo("Kraken exchange created successfully");
-            } else {
-                logInfo("Kraken exchange already exist, nothing to do");
-            }
-            percentDone.postValue(32);
 
             // insert Kraken asset pairs from API
             logInfo("Collecting asset pairs from Kraken API...");
@@ -160,16 +151,6 @@ public class SettingsViewModel extends AndroidViewModel {
             nbIns = poloniexManager.populateTradeHistory();
             logInfo(nbIns + " new trades inserted");
             percentDone.postValue(82);
-
-            // insert Poloniex exchange
-            logInfo("Creating Poloniex exchange...");
-            nbIns = poloniexManager.populateExchange();
-            if (nbIns > 0) {
-                logInfo("Poloniex exchange created successfully");
-            } else {
-                logInfo("Poloniex exchange already exist, nothing to do");
-            }
-            percentDone.postValue(84);
 
             // insert Poloniex assets from API
             logInfo("Inserting currencies from Poloniex assets...");

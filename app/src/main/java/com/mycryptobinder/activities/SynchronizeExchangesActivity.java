@@ -20,8 +20,10 @@
 package com.mycryptobinder.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
@@ -41,24 +43,37 @@ public class SynchronizeExchangesActivity extends AppCompatActivity implements M
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_synchronize_exchanges);
 
-        List<String> items = new ArrayList<>();
-        items.add("Kraken");
-        items.add("Poloniex");
-        items.add("Bittrex");
-        items.add("Bitfinex");
-        MultiSpinner multiSpinner = findViewById(R.id.synchronize_exchange_MultiSpinner);
-        multiSpinner.setItems(items, "All", this);
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+        // fill exchange list
+        List<String> items = new ArrayList<>();
+        items.add(getString(R.string.label_exchange_name_kraken));
+        items.add(getString(R.string.label_exchange_name_poloniex));
+        items.add(getString(R.string.label_exchange_name_bittrex));
+        items.add(getString(R.string.label_exchange_name_bitfinex));
+        MultiSpinner multiSpinner = findViewById(R.id.synchronize_exchange_MultiSpinner);
+        multiSpinner.setItems(items, getString(R.string.label_all), this);
+
+        // get view model
         final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
 
+        // get view elements
         TextView synchronizeLogEditText = findViewById(R.id.synchronize_exchanges_log_editText);
-        settingsViewModel.getCurrentLogs().observe(this, s -> synchronizeLogEditText.setText(s));
-
         ProgressBar synchronizeLogProgressBar = findViewById(R.id.synchronize_exchanges_log_progressBar);
-        settingsViewModel.getPercentDone().observe(this, percent -> synchronizeLogProgressBar.setProgress(percent != null ? percent : 0));
-
         Button synchronizeButton = findViewById(R.id.btn_synchronize_exchanges);
         CheckBox checkBox = findViewById(R.id.checkbox_clean_synchronize_exchanges);
+
+        // observe logs and percentage done from the view model so it will always be up to date in the UI
+        settingsViewModel.getCurrentLogs().observe(this, s -> synchronizeLogEditText.setText(s));
+        settingsViewModel.getPercentDone().observe(this, percent -> synchronizeLogProgressBar.setProgress(percent != null ? percent : 0));
 
         // set click listener for the synchronize button
         synchronizeButton.setOnClickListener(view12 -> settingsViewModel.populateDatabase(checkBox.isChecked()));
@@ -66,6 +81,19 @@ public class SynchronizeExchangesActivity extends AppCompatActivity implements M
 
     public void onItemsSelected(boolean[] selected) {
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // back arrow click
+        if (id == android.R.id.home) {
+            // close current activity and return to previous activity if there is any
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

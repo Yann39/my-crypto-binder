@@ -22,6 +22,7 @@ package com.mycryptobinder.activities;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,12 @@ import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.entities.AppSetting;
+import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.viewmodels.AddAppSettingsViewModel;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class AddAppSettingActivity extends AppCompatActivity {
 
@@ -42,6 +48,10 @@ public class AddAppSettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_app_setting);
+
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -70,18 +80,32 @@ public class AddAppSettingActivity extends AppCompatActivity {
 
             // check mandatory fields
             if (settingName.trim().equals("")) {
-                appSettingNameEditText.setError("Setting name is required!");
+                appSettingNameEditText.setError(getString(R.string.error_setting_name_required));
             } else if (settingValue.trim().equals("")) {
-                appSettingValueEditText.setError("Setting value is required!");
+                appSettingValueEditText.setError(getString(R.string.error_setting_value_required));
             } else {
+
+                // encrypt value
+                Properties properties = new Properties();
+                try {
+                    InputStream inputStream = getApplicationContext().getAssets().open("myCryptoBinder.properties");
+                    properties.load(inputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String key = properties.getProperty("RSA_KEY");
+                String initVector = properties.getProperty("RSA_INIT_VECTOR");
+                UtilsHelper uh = new UtilsHelper(getApplicationContext());
+                String secret = uh.encrypt(key, initVector, settingValue);
+
                 // add record to the view model who will trigger the insert
-                addAppSettingsViewModel.addAppSetting(new AppSetting(settingName, settingValue));
+                addAppSettingsViewModel.addAppSetting(new AppSetting(settingName, secret));
 
                 // close current activity and return to previous activity if there is any
                 finish();
 
                 // show a notification about the created item
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_app_setting_created, settingName), Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), getString(R.string.success_app_setting_created, settingName), Toast.LENGTH_SHORT).show();
             }
         });
     }

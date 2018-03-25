@@ -33,7 +33,7 @@ public class AddTransactionViewModel extends AndroidViewModel {
 
     public AddTransactionViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
     }
 
     public void addTransaction(Transaction transaction) {

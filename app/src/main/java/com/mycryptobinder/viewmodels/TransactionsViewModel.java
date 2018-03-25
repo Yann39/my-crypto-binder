@@ -36,7 +36,7 @@ public class TransactionsViewModel extends AndroidViewModel {
 
     public TransactionsViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
         transactionList = appDatabase.transactionDao().getAll();
     }
 

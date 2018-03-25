@@ -1,90 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.mycryptobinder.activities.AddAppSettingActivity">
 
-    <TextView
-        android:id="@+id/add_app_setting_name_textView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="start|center"
-        android:text="@string/lbl_app_setting_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/add_app_setting_name_editText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/add_app_setting_guideline"
-        app:layout_constraintTop_toTopOf="@+id/add_app_setting_name_editText" />
+    <include layout="@layout/appbar" />
 
-    <EditText
-        android:id="@+id/add_app_setting_name_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/ph_app_setting_name"
-        app:layout_constraintLeft_toRightOf="@+id/add_app_setting_guideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
 
-    <TextView
-        android:id="@+id/add_app_setting_value_textView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="start|center"
-        android:text="@string/lbl_app_setting_value"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/add_app_setting_value_editText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/add_app_setting_guideline"
-        app:layout_constraintTop_toTopOf="@+id/add_app_setting_value_editText" />
+        <TextView
+            android:id="@+id/add_app_setting_name_textView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="start|center"
+            android:text="@string/lbl_app_setting_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/add_app_setting_name_editText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/add_app_setting_guideline"
+            app:layout_constraintTop_toTopOf="@+id/add_app_setting_name_editText" />
 
-    <EditText
-        android:id="@+id/add_app_setting_value_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/ph_app_setting_value"
-        app:layout_constraintLeft_toRightOf="@+id/add_app_setting_guideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_app_setting_name_editText" />
+        <EditText
+            android:id="@+id/add_app_setting_name_editText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/ph_app_setting_name"
+            app:layout_constraintLeft_toRightOf="@+id/add_app_setting_guideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_app_setting_value_editText">
+        <TextView
+            android:id="@+id/add_app_setting_value_textView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="start|center"
+            android:text="@string/lbl_app_setting_value"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/add_app_setting_value_editText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/add_app_setting_guideline"
+            app:layout_constraintTop_toTopOf="@+id/add_app_setting_value_editText" />
 
-        <Button
-            android:id="@+id/btn_create_app_setting"
+        <EditText
+            android:id="@+id/add_app_setting_value_editText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/ph_app_setting_value"
+            app:layout_constraintLeft_toRightOf="@+id/add_app_setting_guideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_app_setting_name_editText" />
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_app_setting_value_editText">
+
+            <Button
+                android:id="@+id/btn_create_app_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/custom_button"
+                android:text="@string/btn_create_app_setting"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/btn_update_app_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/custom_button"
+                android:text="@string/btn_update_app_setting"
+                android:textColor="#ffffff"
+                android:visibility="invisible" />
+
+        </FrameLayout>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/add_app_setting_guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/custom_button"
-            android:text="@string/btn_create_app_setting"
-            android:textColor="#ffffff" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.3" />
 
-        <Button
-            android:id="@+id/btn_update_app_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/custom_button"
-            android:text="@string/btn_update_app_setting"
-            android:textColor="#ffffff"
-            android:visibility="invisible" />
+    </android.support.constraint.ConstraintLayout>
 
-    </FrameLayout>
-
-    <android.support.constraint.Guideline
-        android:id="@+id/add_app_setting_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.3" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

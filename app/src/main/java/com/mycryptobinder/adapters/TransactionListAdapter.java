@@ -79,33 +79,32 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         }
 
         // get text from the data set at this position and replace it in the view
-        viewHolder.transactionItemPairTextView.setText(context.getResources().getString(R.string.transaction_pair, transactions.get(position).getCurrency1IsoCode(), transactions.get(position).getCurrency2IsoCode()));
+        viewHolder.transactionItemPairTextView.setText(context.getResources().getString(R.string.label_transaction_pair, transactions.get(position).getCurrency1IsoCode(), transactions.get(position).getCurrency2IsoCode()));
         viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity() != null ? transactions.get(position).getQuantity() : 0));
         viewHolder.transactionItemPriceTextView.setText(transactions.get(position).getPrice() != null ? df.format(transactions.get(position).getPrice().doubleValue()) : "");
         viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal() != null ? transactions.get(position).getTotal() : 0));
 
         // set click initializer for item row
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        viewHolder.itemView.setOnClickListener(v -> {
 
-                // position of the clicked item
-                final int position = viewHolder.getAdapterPosition();
+            // position of the clicked item
+            final int position1 = viewHolder.getAdapterPosition();
 
-                // store element values in the intent so we can access them later in the other activity
-                Intent edit_trans = new Intent(v.getContext(), EditTransactionActivity.class);
-                edit_trans.putExtra("id", transactions.get(position).getId());
-                edit_trans.putExtra("type", transactions.get(position).getType());
-                edit_trans.putExtra("currency1", transactions.get(position).getCurrency1IsoCode());
-                edit_trans.putExtra("currency2", transactions.get(position).getCurrency2IsoCode());
-                edit_trans.putExtra("exchange", transactions.get(position).getExchangeName());
-                edit_trans.putExtra("quantity", transactions.get(position).getQuantity());
-                edit_trans.putExtra("price", transactions.get(position).getPrice());
-                edit_trans.putExtra("fees", transactions.get(position).getFee());
-                edit_trans.putExtra("date", transactions.get(position).getDate());
-                edit_trans.putExtra("comment", transactions.get(position).getComment());
-                v.getContext().startActivity(edit_trans);
-            }
+            // store element values in the intent so we can access them later in the other activity
+            Intent edit_trans = new Intent(v.getContext(), EditTransactionActivity.class);
+            edit_trans.putExtra("id", transactions.get(position1).getId());
+            edit_trans.putExtra("type", transactions.get(position1).getType());
+            edit_trans.putExtra("currency1", transactions.get(position1).getCurrency1IsoCode());
+            edit_trans.putExtra("currency2", transactions.get(position1).getCurrency2IsoCode());
+            edit_trans.putExtra("exchange", transactions.get(position1).getExchangeName());
+            edit_trans.putExtra("quantity", transactions.get(position1).getQuantity());
+            edit_trans.putExtra("price", transactions.get(position1).getPrice());
+            edit_trans.putExtra("fees", transactions.get(position1).getFee());
+            edit_trans.putExtra("date", transactions.get(position1).getDate());
+            edit_trans.putExtra("txId", transactions.get(position1).getTransactionId());
+            edit_trans.putExtra("total", transactions.get(position1).getTotal());
+            edit_trans.putExtra("comment", transactions.get(position1).getComment());
+            v.getContext().startActivity(edit_trans);
         });
     }
 

@@ -28,6 +28,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +37,6 @@ import android.widget.Toast;
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.CurrencyCardAdapter;
 import com.mycryptobinder.entities.Currency;
-import com.mycryptobinder.viewholders.CurrencyCardViewHolder;
 import com.mycryptobinder.viewmodels.CurrencyListViewModel;
 
 public class CurrencyListActivity extends AppCompatActivity implements View.OnClickListener {
@@ -48,6 +48,10 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_currency_list);
+
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -95,32 +99,24 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
         Currency currency = (Currency) view.getTag();
         // show a confirm dialog
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(getResources().getString(R.string.lbl_confirmation));
-        alert.setMessage(Html.fromHtml(getResources().getString(R.string.dialog_delete_currency_message, " <b>" + currency.getName() + "</b>")));
+        alert.setTitle(getString(R.string.title_confirmation));
+        alert.setMessage(Html.fromHtml(getString(R.string.confirm_delete_currency, " <b>" + currency.getName() + "</b>")));
 
         Context context = this;
 
-        alert.setPositiveButton(getResources().getString(R.string.lbl_yes), (dialog, which) -> {
-
+        // "yes" button click
+        alert.setPositiveButton(getString(R.string.label_yes), (dialog, which) -> {
             // delete from the database
             currencyListViewModel.deleteItem(currency);
 
-            // notify any registered observers that the item previously located at position
-            // has been removed from the data set. The items previously located at and
-            // after position may now be found at oldPosition - 1.
-            //currencyCardAdapter.notifyItemRemoved(position);
-
-            // notify any registered observers that the itemCount items starting at
-            // position positionStart have changed.
-            //currencyCardAdapter.notifyItemRangeChanged(position, currencies.size());
-
             // show a notification about the removed item
-            Toast.makeText(context, getResources().getString(R.string.msg_currency_removed, currency.getIsoCode()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, getString(R.string.success_currency_removed, currency.getIsoCode()), Toast.LENGTH_SHORT).show();
 
             dialog.dismiss();
         });
 
-        alert.setNegativeButton(getResources().getString(R.string.lbl_no), (dialog, which) -> dialog.dismiss());
+        // "no" button click
+        alert.setNegativeButton(getString(R.string.label_no), (dialog, which) -> dialog.dismiss());
 
         alert.show();
     }

@@ -81,16 +81,10 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
 
     @Override
     public void onBindViewHolder(final PortfolioCardViewHolder holder, int position) {
-
         HoldingData hd = holdingData.get(position);
         if (hd != null) {
             holder.setItem(hd, pricesFull);
-        } else {
-            // Null defines a placeholder item - PagedListAdapter will automatically invalidate
-            // this row when the actual object is loaded from the database
-            //holder.clear();
         }
-
     }
 
     @Override

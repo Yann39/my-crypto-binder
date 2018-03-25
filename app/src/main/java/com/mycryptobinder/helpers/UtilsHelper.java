@@ -21,8 +21,20 @@ package com.mycryptobinder.helpers;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Base64;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Locale;
+import java.util.Properties;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class UtilsHelper {
 
@@ -32,12 +44,85 @@ public class UtilsHelper {
         context = c;
     }
 
+    /**
+     * Get the current locale
+     *
+     * @return The current locale
+     */
     public Locale getCurrentLocale(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
             return context.getResources().getConfiguration().getLocales().get(0);
         } else{
             return context.getResources().getConfiguration().locale;
         }
+    }
+
+    /**
+     * Get myCryptoBinder properties
+     *
+     * @return The set of properties from the myCryptoBinder property file
+     */
+    public Properties getProperties() {
+        Properties properties = new Properties();
+        try {
+            InputStream inputStream = context.getAssets().open("myCryptoBinder.properties");
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties;
+    }
+
+    /**
+     * AES Encrypt the specified string using the specified key and initial vector
+     *
+     * @param key The key used for encryption
+     * @param initVector The initial vector to use
+     * @param value The value to encrypt
+     * @return The encrypted value
+     */
+    public String encrypt(String key, String initVector, String value) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+
+            return Base64.encodeToString(encrypted, Base64.DEFAULT);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * AES Decrypt the specified string using the specified key and initial vector
+     *
+     * @param key The key used for encryption
+     * @param initVector The initial vector to use
+     * @param encrypted The encrypted value to decrypt
+     * @return The decrypted value
+     */
+    public String decrypt(String key, String initVector, String encrypted) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+
+            byte[] original = cipher.doFinal(Base64.decode(encrypted, Base64.DEFAULT));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 
 }

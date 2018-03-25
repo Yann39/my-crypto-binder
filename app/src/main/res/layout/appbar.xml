@@ -13,11 +13,4 @@
         android:background="@android:color/transparent"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        style="@style/TabLayoutStyle"/>
-
 </android.support.design.widget.AppBarLayout>

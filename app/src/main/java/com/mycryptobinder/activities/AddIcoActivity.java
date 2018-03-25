@@ -21,14 +21,17 @@ package com.mycryptobinder.activities;
 
 import android.app.DatePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycryptobinder.R;
@@ -56,6 +59,10 @@ public class AddIcoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_ico);
+
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -187,35 +194,39 @@ public class AddIcoActivity extends AppCompatActivity {
 
             // check mandatory fields
             if (name.trim().equals("")) {
-                addIcoNameEditText.setError("ICO name is required!");
+                addIcoNameEditText.setError(getString(R.string.error_ico_name_required));
             } else if (currencyIsoCode == null || currencyIsoCode.trim().equals("")) {
-                //todo setError on spinner not possible
+                // setError on spinner not possible, so I use a fake TextView
+                TextView errorText = (TextView) addIcoCurrencySpinner.getSelectedView();
+                errorText.setError("Anything here, just to add the icon");
+                errorText.setTextColor(Color.RED);
+                errorText.setText(getString(R.string.error_ico_currency_required));
             } else if (amountStr.trim().equals("")) {
-                addIcoAmountEditText.setError("Amount is required!");
+                addIcoAmountEditText.setError(getString(R.string.error_ico_amount_required));
             } else if (amount == null) {
-                addIcoAmountEditText.setError("Amount is invalid!");
+                addIcoAmountEditText.setError(getString(R.string.error_ico_amount_not_valid));
             } else if (dateStr.trim().equals("")) {
-                addIcoDateEditText.setError("Date is required!");
+                addIcoDateEditText.setError(getString(R.string.error_ico_date_required));
             } else if (date == null) {
-                addIcoDateEditText.setError("Date is invalid!");
+                addIcoDateEditText.setError(getString(R.string.error_ico_date_not_valid));
             } else if (tokenName.trim().equals("")) {
-                addIcoTokenNameEditText.setError("Token name is required!");
+                addIcoTokenNameEditText.setError(getString(R.string.error_ico_token_name_required));
             } else if (tokenDateStr.trim().equals("")) {
-                addIcoTokenDateEditText.setError("Token date is required!");
+                addIcoTokenDateEditText.setError(getString(R.string.error_ico_token_date_required));
             } else if (tokenDate == null) {
-                addIcoTokenDateEditText.setError("Token date is invalid!");
+                addIcoTokenDateEditText.setError(getString(R.string.error_ico_token_date_invalid));
             } else if (tokenQuantityStr.trim().equals("")) {
-                addIcoTokenQuantityEditText.setError("Token quantity is required!");
+                addIcoTokenQuantityEditText.setError(getString(R.string.error_ico_token_quantity_required));
             } else if (tokenQuantity == null) {
-                addIcoTokenQuantityEditText.setError("Token quantity is invalid!");
+                addIcoTokenQuantityEditText.setError(getString(R.string.error_ico_token_quantity_invalid));
             } else if (feeStr.trim().equals("")) {
-                addIcoFeeEditText.setError("Fee is required!");
+                addIcoFeeEditText.setError(getString(R.string.error_ico_fee_required));
             } else if (fee == null) {
-                addIcoFeeEditText.setError("Fee is invalid!");
+                addIcoFeeEditText.setError(getString(R.string.error_ico_fee_invalid));
             } else if (bonusStr.trim().equals("")) {
-                addIcoBonusEditText.setError("Bonus is required!");
+                addIcoBonusEditText.setError(getString(R.string.error_ico_bonus_required));
             } else if (bonus == null) {
-                addIcoBonusEditText.setError("Bonus is invalid!");
+                addIcoBonusEditText.setError(getString(R.string.error_ico_bonus_invalid));
             } else {
                 // add record to the view model who will trigger the insert
                 addIcoViewModel.addIco(new Ico(name, currencyIsoCode, amount, fee, date, tokenName, tokenDate, tokenQuantity, bonus, comment));
@@ -225,7 +236,7 @@ public class AddIcoActivity extends AppCompatActivity {
 
                 // show a notification about the created item
                 final View view = findViewById(R.id.save_add_ico);
-                Toast.makeText(view.getContext(), view.getResources().getString(R.string.msg_ico_created, name), Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), getString(R.string.success_ico_created, name), Toast.LENGTH_SHORT).show();
             }
         }
         return super.onOptionsItemSelected(item);

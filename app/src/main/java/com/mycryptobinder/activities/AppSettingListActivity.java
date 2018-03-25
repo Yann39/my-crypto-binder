@@ -26,6 +26,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.mycryptobinder.R;
@@ -44,6 +46,10 @@ public class AppSettingListActivity extends AppCompatActivity implements View.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_settings);
+
+        // set toolbar as actionbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null) {
@@ -78,5 +84,18 @@ public class AppSettingListActivity extends AppCompatActivity implements View.On
         AppSetting appSetting = (AppSetting) v.getTag();
         appSettingListViewModel.deleteItem(appSetting);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // back arrow click
+        if (id == android.R.id.home) {
+            // close current activity and return to previous activity if there is any
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -18,9 +18,9 @@ Here is the currently supported exchanges :
 
 ## Usage
 
-1. Create and API key in your favorite exchange platform (read only recommended)
-2. In the application, go to the _settings_ page and add the key corresponding to the exchange under
-the _AppSetting_ menu
+1. Create API keys in your favorite exchange platform (read only recommended)
+2. In the application, go to the _settings_ page, then in the _Exchanges_ menu, edit the concerned
+exchange to add the related keys (public and private)
 3. Still in the settings page, click the 'synchronize' button under the _Synchronize with exchanges_
 menu
 4. Enjoy a beer watching your million dollars
@@ -39,7 +39,7 @@ Main theme is based directly on the raw
 Thereby the [Support libraries](https://developer.android.com/topic/libraries/support-library/index.html)
 have been used for backward compatibility ([v7](https://developer.android.com/topic/libraries/support-library/packages.html#v7)).
 It adds support for the Action Bar user interface design pattern and includes support for material
-design user interface implementations (RecyclerView, CardView, etc.), following ones have been used :
+design user interface implementations (RecyclerView, CardView, etc.). The following ones have been used :
 
 - [Design Support library](https://developer.android.com/training/material/design-library.html)
 - [AppCompat library](https://developer.android.com/topic/libraries/support-library/packages.html#v7-appcompat)
@@ -60,24 +60,37 @@ design user interface implementations (RecyclerView, CardView, etc.), following 
   displaying large sets of data (paged lists)
   - [Room](https://developer.android.com/topic/libraries/architecture/room.html) as persistence
   library (with singleton database instance)
-- [Retrofit 2](http://square.github.io/retrofit/) as HTTP client helper with GSON2).
+- [Retrofit 2](http://square.github.io/retrofit/) as HTTP client helper (with GSON2).
 A [logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor) has
 also been used for logging with OkHttp 3 (Retrofit 2 completely relies on OkHttp for any network
 operation).
-- [Argon2 Java implementation](https://github.com/phxql/argon2-jvm) for encrypting API keys. This is
-one of the best key derivation function at the time of writing. There is no need of encrypting API
-keys, this is just for fun -_-
 - [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) library for charts
 
 #### Architecture
 
-Application has been implemented using the MVVM (Model-View-ViewModel) pattern as described below :
+Application has been implemented using the **MVVM** (Model-View-ViewModel) pattern as described below :
 
 ![Architecture schema](doc/architecture.svg "Architecture")
 
+#### Code structure
+
+Application code has been organized with the following package structure :
+
+- activities
+- adapters
+- components
+- dao
+- entities
+- helpers
+- managers
+- models
+- services
+- viewholders
+- viewmodels
+
 ## Privacy
 
-This privacy policy sets out how we uses and protects any information that you give when you use
+This privacy policy sets out how we use and protect any information that you give when you use
 this application.
 
 Should we ask you to provide certain information by which you can be identified when using this
@@ -99,6 +112,7 @@ The application may communicate with mentioned exchanges and with the
 [CryptoCompare API](https://www.cryptocompare.com/api/) to get live trading data.
 
 Thereby we may collect the following information:
+
 - any data available from the API related to the exchange(s) you have linked
 - any data you may manually enter in the app
 
@@ -114,8 +128,11 @@ We will never display any advertising and/or send you promotional information ab
 
 ##### Security
 
-Data is only stored in the local embedded SQLite database. Once in the app, data will never be send
+Data is only stored in the local embedded SQLite database. Once in the app, data will never be sent
 over the network to any centralized server.
+
+I have planned to use [Android Keystore System](https://developer.android.com/training/articles/keystore.html)
+in the near future to store the exchange API keys but for the moment I simply used an AES encryption. 
 
 Therefore we cannot guarantee the security of your data as any APK file can be easily decompiled.
 It's up to you to keep your application in safe hands.

@@ -32,7 +32,7 @@ public class AddAppSettingsViewModel extends AndroidViewModel {
 
     public AddAppSettingsViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
     }
 
     /**

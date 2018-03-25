@@ -21,6 +21,7 @@ package com.mycryptobinder.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,14 +50,19 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         // get the list view and add items
         ListView listView = view.findViewById(R.id.settings_listView);
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{"Currencies", "Exchanges", "AppSetting", "Synchronize with exchanges"});
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{
+                getString(R.string.label_menu_item_currencies),
+                getString(R.string.label_menu_item_exchanges),
+                getString(R.string.label_menu_item_app_setting),
+                getString(R.string.label_menu_item_synchronize_with_exchanges)
+        });
         listView.setAdapter(adapter);
 
         // set click listener for list view items

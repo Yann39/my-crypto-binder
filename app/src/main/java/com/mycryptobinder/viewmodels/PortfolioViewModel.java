@@ -28,7 +28,7 @@ import android.arch.lifecycle.Transformations;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.models.PricesFull;
-import com.mycryptobinder.service.CryptoCompareManager;
+import com.mycryptobinder.managers.CryptoCompareManager;
 
 import java.util.List;
 
@@ -42,8 +42,8 @@ public class PortfolioViewModel extends AndroidViewModel {
 
     public PortfolioViewModel(Application application) {
         super(application);
-        AppDatabase appDatabase = AppDatabase.getDatabase(getApplication());
-        cryptoCompareManager = new CryptoCompareManager();
+        AppDatabase appDatabase = AppDatabase.getInstance(getApplication());
+        cryptoCompareManager = new CryptoCompareManager(application.getApplicationContext());
         differentCurrencies = appDatabase.transactionDao().getDifferentCurrencies();
         holdings = appDatabase.transactionDao().getHoldings();
         pricesFull = Transformations.switchMap(codes, cryptoCompareManager::getCurrentPricesFullData);

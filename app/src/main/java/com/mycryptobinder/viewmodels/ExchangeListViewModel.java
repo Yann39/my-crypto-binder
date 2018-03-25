@@ -37,7 +37,7 @@ public class ExchangeListViewModel extends AndroidViewModel {
 
     public ExchangeListViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
         exchanges = appDatabase.exchangeDao().getAll();
     }
 

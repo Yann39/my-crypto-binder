@@ -32,7 +32,7 @@ public class AddIcoViewModel extends AndroidViewModel {
 
     public AddIcoViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
     }
 
     public void addIco(Ico ico) {

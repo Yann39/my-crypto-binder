@@ -13,12 +13,6 @@
         android:padding="8dp">
 
         <TextView
-            android:id="@+id/exchange_card_exchange_id"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="invisible" />
-
-        <TextView
             android:id="@+id/exchange_card_exchange_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -29,7 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/exchange_card_exchange_name"
-            android:layout_toRightOf="@+id/exchange_card_exchange_name"
             android:orientation="vertical"
             android:weightSum="2">
 
@@ -37,7 +30,6 @@
                 android:id="@+id/exchange_card_exchange_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1" />
 
@@ -45,9 +37,20 @@
                 android:id="@+id/exchange_card_exchange_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/exchange_card_exchange_publicApiKey"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/exchange_card_exchange_privateApiKey"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible" />
 
         </LinearLayout>
 
@@ -56,7 +59,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:contentDescription="@string/imgbtn_delete_exchange_desc"
             android:src="@android:drawable/ic_menu_delete" />

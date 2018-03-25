@@ -19,25 +19,36 @@
 
 package com.mycryptobinder.entities;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.mycryptobinder.dao.AppSettingDao;
 import com.mycryptobinder.dao.CurrencyDao;
 import com.mycryptobinder.dao.ExchangeDao;
 import com.mycryptobinder.dao.IcoDao;
-import com.mycryptobinder.dao.KrakenAssetDao;
-import com.mycryptobinder.dao.KrakenAssetPairDao;
-import com.mycryptobinder.dao.KrakenTradeDao;
-import com.mycryptobinder.dao.PoloniexAssetDao;
-import com.mycryptobinder.dao.PoloniexDepositDao;
-import com.mycryptobinder.dao.PoloniexTradeDao;
-import com.mycryptobinder.dao.PoloniexWithdrawalDao;
 import com.mycryptobinder.dao.TransactionDao;
+import com.mycryptobinder.dao.kraken.KrakenAssetDao;
+import com.mycryptobinder.dao.kraken.KrakenAssetPairDao;
+import com.mycryptobinder.dao.kraken.KrakenTradeDao;
+import com.mycryptobinder.dao.poloniex.PoloniexAssetDao;
+import com.mycryptobinder.dao.poloniex.PoloniexDepositDao;
+import com.mycryptobinder.dao.poloniex.PoloniexTradeDao;
+import com.mycryptobinder.dao.poloniex.PoloniexWithdrawalDao;
+import com.mycryptobinder.entities.kraken.KrakenAsset;
+import com.mycryptobinder.entities.kraken.KrakenAssetPair;
+import com.mycryptobinder.entities.kraken.KrakenTrade;
+import com.mycryptobinder.entities.poloniex.PoloniexAsset;
+import com.mycryptobinder.entities.poloniex.PoloniexDeposit;
+import com.mycryptobinder.entities.poloniex.PoloniexTrade;
+import com.mycryptobinder.entities.poloniex.PoloniexWithdrawal;
 import com.mycryptobinder.helpers.DateTypeConverter;
+
+import java.util.concurrent.Executors;
 
 @Database(entities = {
         AppSetting.class,
@@ -51,7 +62,7 @@ import com.mycryptobinder.helpers.DateTypeConverter;
         Currency.class,
         Exchange.class,
         Ico.class,
-        Transaction.class}, version = 13, exportSchema = false)
+        Transaction.class}, version = 16, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -81,11 +92,30 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract PoloniexWithdrawalDao poloniexWithdrawalDao();
 
-    public static AppDatabase getDatabase(Context context) {
+    public synchronized static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "crytodatabase").fallbackToDestructiveMigration().build();
+            INSTANCE = buildDatabase(context);
         }
         return INSTANCE;
+    }
+
+    private static AppDatabase buildDatabase(final Context context) {
+        return Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "cryptodatabase").fallbackToDestructiveMigration().addCallback(new Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+                Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        // initialize database with exchanges
+                        Exchange krakenExchange = new Exchange("Kraken", "https://www.kraken.com", "Kraken exchange", null, null);
+                        Exchange poloniexExchange = new Exchange("Poloniex", "https://poloniex.com", "Poloniex exchange", null, null);
+                        getInstance(context).exchangeDao().insert(krakenExchange);
+                        getInstance(context).exchangeDao().insert(poloniexExchange);
+                    }
+                });
+            }
+        }).build();
     }
 
     public static void destroyInstance() {

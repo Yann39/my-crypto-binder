@@ -9,12 +9,19 @@
     <string name="lbl_currency_iso_code">ISO code</string>
     <string name="lbl_currency_symbol">Symbol</string>
 
+    <string name="lbl_exchange">Exchange</string>
     <string name="lbl_exchange_name">Name</string>
     <string name="lbl_exchange_link">Link</string>
     <string name="lbl_exchange_description">Description</string>
+    <string name="lbl_exchange_api_public_key">API public key</string>
+    <string name="ph_exchange_api_public_key">API public key</string>
+    <string name="lbl_exchange_api_private_key">API private key</string>
+    <string name="ph_exchange_api_private_key">API private key</string>
 
     <string name="lbl_app_setting_name">Name</string>
     <string name="lbl_app_setting_value">Value</string>
+    <string name="lbl_app_setting_header_name">NAME</string>
+    <string name="lbl_app_setting_header_value">VALUE</string>
 
     <string name="ph_currency_name">ex. Euro</string>
     <string name="ph_currency_iso_code">ex. EUR</string>
@@ -43,18 +50,17 @@
 
     <string name="btn_create_ico">Add new ICO</string>
 
+    <string name="lbl_exchange_synchronization_title">Exchange synchronization</string>
+    <string name="lbl_select_exchanges">Select exchanges</string>
+    <string name="msg_synchronize_exchanges_intro">Use this functionality to synchronize your data with online exchanges. Please note that you must have provided your private and public API key in the \'Keys configuration\' menu for the exchanges you want to synchronize.</string>
+    <string name="lbl_perform_clean_import">Perform clean import</string>
     <string name="btn_synchronize">Synchronize</string>
     <string name="btn_select">Select</string>
 
     <string name="imgbtn_delete_currency_desc">Delete this currency</string>
     <string name="imgbtn_delete_exchange_desc">Delete this exchange</string>
 
-    <string name="dialog_delete_currency_message">Are you sure you want to delete currency %1$s</string>
-    <string name="dialog_delete_exchange_message">Are you sure you want to delete exchange %1$s</string>
 
-    <string name="lbl_confirmation">Confirmation</string>
-    <string name="lbl_yes">Yes</string>
-    <string name="lbl_no">No</string>
     <string name="lbl_checkbox_clean_synchronize">Clean?</string>
 
     <string name="lbl_currency1_selection">Send</string>
@@ -69,11 +75,19 @@
     <string name="lbl_date">Date</string>
     <string name="lbl_comment">Comment</string>
 
+    <string name="lbl_ico_title">ICO</string>
+    <string name="lbl_ico_name">Name</string>
+    <string name="lbl_ico_amount">Amount</string>
+    <string name="lbl_ico_currency">Currency</string>
+    <string name="lbl_ico_date">Date</string>
+    <string name="lbl_ico_token_name">Token name</string>
+    <string name="lbl_ico_token_date">Token date</string>
+    <string name="lbl_ico_token_quantity">Token quantity</string>
+    <string name="lbl_ico_fee">Fee</string>
+    <string name="lbl_ico_bonus">Bonus</string>
+    <string name="lbl_ico_comment">Comment</string>
+
     <string name="lbl_transaction_type">Type</string>
-    <string name="lbl_transaction_currency1_buy">Buy</string>
-    <string name="lbl_transaction_currency1_sell">Sell</string>
-    <string name="lbl_transaction_currency2_with">With</string>
-    <string name="lbl_transaction_currency2_for">For</string>
 
     <string name="title_portfolio">Portfolio</string>
     <string name="title_add_currency">Add new currency</string>
@@ -90,15 +104,82 @@
     <string name="title_exchange_list">Exchange list</string>
     <string name="title_exchange_synchronization">Exchange synchronization</string>
 
-    <string name="msg_currency_removed">Currency %1$s has been removed</string>
-    <string name="msg_currency_updated">Currency %1$s has been updated</string>
-    <string name="msg_currency_created">Currency %1$s has been created</string>
-    <string name="msg_exchange_removed">Exchange %1$s has been removed</string>
-    <string name="msg_exchange_updated">Exchange %1$s has been updated</string>
-    <string name="msg_exchange_created">Exchange %1$s has been created</string>
-    <string name="msg_ico_created">ICO %1$s has been created</string>
-    <string name="msg_app_setting_created">Application setting %1$s has been created</string>
-    <string name="msg_transaction_created">Transaction %1$s has been created</string>
-    <string name="msg_transaction_updated">Transaction %1$s has been updated</string>
-    <string name="transaction_pair">%1$s/%2$s</string>
+    <!--region labels-->
+    <string name="label_transaction_currency1_buy">Buy</string>
+    <string name="label_transaction_currency1_sell">Sell</string>
+    <string name="label_transaction_currency2_with">With</string>
+    <string name="label_transaction_currency2_for">For</string>
+    <string name="label_yes">Yes</string>
+    <string name="label_no">No</string>
+    <string name="label_euro_price">€ %1$s</string>
+    <string name="label_percentage">%1$s%%</string>
+    <string name="label_menu_item_currencies">Currencies</string>
+    <string name="label_menu_item_exchanges">Exchanges</string>
+    <string name="label_menu_item_app_setting">AppSetting</string>
+    <string name="label_menu_item_synchronize_with_exchanges">Synchronize with exchanges</string>
+    <string name="label_exchange_name_kraken">Kraken</string>
+    <string name="label_exchange_name_poloniex">Poloniex</string>
+    <string name="label_exchange_name_bittrex">Bittrex</string>
+    <string name="label_exchange_name_bitfinex">Bitfinex</string>
+    <string name="label_all">All</string>
+    <string name="label_transaction_pair">%1$s/%2$s</string>
+    <!--endregion-->
+
+    <!--region error messages-->
+    <string name="error_setting_name_required">Setting name is required!</string>
+    <string name="error_setting_value_required">Setting value is required!</string>
+    <string name="error_currency_name_required">Currency name is required!</string>
+    <string name="error_currency_iso_code_required">ISO code is required!</string>
+    <string name="error_exchange_name_required">Exchange name is required!</string>
+    <string name="error_ico_name_required">ICO name is required!</string>
+    <string name="error_ico_currency_required">Currency is required!</string>
+    <string name="error_ico_amount_required">Amount is required!</string>
+    <string name="error_ico_amount_not_valid">Amount is invalid!</string>
+    <string name="error_ico_date_required">Date is required!</string>
+    <string name="error_ico_date_not_valid">Date is invalid!</string>
+    <string name="error_ico_token_name_required">Token name is required!</string>
+    <string name="error_ico_token_date_required">Token date is required!</string>
+    <string name="error_ico_token_date_invalid">Token date is invalid!</string>
+    <string name="error_ico_token_quantity_required">Token quantity is required!</string>
+    <string name="error_ico_token_quantity_invalid">Token quantity is invalid!</string>
+    <string name="error_ico_fee_required">Fee is required!</string>
+    <string name="error_ico_fee_invalid">Fee is invalid!</string>
+    <string name="error_ico_bonus_required">Bonus is required!</string>
+    <string name="error_ico_bonus_invalid">Bonus is invalid!</string>
+    <string name="error_transaction_currency1_required">Currency1 is required!</string>
+    <string name="error_transaction_currency2_required">Currency2 is required!</string>
+    <string name="error_transaction_exchange_required">Exchange is required!</string>
+    <string name="error_transaction_id_required">Transaction ID is required!</string>
+    <string name="error_transaction_quantity_required">Quantity is required!</string>
+    <string name="error_transaction_quantity_not_valid">Quantity is invalid!</string>
+    <string name="error_transaction_price_required">Price is required!</string>
+    <string name="error_transaction_price_not_valid">Price is invalid!</string>
+    <string name="error_transaction_fee_required">Fee is required!</string>
+    <string name="error_transaction_fee_not_valid">Fee is invalid!</string>
+    <string name="error_transaction_total_required">Total is required!</string>
+    <string name="error_transaction_total_not_valid">Total is invalid!</string>
+    <string name="error_transaction_type_required">Type is required!</string>
+    <string name="error_retrieving_price_full">Error occurred when retrieving pricemultifull from cryptoCompare API : %1$s</string>
+    <!--endregion-->
+
+    <!--region success messages-->
+    <string name="success_app_setting_created">Application setting %1$s has been created</string>
+    <string name="success_currency_created">Currency %1$s has been created</string>
+    <string name="success_exchange_created">Exchange %1$s has been created</string>
+    <string name="success_ico_created">ICO %1$s has been created</string>
+    <string name="success_transaction_created">Transaction %1$s has been created</string>
+    <string name="success_currency_removed">Currency %1$s has been removed</string>
+    <string name="success_currency_updated">Currency %1$s has been updated</string>
+    <string name="success_exchange_updated">Exchange %1$s has been updated</string>
+    <string name="success_transaction_updated">Transaction %1$s has been updated</string>
+    <string name="success_exchange_removed">Exchange %1$s has been removed</string>
+    <!--endregion-->
+
+    <!--region confirmation messages-->
+    <string name="confirm_delete_currency">Are you sure you want to delete currency %1$s</string>
+    <string name="confirm_delete_exchange">Are you sure you want to delete exchange %1$s</string>
+    <!--endregion-->
+
+    <string name="title_confirmation">Confirmation</string>
+
 </resources>

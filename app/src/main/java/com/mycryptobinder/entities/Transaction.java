@@ -81,16 +81,10 @@ public class Transaction {
     @ColumnInfo(name = "total")
     private Double total;
 
-    @ColumnInfo(name = "sum_currency1")
-    private Double sumCurrency1;
-
-    @ColumnInfo(name = "sum_currency2")
-    private Double sumCurrency2;
-
     @ColumnInfo(name = "comment")
     private String comment;
 
-    public Transaction(String exchangeName, String transactionId, String currency1IsoCode, String currency2IsoCode, Double fee, Date date, String type, Double quantity, Double price, Double total, Double sumCurrency1, Double sumCurrency2, String comment) {
+    public Transaction(String exchangeName, String transactionId, String currency1IsoCode, String currency2IsoCode, Double fee, Date date, String type, Double quantity, Double price, Double total, String comment) {
         this.exchangeName = exchangeName;
         this.transactionId = transactionId;
         this.currency1IsoCode = currency1IsoCode;
@@ -101,8 +95,6 @@ public class Transaction {
         this.quantity = quantity;
         this.price = price;
         this.total = total;
-        this.sumCurrency1 = sumCurrency1;
-        this.sumCurrency2 = sumCurrency2;
         this.comment = comment;
     }
 
@@ -192,22 +184,6 @@ public class Transaction {
 
     public void setTotal(Double total) {
         this.total = total;
-    }
-
-    public Double getSumCurrency1() {
-        return sumCurrency1;
-    }
-
-    public void setSumCurrency1(Double sumCurrency1) {
-        this.sumCurrency1 = sumCurrency1;
-    }
-
-    public Double getSumCurrency2() {
-        return sumCurrency2;
-    }
-
-    public void setSumCurrency2(Double sumCurrency2) {
-        this.sumCurrency2 = sumCurrency2;
     }
 
     public String getComment() {

@@ -21,6 +21,7 @@ package com.mycryptobinder.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,7 +42,6 @@ import com.mycryptobinder.viewmodels.PortfolioViewModel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class PortfolioFragment extends Fragment {
 
@@ -58,7 +58,7 @@ public class PortfolioFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
 
@@ -100,10 +100,12 @@ public class PortfolioFragment extends Fragment {
 
             DecimalFormat df = new DecimalFormat("#");
             double sum = 0.0;
-            for (HoldingData holdingData : holdingDataList) {
-                sum += holdingData.getQuantity();
+            if (holdingDataList != null) {
+                for (HoldingData holdingData : holdingDataList) {
+                    sum += holdingData.getQuantity();
+                }
             }
-            totalHoldingTextView.setText("€ " + df.format(sum));
+            totalHoldingTextView.setText(getString(R.string.label_euro_price, df.format(sum)));
         });
 
         // observe the current prices data from the view model so it will always be up to date in the UI
@@ -111,6 +113,7 @@ public class PortfolioFragment extends Fragment {
             // update data in the adapter
             portfolioCardAdapter.setPricesFull(pricesFull);
 
+            // update UI
             DecimalFormat df = new DecimalFormat("#");
             DecimalFormat df2 = new DecimalFormat("+#.##;-#");
             double sum = 0.0;
@@ -123,8 +126,8 @@ public class PortfolioFragment extends Fragment {
                 }
                 totalChange = sum24h / pricesFull.getRaw().values().size();
             }
-            totalHoldingTextView.setText("€ " + df.format(sum));
-            totalChange24hTextView.setText(df2.format(totalChange) + "%");
+            totalHoldingTextView.setText(getString(R.string.label_euro_price, df.format(sum)));
+            totalChange24hTextView.setText(getString(R.string.label_percentage, df2.format(totalChange)));
 
             // hide the progress bar
             progressBar.setVisibility(View.GONE);
@@ -136,6 +139,7 @@ public class PortfolioFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            // refresh icon click
             case R.id.action_refresh:
                 portfolioViewModel.refresh();
                 break;

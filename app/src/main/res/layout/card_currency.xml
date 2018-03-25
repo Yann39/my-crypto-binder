@@ -26,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/currency_card_currency_symbol"
-            android:layout_toRightOf="@+id/currency_card_currency_symbol"
             android:orientation="vertical"
             android:weightSum="2">
 
@@ -34,7 +33,6 @@
                 android:id="@+id/currency_card_currency_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:textColor="@color/colorDark30" />
@@ -43,7 +41,6 @@
                 android:id="@+id/currency_card_currency_iso_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:textColor="@color/colorDark30" />
@@ -55,7 +52,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:contentDescription="@string/imgbtn_delete_currency_desc"
             app:srcCompat="@drawable/ic_delete_white_24px"/>

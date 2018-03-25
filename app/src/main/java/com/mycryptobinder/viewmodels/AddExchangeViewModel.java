@@ -21,6 +21,8 @@ package com.mycryptobinder.viewmodels;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 
 import com.mycryptobinder.entities.AppDatabase;
@@ -33,7 +35,7 @@ public class AddExchangeViewModel extends AndroidViewModel {
 
     public AddExchangeViewModel(Application application) {
         super(application);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
+        appDatabase = AppDatabase.getInstance(this.getApplication());
     }
 
     public void addExchange(Exchange exchange) {

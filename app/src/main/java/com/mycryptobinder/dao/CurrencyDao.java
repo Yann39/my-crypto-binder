@@ -28,7 +28,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.mycryptobinder.entities.Currency;
-import com.mycryptobinder.models.HoldingData;
 
 import java.util.List;
 

@@ -1,101 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.mycryptobinder.activities.SynchronizeExchangesActivity">
 
-    <TextView
-        android:id="@+id/synchronize_exchanges_title_editText"
+    <include layout="@layout/appbar" />
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="14dp"
-        android:text="Exchange synchronization"
-        android:textSize="20sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/synchronize_exchanges_intro_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="14dp"
-        android:text="Use this functionnality to synchronize your data with online exchanges. Please note that you must have provided your private and public API key in the 'Keys configuration' menu for the exchanges you want to synchronize."
-        app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_title_editText" />
-
-    <TextView
-        android:id="@+id/synchronize_exchange_label_TextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Select exchanges"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/synchronize_exchange_MultiSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_intro_editText" />
-
-    <com.mycryptobinder.components.MultiSpinner
-        android:id="@+id/synchronize_exchange_MultiSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@+id/synchronize_exchange_label_TextView"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_intro_editText" />
-
-    <TextView
-        android:id="@+id/synchronize_exchange_clean_label_TextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Perform clean import"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/checkbox_clean_synchronize_exchanges"
-        app:layout_constraintTop_toBottomOf="@+id/synchronize_exchange_MultiSpinner" />
-
-    <CheckBox
-        android:id="@+id/checkbox_clean_synchronize_exchanges"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@+id/synchronize_exchange_clean_label_TextView"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/synchronize_exchange_MultiSpinner" />
-
-    <Button
-        android:id="@+id/btn_synchronize_exchanges"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/custom_button"
-        android:text="@string/btn_synchronize"
-        android:layout_marginTop="20dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkbox_clean_synchronize_exchanges" />
-
-    <ProgressBar
-        android:id="@+id/synchronize_exchanges_log_progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_synchronize_exchanges" />
-
-    <ScrollView
-        android:id="@+id/synchronize_exchanges_log_scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="260dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/background_border"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_log_progressBar">
+        android:layout_height="match_parent"
+        android:padding="20dp">
 
         <TextView
-            android:id="@+id/synchronize_exchanges_log_editText"
+            android:id="@+id/synchronize_exchanges_title_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            android:text="@string/lbl_exchange_synchronization_title"
+            android:textSize="20sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/synchronize_exchanges_intro_editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|start" />
-    </ScrollView>
-</android.support.constraint.ConstraintLayout>
+            android:paddingBottom="14dp"
+            android:text="@string/msg_synchronize_exchanges_intro"
+            app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_title_editText" />
+
+        <TextView
+            android:id="@+id/synchronize_exchange_label_TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_select_exchanges"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/synchronize_exchange_MultiSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_intro_editText" />
+
+        <com.mycryptobinder.components.MultiSpinner
+            android:id="@+id/synchronize_exchange_MultiSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/synchronize_exchange_label_TextView"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_intro_editText" />
+
+        <TextView
+            android:id="@+id/synchronize_exchange_clean_label_TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_perform_clean_import"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/checkbox_clean_synchronize_exchanges"
+            app:layout_constraintTop_toBottomOf="@+id/synchronize_exchange_MultiSpinner" />
+
+        <CheckBox
+            android:id="@+id/checkbox_clean_synchronize_exchanges"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/synchronize_exchange_clean_label_TextView"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/synchronize_exchange_MultiSpinner" />
+
+        <Button
+            android:id="@+id/btn_synchronize_exchanges"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/custom_button"
+            android:text="@string/btn_synchronize"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox_clean_synchronize_exchanges" />
+
+        <ProgressBar
+            android:id="@+id/synchronize_exchanges_log_progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_synchronize_exchanges" />
+
+        <ScrollView
+            android:id="@+id/synchronize_exchanges_log_scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/background_border"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_log_progressBar">
+
+            <TextView
+                android:id="@+id/synchronize_exchanges_log_editText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start" />
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

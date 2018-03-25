@@ -38,37 +38,20 @@ public class CurrencyCardViewHolder extends RecyclerView.ViewHolder implements V
     public ImageView currency_delete_imageButton;
     public TextView currency_symbol_textView;
     public List<Currency> currencies;
-    private Currency currency;
-    //private CurrencyCardListener currencyCardListener;
-
-    public interface CurrencyCardListener {
-        void onDeleteButtonClicked(Currency item);
-    }
 
     public void setItem(Currency currency) {
-        this.currency = currency;
         currency_name_textView.setText(currency.getName());
         currency_iso_code_textView.setText(currency.getIsoCode());
         currency_symbol_textView.setText(currency.getSymbol());
     }
 
-    public CurrencyCardViewHolder(View view/*, final CurrencyCardListener currencyCardListener*/) {
+    public CurrencyCardViewHolder(View view) {
         super(view);
-        //this.currencyCardListener = currencyCardListener;
         view.setOnClickListener(this);
-
         currency_name_textView = view.findViewById(R.id.currency_card_currency_name);
         currency_iso_code_textView = view.findViewById(R.id.currency_card_currency_iso_code);
         currency_symbol_textView = view.findViewById(R.id.currency_card_currency_symbol);
         currency_delete_imageButton = view.findViewById(R.id.currency_card_btn_delete);
-
-        // delete button click
-        /*currency_delete_imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                currencyCardListener.onDeleteButtonClicked(currency);
-            }
-        });*/
     }
 
     @Override

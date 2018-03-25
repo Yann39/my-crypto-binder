@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -75,7 +76,7 @@ public class TransactionsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // inflate the layout (create a new view)
         View view = inflater.inflate(R.layout.fragment_transactions, container, false);
@@ -118,61 +119,67 @@ public class TransactionsFragment extends Fragment {
         LinearLayout transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
         transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
 
-        // prepare drawables (change color)
-        caretDown = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_more_black_24px);
-        caretDown = DrawableCompat.wrap(caretDown);
-        DrawableCompat.setTint(caretDown, ContextCompat.getColor(getContext(), R.color.colorDark30));
-        DrawableCompat.setTintMode(caretDown, PorterDuff.Mode.SRC_IN);
-        caretDown.setBounds(0, 0, caretDown.getIntrinsicWidth(), caretDown.getIntrinsicHeight());
-        caretUp = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_less_black_24px);
-        caretUp = DrawableCompat.wrap(caretUp);
-        DrawableCompat.setTint(caretUp, ContextCompat.getColor(getContext(), R.color.colorDark30));
-        DrawableCompat.setTintMode(caretUp, PorterDuff.Mode.SRC_IN);
-        caretUp.setBounds(0, 0, caretUp.getIntrinsicWidth(), caretUp.getIntrinsicHeight());
+        if (getActivity() != null && getContext() != null) {
+            // prepare drawables (change color)
+            caretDown = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_more_black_24px);
+            if (caretDown != null) {
+                caretDown = DrawableCompat.wrap(caretDown);
+                DrawableCompat.setTint(caretDown, ContextCompat.getColor(getContext(), R.color.colorDark30));
+                DrawableCompat.setTintMode(caretDown, PorterDuff.Mode.SRC_IN);
+                caretDown.setBounds(0, 0, caretDown.getIntrinsicWidth(), caretDown.getIntrinsicHeight());
+            }
+            caretUp = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_less_black_24px);
+            if (caretUp != null) {
+                caretUp = DrawableCompat.wrap(caretUp);
+                DrawableCompat.setTint(caretUp, ContextCompat.getColor(getContext(), R.color.colorDark30));
+                DrawableCompat.setTintMode(caretUp, PorterDuff.Mode.SRC_IN);
+                caretUp.setBounds(0, 0, caretUp.getIntrinsicWidth(), caretUp.getIntrinsicHeight());
+            }
 
-        // add click listener on header to sort rows
-        transactionsPairColumnHeader.setOnClickListener(view12 -> {
-            transactionListAdapter.sortTransactions(0, col0Asc);
-            transactionListAdapter.notifyDataSetChanged();
-            transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col0Asc ? caretDown : caretUp, null);
-            transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            col0Asc = !col0Asc;
-        });
+            // add click listener on header to sort rows
+            transactionsPairColumnHeader.setOnClickListener(view12 -> {
+                transactionListAdapter.sortTransactions(0, col0Asc);
+                transactionListAdapter.notifyDataSetChanged();
+                transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col0Asc ? caretDown : caretUp, null);
+                transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col0Asc = !col0Asc;
+            });
 
-        // add click listener on header to sort rows
-        transactionsQuantityColumnHeader.setOnClickListener(view13 -> {
-            transactionListAdapter.sortTransactions(1, col1Asc);
-            transactionListAdapter.notifyDataSetChanged();
-            transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col1Asc ? caretDown : caretUp, null);
-            transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            col1Asc = !col1Asc;
-        });
+            // add click listener on header to sort rows
+            transactionsQuantityColumnHeader.setOnClickListener(view13 -> {
+                transactionListAdapter.sortTransactions(1, col1Asc);
+                transactionListAdapter.notifyDataSetChanged();
+                transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col1Asc ? caretDown : caretUp, null);
+                transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col1Asc = !col1Asc;
+            });
 
-        // add click listener on header to sort rows
-        transactionsPriceColumnHeader.setOnClickListener(view14 -> {
-            transactionListAdapter.sortTransactions(2, col2Asc);
-            transactionListAdapter.notifyDataSetChanged();
-            transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col2Asc ? caretDown : caretUp, null);
-            transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            col2Asc = !col2Asc;
-        });
+            // add click listener on header to sort rows
+            transactionsPriceColumnHeader.setOnClickListener(view14 -> {
+                transactionListAdapter.sortTransactions(2, col2Asc);
+                transactionListAdapter.notifyDataSetChanged();
+                transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col2Asc ? caretDown : caretUp, null);
+                transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col2Asc = !col2Asc;
+            });
 
-        // add click listener on header to sort rows
-        transactionsTotalColumnHeader.setOnClickListener(view15 -> {
-            transactionListAdapter.sortTransactions(3, col3Asc);
-            transactionListAdapter.notifyDataSetChanged();
-            transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col3Asc ? caretDown : caretUp, null);
-            transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            col3Asc = !col3Asc;
-        });
+            // add click listener on header to sort rows
+            transactionsTotalColumnHeader.setOnClickListener(view15 -> {
+                transactionListAdapter.sortTransactions(3, col3Asc);
+                transactionListAdapter.notifyDataSetChanged();
+                transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col3Asc ? caretDown : caretUp, null);
+                transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col3Asc = !col3Asc;
+            });
+        }
 
         return view;
     }
