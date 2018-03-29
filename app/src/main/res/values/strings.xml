@@ -123,6 +123,15 @@
     <string name="label_exchange_name_bitfinex">Bitfinex</string>
     <string name="label_all">All</string>
     <string name="label_transaction_pair">%1$s/%2$s</string>
+    <string name="label_one_day">1 day</string>
+    <string name="label_seven_days">7 days</string>
+    <string name="label_fifteen_days">15 days</string>
+    <string name="label_one_month">1 month</string>
+    <string name="label_two_months">2 months</string>
+    <string name="label_three_months">3 months</string>
+    <string name="label_six_months">6 months</string>
+    <string name="label_one_year">1 year</string>
+    <string name="label_price_history">price history</string>
     <!--endregion-->
 
     <!--region error messages-->
@@ -159,7 +168,9 @@
     <string name="error_transaction_total_required">Total is required!</string>
     <string name="error_transaction_total_not_valid">Total is invalid!</string>
     <string name="error_transaction_type_required">Type is required!</string>
+    <string name="error_retrieving_data_from_api">An error occurred when retrieving data from API : %1$s</string>
     <string name="error_retrieving_price_full">Error occurred when retrieving pricemultifull from cryptoCompare API : %1$s</string>
+    <string name="error_retrieving_historical_day_price">Error occurred when retrieving histoday from cryptoCompare API : %1$s</string>
     <!--endregion-->
 
     <!--region success messages-->

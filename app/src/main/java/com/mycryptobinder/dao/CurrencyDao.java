@@ -52,6 +52,12 @@ public interface CurrencyDao {
             "where c.iso_code is null")
     List<Currency> getFromKraken();
 
+    @Query("select ba.asset_code as iso_code, ba.asset_name as name, null as symbol " +
+            "from bittrex_assets ba " +
+            "left join currencies c on c.iso_code = ba.asset_code " +
+            "where c.iso_code is null")
+    List<Currency> getFromBittrex();
+
     @Insert
     void insert(Currency... currencies);
 

@@ -19,18 +19,19 @@
 
 package com.mycryptobinder.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.entities.AppSetting;
+import com.mycryptobinder.viewholders.AppSettingsViewHolder;
 
 import java.util.List;
 
-public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsListAdapter.AppSettingsViewHolder> {
+public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsViewHolder> {
 
     private List<AppSetting> appSettings;
     private View.OnLongClickListener longClickListener;
@@ -40,13 +41,14 @@ public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsList
         this.longClickListener = longClickListener;
     }
 
+    @NonNull
     @Override
-    public AppSettingsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AppSettingsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new AppSettingsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_settings, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final AppSettingsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AppSettingsViewHolder holder, int position) {
         AppSetting appSetting = appSettings.get(position);
         holder.nameTextView.setText(appSetting.getName());
         holder.valueTextView.setText(appSetting.getValue());
@@ -64,14 +66,4 @@ public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsList
         notifyDataSetChanged();
     }
 
-    static class AppSettingsViewHolder extends RecyclerView.ViewHolder {
-        private TextView nameTextView;
-        private TextView valueTextView;
-
-        AppSettingsViewHolder(View view) {
-            super(view);
-            nameTextView = view.findViewById(R.id.app_settings_name_column_header_text);
-            valueTextView = view.findViewById(R.id.app_settings_value_column_header_text);
-        }
-    }
 }

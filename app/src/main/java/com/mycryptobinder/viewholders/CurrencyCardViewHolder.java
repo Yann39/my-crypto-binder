@@ -39,12 +39,6 @@ public class CurrencyCardViewHolder extends RecyclerView.ViewHolder implements V
     public TextView currency_symbol_textView;
     public List<Currency> currencies;
 
-    public void setItem(Currency currency) {
-        currency_name_textView.setText(currency.getName());
-        currency_iso_code_textView.setText(currency.getIsoCode());
-        currency_symbol_textView.setText(currency.getSymbol());
-    }
-
     public CurrencyCardViewHolder(View view) {
         super(view);
         view.setOnClickListener(this);
@@ -52,6 +46,12 @@ public class CurrencyCardViewHolder extends RecyclerView.ViewHolder implements V
         currency_iso_code_textView = view.findViewById(R.id.currency_card_currency_iso_code);
         currency_symbol_textView = view.findViewById(R.id.currency_card_currency_symbol);
         currency_delete_imageButton = view.findViewById(R.id.currency_card_btn_delete);
+    }
+
+    public void setItem(Currency currency) {
+        currency_name_textView.setText(currency.getName());
+        currency_iso_code_textView.setText(currency.getIsoCode());
+        currency_symbol_textView.setText(currency.getSymbol());
     }
 
     @Override

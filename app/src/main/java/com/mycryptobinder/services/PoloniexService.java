@@ -63,7 +63,7 @@ public interface PoloniexService {
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging).addInterceptor(chain -> {
         Request original = chain.request();
 
-        //sort request body parameters alphabetically so they are in the same order as the one used to generate the HMAC
+        // sort request body parameters alphabetically so they are in the same order as the one used to generate the HMAC
         RequestBody body = original.body();
         FormBody formBody = (FormBody) body;
         Map<String, String> unsortedParams = new HashMap<>();
@@ -74,7 +74,7 @@ public interface PoloniexService {
         }
         Map<String, String> sortedParams = new TreeMap<>(unsortedParams);
 
-        //convert map to URL string
+        // convert map to URL string
         StringBuilder sb = new StringBuilder();
         for (HashMap.Entry<String, String> e : sortedParams.entrySet()) {
             if (sb.length() > 0) {
@@ -84,7 +84,7 @@ public interface PoloniexService {
         }
         String newPostBody = sb.toString();
 
-        //set as new POST body
+        // set as new POST body
         RequestBody requestBody = null;
         if (body != null) {
             requestBody = RequestBody.create(body.contentType(), newPostBody);

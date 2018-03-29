@@ -22,6 +22,7 @@ package com.mycryptobinder.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -47,8 +48,9 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
         this.context = context;
     }
 
+    @NonNull
     @Override
-    public ExchangeCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ExchangeCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(context).inflate(R.layout.card_exchange, parent, false);
         return new ExchangeCardViewHolder(v);
@@ -60,7 +62,7 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
     }
 
     @Override
-    public void onBindViewHolder(final ExchangeCardViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ExchangeCardViewHolder holder, int position) {
         // get text from the data set at this position and replace it in the view
         holder.exchange_name_textView.setText(exchanges.get(holder.getAdapterPosition()).getName());
         holder.exchange_link_textView.setText(exchanges.get(holder.getAdapterPosition()).getLink());

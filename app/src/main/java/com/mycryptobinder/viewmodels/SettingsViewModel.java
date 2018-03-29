@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.helpers.UtilsHelper;
+import com.mycryptobinder.managers.BittrexManager;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.managers.KrakenManager;
 import com.mycryptobinder.managers.PoloniexManager;
@@ -42,6 +43,7 @@ public class SettingsViewModel extends AndroidViewModel {
     private static MutableLiveData<Integer> percentDone;
     private static KrakenManager krakenManager;
     private static PoloniexManager poloniexManager;
+    private static BittrexManager bittrexManager;
     private static PortfolioManager portfolioManager;
     private final SimpleDateFormat sdfLog;
     private final AppDatabase appDatabase;
@@ -53,6 +55,7 @@ public class SettingsViewModel extends AndroidViewModel {
         percentDone = new MutableLiveData<>();
         krakenManager = new KrakenManager(getApplication().getBaseContext());
         poloniexManager = new PoloniexManager(getApplication().getBaseContext());
+        bittrexManager = new BittrexManager(getApplication().getBaseContext());
         portfolioManager = new PortfolioManager(getApplication().getBaseContext());
         UtilsHelper uh = new UtilsHelper(getApplication().getBaseContext());
         sdfLog = new SimpleDateFormat("k:mm:ss", uh.getCurrentLocale());
@@ -167,6 +170,30 @@ public class SettingsViewModel extends AndroidViewModel {
             // insert Poloniex transactions from trade history
             logInfo("Inserting transactions from Poloniex trade history...");
             nbIns = poloniexManager.populateTransactions();
+            logInfo(nbIns + " transactions inserted");
+            percentDone.postValue(100);
+
+            // insert Bittrex trade history from API
+            logInfo("Collecting trade history from Bittrex API...");
+            nbIns = bittrexManager.populateTradeHistory();
+            logInfo(nbIns + " new trades inserted");
+            percentDone.postValue(100);
+
+            // insert Bittrex assets from API
+            logInfo("Inserting currencies from Bittrex assets...");
+            nbIns = bittrexManager.populateAssets();
+            logInfo(nbIns + " currencies inserted");
+            percentDone.postValue(100);
+
+            // insert Bittrex currencies from assets
+            logInfo("Inserting currencies from Bittrex assets...");
+            nbIns = bittrexManager.populateCurrencies();
+            logInfo(nbIns + " currencies inserted");
+            percentDone.postValue(100);
+
+            // insert Bittrex transactions from trade history
+            logInfo("Inserting transactions from Bittrex trade history...");
+            nbIns = bittrexManager.populateTransactions();
             logInfo(nbIns + " transactions inserted");
             percentDone.postValue(100);
 

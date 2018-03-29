@@ -382,12 +382,12 @@ public class PoloniexManager {
      * @return number of currencies inserted
      */
     public int populateCurrencies() {
-        List<Currency> poloniexCurrencyList = appDatabase.currencyDao().getFromPoloniex();
-        if (poloniexCurrencyList != null) {
-            Currency[] currencyArray2 = new Currency[poloniexCurrencyList.size()];
-            currencyArray2 = poloniexCurrencyList.toArray(currencyArray2);
+        List<Currency> currencyList = appDatabase.currencyDao().getFromPoloniex();
+        if (currencyList != null) {
+            Currency[] currencyArray2 = new Currency[currencyList.size()];
+            currencyArray2 = currencyList.toArray(currencyArray2);
             appDatabase.currencyDao().insert(currencyArray2);
-            return poloniexCurrencyList.size();
+            return currencyList.size();
         } else {
             return 0;
         }
@@ -411,7 +411,7 @@ public class PoloniexManager {
     }
 
     /**
-     * delete all data
+     * Delete all data
      */
     public void deleteAll() {
         appDatabase.poloniexTradeDao().deleteAll();

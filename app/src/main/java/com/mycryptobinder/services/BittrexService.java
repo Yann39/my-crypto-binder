@@ -19,12 +19,16 @@
 
 package com.mycryptobinder.services;
 
-import com.mycryptobinder.models.kraken.KrakenAssetPairs;
-import com.mycryptobinder.models.kraken.KrakenAssets;
-import com.mycryptobinder.models.kraken.KrakenTrades;
+import com.mycryptobinder.models.bittrex.BittrexAssets;
+import com.mycryptobinder.models.bittrex.BittrexDeposits;
+import com.mycryptobinder.models.bittrex.BittrexTrades;
+import com.mycryptobinder.models.bittrex.BittrexWithdrawals;
+import com.mycryptobinder.models.poloniex.PoloniexDepositsWithdrawals;
+import com.mycryptobinder.models.poloniex.PoloniexTradeValue;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -42,18 +46,26 @@ import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
 
-public interface KrakenService {
+public interface BittrexService {
 
-    @GET("0/public/AssetPairs")
-    Call<KrakenAssetPairs> getAssetPairs();
-
-    @GET("0/public/Assets")
-    Call<KrakenAssets> getAssets();
+    @GET("public/getcurrencies")
+    Call<BittrexAssets> getAssets();
 
     @FormUrlEncoded
-    @POST("0/private/TradesHistory")
-    Call<KrakenTrades> getTradeHistory(@HeaderMap Map<String, String> headers,
-                                       @FieldMap Map<String, String> fields);
+    @POST("account/getorderhistory")
+    Call<BittrexTrades> getTradeHistory(@HeaderMap Map<String, String> headers,
+                                        @FieldMap Map<String, String> params);
+
+    @FormUrlEncoded
+    @POST("account/getwithdrawalhistory?currency=BTC ")
+    Call<BittrexDeposits> getDeposits(@HeaderMap Map<String, String> headers,
+                                      @FieldMap Map<String, String> params);
+
+    @FormUrlEncoded
+    @POST("account/getwithdrawalhistory?currency=BTC  ")
+    Call<BittrexWithdrawals> getWithdrawals(@HeaderMap Map<String, String> headers,
+                                            @FieldMap Map<String, String> params);
+
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging).addInterceptor(chain -> {
@@ -108,7 +120,7 @@ public interface KrakenService {
     });
 
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://api.kraken.com/")
+            .baseUrl("https://bittrex.com/api/v1.1/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient.build())
             .build();

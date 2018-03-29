@@ -19,6 +19,7 @@
 
 package com.mycryptobinder.services;
 
+import com.mycryptobinder.models.HistoDayPrices;
 import com.mycryptobinder.models.PricesFull;
 
 import okhttp3.OkHttpClient;
@@ -33,6 +34,9 @@ public interface CryptoCompareService {
 
     @GET("pricemultifull?tsyms=EUR,USD")
     Call<PricesFull> getCurrentPricesFull(@Query("fsyms") String fsyms);
+
+    @GET("histoday?tsym=EUR&aggregate=1&e=CCCAGG")
+    Call<HistoDayPrices> getHistoricalDayPrice(@Query("fsym") String currency, @Query("limit") int nbDays);
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);

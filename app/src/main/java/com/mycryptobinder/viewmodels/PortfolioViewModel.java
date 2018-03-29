@@ -26,9 +26,9 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 
 import com.mycryptobinder.entities.AppDatabase;
+import com.mycryptobinder.managers.CryptoCompareManager;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.models.PricesFull;
-import com.mycryptobinder.managers.CryptoCompareManager;
 
 import java.util.List;
 
@@ -47,7 +47,6 @@ public class PortfolioViewModel extends AndroidViewModel {
         differentCurrencies = appDatabase.transactionDao().getDifferentCurrencies();
         holdings = appDatabase.transactionDao().getHoldings();
         pricesFull = Transformations.switchMap(codes, cryptoCompareManager::getCurrentPricesFullData);
-        //todo MediatorLiveData
     }
 
     public LiveData<List<HoldingData>> getHoldings() {

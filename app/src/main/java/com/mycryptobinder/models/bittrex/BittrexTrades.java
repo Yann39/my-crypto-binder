@@ -17,27 +17,37 @@
  * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycryptobinder.managers;
+package com.mycryptobinder.models.bittrex;
 
-import android.content.Context;
+import java.util.List;
 
-import com.mycryptobinder.entities.AppDatabase;
+public class BittrexTrades {
 
-public class PortfolioManager {
+    public boolean success;
+    public String message;
+    public List<BittrexTradeValue> result;
 
-    private static AppDatabase appDatabase;
-
-    public PortfolioManager(Context context) {
-        appDatabase = AppDatabase.getInstance(context);
+    public boolean isSuccess() {
+        return success;
     }
 
-    /**
-     * Delete all data
-     */
-    public void deleteAll() {
-        appDatabase.transactionDao().deleteAll();
-        appDatabase.currencyDao().deleteAll();
-        appDatabase.exchangeDao().deleteAll();
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public List<BittrexTradeValue> getResult() {
+        return result;
+    }
+
+    public void setResult(List<BittrexTradeValue> result) {
+        this.result = result;
+    }
 }

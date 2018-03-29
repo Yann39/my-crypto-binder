@@ -205,9 +205,9 @@ public class AddTransactionActivity extends AppCompatActivity {
             } else if (currency2 == null || currency2.trim().equals("")) {
                 transactionCurrency2AutoCompleteText.setError(getString(R.string.error_transaction_currency2_required));
             } else if (exchange == null || exchange.trim().equals("")) {
-                // setError on spinner not possible, so I use a fake TextView
+                // setError on spinner not possible, so let's use a fake TextView
                 TextView errorText = (TextView) transactionExchangeSpinner.getSelectedView();
-                errorText.setError("Anything here, just to add the icon");
+                errorText.setError("Anything here, just for the icon to be displayed");
                 errorText.setTextColor(Color.RED);
                 errorText.setText(getString(R.string.error_transaction_exchange_required));
             } else if (txId.trim().equals("")) {

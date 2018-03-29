@@ -63,6 +63,7 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
+                // get only currencies that corresponds to the specified filter value
                 if (constraint != null && currencies != null) {
                     List<Currency> tmpCurrencies = new ArrayList<>();
                     for (Currency c : currencies) {
@@ -70,7 +71,6 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
                             tmpCurrencies.add(c);
                         }
                     }
-                    // Now assign the values and count to the FilterResults object
                     filterResults.values = tmpCurrencies;
                     filterResults.count = tmpCurrencies.size();
                 }

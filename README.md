@@ -76,17 +76,30 @@ Application has been implemented using the **MVVM** (Model-View-ViewModel) patte
 
 Application code has been organized with the following package structure :
 
-- activities
-- adapters
-- components
-- dao
-- entities
-- helpers
-- managers
-- models
-- services
-- viewholders
-- viewmodels
+- _activities_ : UI interaction classes
+- _adapters_ : underlying views datasets management classes
+- _components_ : custom components
+- _dao_ : database access object interfaces
+- _entities_ : database entity classes
+- _helpers_ : helper classes
+- _managers_ : manager classes that acts as proxy between viewmodels and daos/services
+- _models_ : simple model classes (mainly used for services)
+- _services_ : services classes responsible for calling web services
+- _viewholders_ : view holder classes that holds view elements to speed up rendering
+- _viewmodels_ : viewmodel classes that store and manage UI-related data
+
+#### Mechanics
+
+Data got from online exchanges are stored in the local SQLite database :
+
+- all assets from different exchanges are merged into a single `CURRENCY` table
+- all trades from different exchanges are merged into a `TRANSACTIONS` table
+
+Note: currencies with different names are merged into the same name (ie. Kraken XBT becomes BTC).
+
+That way we have a simple `EXCHANGE` - `CURRENCY` - `TRANSACTIONS` relation, and have no need to
+call exchange API each time. Simply resynchronize with the exchange (from the settings menu) if you
+made new operations on it.
 
 ## Privacy
 

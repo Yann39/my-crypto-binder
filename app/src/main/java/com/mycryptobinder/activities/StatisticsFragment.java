@@ -19,6 +19,7 @@
 
 package com.mycryptobinder.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,17 +27,35 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mycryptobinder.R;
+import com.mycryptobinder.helpers.UtilsHelper;
+import com.mycryptobinder.models.HistoDayPrice;
+import com.mycryptobinder.viewmodels.StatisticsViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-public class StatisticsFragment extends Fragment {
+public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
+
+    private StatisticsViewModel statisticsViewModel;
+    private LineChart lineChart;
+    private SeekBar nbDaysSeekBar;
+    private TextView nbDaysTextView;
+    private UtilsHelper uh;
 
     public StatisticsFragment() {
         // required empty public constructor
@@ -59,35 +78,144 @@ public class StatisticsFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1F, 1252.457F));
-        entries.add(new Entry(2F, 1042.11F));
-        entries.add(new Entry(3F, 1430.15475F));
-        entries.add(new Entry(4F, 789.97845F));
-        entries.add(new Entry(5F, 899.5F));
-        entries.add(new Entry(6F, 884.545F));
-        entries.add(new Entry(7F, 987F));
-        entries.add(new Entry(8F, 1384.1145F));
-        entries.add(new Entry(9F, 1400.998F));
-        entries.add(new Entry(10F, 1778.92782F));
-        entries.add(new Entry(11F, 1832.2F));
-        entries.add(new Entry(12F, 1705.8902F));
-        entries.add(new Entry(13F, 1751.3F));
-        entries.add(new Entry(14F, 1698.75F));
-        entries.add(new Entry(15F, 1766.33341F));
+        UtilsHelper uh = new UtilsHelper(getContext());
 
-        // add entries to data set
-        LineDataSet dataSet = new LineDataSet(entries, "Portfolio value");
-        dataSet.setColor(Color.BLUE);
-        dataSet.setValueTextColor(Color.GREEN);
+        // get UI components
+        nbDaysTextView = view.findViewById(R.id.historical_day_price_nb_days_textView);
+        nbDaysSeekBar = view.findViewById(R.id.historical_day_price_nb_days_seekBar);
+        lineChart = view.findViewById(R.id.historical_day_price);
 
-        LineChart chart = view.findViewById(R.id.chart_example);
+        // initialize to 30 days
+        nbDaysSeekBar.setProgress(7);
+        nbDaysTextView.setText(getString(R.string.label_one_year));
 
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
-        chart.invalidate();
+        // add seek bar listener
+        nbDaysSeekBar.setOnSeekBarChangeListener(this);
+
+        // no description text
+        lineChart.getDescription().setEnabled(false);
+
+        // enable touch gestures
+        lineChart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setHighlightPerDragEnabled(true);
+
+        // set view offsets
+        lineChart.setViewPortOffsets(0f, 0f, 0f, 0f);
+
+        // get view model
+        statisticsViewModel = ViewModelProviders.of(this).get(StatisticsViewModel.class);
+
+        // set the currency for which we want historical price
+        statisticsViewModel.setDayPriceFilter("BTC", 365);
+
+        // observe the historical prices data from the view model so it will always be up to date in the UI
+        statisticsViewModel.getHistoricalDayPrice().observe(this, historicalDayPrices -> {
+            if (historicalDayPrices != null && historicalDayPrices.getData() != null) {
+
+                // fill chart entries with our values
+                ArrayList<Entry> entries = new ArrayList<>();
+                for (HistoDayPrice histoDayPrice : historicalDayPrices.getData()) {
+                    entries.add(new Entry(histoDayPrice.getTime(), histoDayPrice.getHigh().floatValue()));
+                }
+
+                // create a data set and customize it
+                LineDataSet set1 = new LineDataSet(entries, "BTC " + getString(R.string.label_one_day));
+                set1.setAxisDependency(YAxis.AxisDependency.LEFT);
+                set1.setColor(ColorTemplate.getHoloBlue());
+                set1.setValueTextColor(ColorTemplate.getHoloBlue());
+                set1.setLineWidth(1.5f);
+                set1.setDrawCircles(false);
+                set1.setDrawValues(false);
+                set1.setFillAlpha(65);
+                set1.setFillColor(ColorTemplate.getHoloBlue());
+                set1.setHighLightColor(Color.rgb(244, 117, 117));
+                set1.setDrawCircleHole(false);
+
+                // create a data object with the data set
+                LineData data = new LineData(set1);
+                data.setValueTextColor(Color.WHITE);
+                data.setValueTextSize(9f);
+
+                // set data
+                lineChart.setData(data);
+                lineChart.invalidate();
+
+                // disable the legend (only possible after setting data)
+                Legend l = lineChart.getLegend();
+                l.setEnabled(false);
+
+                // customize X axis
+                XAxis xAxis = lineChart.getXAxis();
+                xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
+                xAxis.setTextSize(10f);
+                xAxis.setTextColor(Color.WHITE);
+                xAxis.setDrawAxisLine(false);
+                xAxis.setDrawGridLines(true);
+                xAxis.setTextColor(Color.rgb(255, 192, 56));
+                xAxis.setCenterAxisLabels(true);
+                xAxis.setGranularity(24f); // one day
+                xAxis.setValueFormatter(new IAxisValueFormatter() {
+                    private SimpleDateFormat mFormat = new SimpleDateFormat("dd MMM", uh.getCurrentLocale());
+
+                    @Override
+                    public String getFormattedValue(float value, AxisBase axis) {
+
+                        return mFormat.format(new Date((long) value * 1000L));
+                    }
+                });
+
+                // customize Y axis
+                YAxis leftAxis = lineChart.getAxisLeft();
+                leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+                leftAxis.setTextColor(ColorTemplate.getHoloBlue());
+                leftAxis.setDrawGridLines(true);
+                leftAxis.setGranularityEnabled(true);
+                leftAxis.setYOffset(-9f);
+                leftAxis.setTextColor(Color.rgb(255, 192, 56));
+
+                YAxis rightAxis = lineChart.getAxisRight();
+                rightAxis.setEnabled(false);
+            }
+        });
 
         return view;
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        int[] valuesInt = {1, 7, 15, 30, 60, 90, 180, 365};
+        String[] valuesStr = {
+                getString(R.string.label_one_day),
+                getString(R.string.label_seven_days),
+                getString(R.string.label_fifteen_days),
+                getString(R.string.label_one_month),
+                getString(R.string.label_two_months),
+                getString(R.string.label_three_months),
+                getString(R.string.label_six_months),
+                getString(R.string.label_one_year)
+        };
+        nbDaysTextView.setText(valuesStr[nbDaysSeekBar.getProgress()]);
+        statisticsViewModel.setDayPriceFilter("BTC", valuesInt[nbDaysSeekBar.getProgress()]);
+        // redraw
+        lineChart.invalidate();
+    }
+
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+
     }
 
 }

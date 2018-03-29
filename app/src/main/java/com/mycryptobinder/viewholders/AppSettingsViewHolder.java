@@ -17,27 +17,23 @@
  * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycryptobinder.managers;
+package com.mycryptobinder.viewholders;
 
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
-import com.mycryptobinder.entities.AppDatabase;
+import com.mycryptobinder.R;
 
-public class PortfolioManager {
+public class AppSettingsViewHolder extends RecyclerView.ViewHolder {
 
-    private static AppDatabase appDatabase;
+    public TextView nameTextView;
+    public TextView valueTextView;
 
-    public PortfolioManager(Context context) {
-        appDatabase = AppDatabase.getInstance(context);
-    }
-
-    /**
-     * Delete all data
-     */
-    public void deleteAll() {
-        appDatabase.transactionDao().deleteAll();
-        appDatabase.currencyDao().deleteAll();
-        appDatabase.exchangeDao().deleteAll();
+    public AppSettingsViewHolder(View view) {
+        super(view);
+        nameTextView = view.findViewById(R.id.app_settings_name_column_header_text);
+        valueTextView = view.findViewById(R.id.app_settings_value_column_header_text);
     }
 
 }

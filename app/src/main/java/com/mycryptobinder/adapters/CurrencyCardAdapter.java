@@ -75,13 +75,6 @@ public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCard
             holder.setItem(currency);
             holder.currency_delete_imageButton.setOnClickListener(clickListener);
         }
-
-        /*Currency currency = getItem(position);
-        if (currency != null) {
-            holder.setItem(currency);
-            holder.currency_delete_imageButton.setOnClickListener(clickListener);
-        }*/
-
     }
 
     @Override

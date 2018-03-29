@@ -196,9 +196,9 @@ public class AddIcoActivity extends AppCompatActivity {
             if (name.trim().equals("")) {
                 addIcoNameEditText.setError(getString(R.string.error_ico_name_required));
             } else if (currencyIsoCode == null || currencyIsoCode.trim().equals("")) {
-                // setError on spinner not possible, so I use a fake TextView
+                // setError on spinner not possible, so let's use a fake TextView
                 TextView errorText = (TextView) addIcoCurrencySpinner.getSelectedView();
-                errorText.setError("Anything here, just to add the icon");
+                errorText.setError("Anything here, just for the icon to be displayed");
                 errorText.setTextColor(Color.RED);
                 errorText.setText(getString(R.string.error_ico_currency_required));
             } else if (amountStr.trim().equals("")) {

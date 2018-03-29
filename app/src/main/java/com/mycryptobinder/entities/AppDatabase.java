@@ -32,6 +32,10 @@ import com.mycryptobinder.dao.CurrencyDao;
 import com.mycryptobinder.dao.ExchangeDao;
 import com.mycryptobinder.dao.IcoDao;
 import com.mycryptobinder.dao.TransactionDao;
+import com.mycryptobinder.dao.bittrex.BittrexAssetDao;
+import com.mycryptobinder.dao.bittrex.BittrexDepositDao;
+import com.mycryptobinder.dao.bittrex.BittrexTradeDao;
+import com.mycryptobinder.dao.bittrex.BittrexWithdrawalDao;
 import com.mycryptobinder.dao.kraken.KrakenAssetDao;
 import com.mycryptobinder.dao.kraken.KrakenAssetPairDao;
 import com.mycryptobinder.dao.kraken.KrakenTradeDao;
@@ -39,6 +43,10 @@ import com.mycryptobinder.dao.poloniex.PoloniexAssetDao;
 import com.mycryptobinder.dao.poloniex.PoloniexDepositDao;
 import com.mycryptobinder.dao.poloniex.PoloniexTradeDao;
 import com.mycryptobinder.dao.poloniex.PoloniexWithdrawalDao;
+import com.mycryptobinder.entities.bittrex.BittrexAsset;
+import com.mycryptobinder.entities.bittrex.BittrexDeposit;
+import com.mycryptobinder.entities.bittrex.BittrexTrade;
+import com.mycryptobinder.entities.bittrex.BittrexWithdrawal;
 import com.mycryptobinder.entities.kraken.KrakenAsset;
 import com.mycryptobinder.entities.kraken.KrakenAssetPair;
 import com.mycryptobinder.entities.kraken.KrakenTrade;
@@ -59,10 +67,14 @@ import java.util.concurrent.Executors;
         PoloniexTrade.class,
         PoloniexDeposit.class,
         PoloniexWithdrawal.class,
+        BittrexAsset.class,
+        BittrexTrade.class,
+        BittrexDeposit.class,
+        BittrexWithdrawal.class,
         Currency.class,
         Exchange.class,
         Ico.class,
-        Transaction.class}, version = 16, exportSchema = false)
+        Transaction.class}, version = 17, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -92,6 +104,14 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract PoloniexWithdrawalDao poloniexWithdrawalDao();
 
+    public abstract BittrexAssetDao bittrexAssetDao();
+
+    public abstract BittrexTradeDao bittrexTradeDao();
+
+    public abstract BittrexDepositDao bittrexDepositDao();
+
+    public abstract BittrexWithdrawalDao bittrexWithdrawalDao();
+
     public synchronized static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
             INSTANCE = buildDatabase(context);
@@ -104,15 +124,14 @@ public abstract class AppDatabase extends RoomDatabase {
             @Override
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
-                Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        // initialize database with exchanges
-                        Exchange krakenExchange = new Exchange("Kraken", "https://www.kraken.com", "Kraken exchange", null, null);
-                        Exchange poloniexExchange = new Exchange("Poloniex", "https://poloniex.com", "Poloniex exchange", null, null);
-                        getInstance(context).exchangeDao().insert(krakenExchange);
-                        getInstance(context).exchangeDao().insert(poloniexExchange);
-                    }
+                Executors.newSingleThreadScheduledExecutor().execute(() -> {
+                    // initialize database with exchanges
+                    Exchange krakenExchange = new Exchange("Kraken", "https://www.kraken.com", "Kraken exchange", null, null);
+                    Exchange poloniexExchange = new Exchange("Poloniex", "https://poloniex.com", "Poloniex exchange", null, null);
+                    Exchange bittrexExchange = new Exchange("Bittrex", "https://bittrex.com", "Bittrex exchange", null, null);
+                    getInstance(context).exchangeDao().insert(krakenExchange);
+                    getInstance(context).exchangeDao().insert(poloniexExchange);
+                    getInstance(context).exchangeDao().insert(bittrexExchange);
                 });
             }
         }).build();

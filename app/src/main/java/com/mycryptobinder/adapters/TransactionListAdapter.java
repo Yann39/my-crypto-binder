@@ -21,6 +21,10 @@ package com.mycryptobinder.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +33,12 @@ import android.view.ViewGroup;
 import com.mycryptobinder.R;
 import com.mycryptobinder.activities.EditTransactionActivity;
 import com.mycryptobinder.entities.Transaction;
+import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.viewholders.TransactionListViewHolder;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class TransactionListAdapter extends RecyclerView.Adapter<TransactionListViewHolder> {
@@ -52,30 +56,39 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         notifyDataSetChanged();
     }
 
+    @NonNull
     @Override
-    public TransactionListViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public TransactionListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         // inflate the layout (create a new view)
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_item_transaction, viewGroup, false);
         return new TransactionListViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final TransactionListViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull final TransactionListViewHolder viewHolder, final int position) {
 
         // number formatter
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
         // set right arrow icon depending on transaction type
-        viewHolder.transactionItemPairTextView.setCompoundDrawablePadding(5);
+        viewHolder.transactionItemPairTextView.setCompoundDrawablePadding(15);
         if (transactions.get(position).getType().equals("buy")) {
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_right_green, 0, 0, 0);
+            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_right_green);
+            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
         } else if (transactions.get(position).getType().equals("sell")) {
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_red, 0, 0, 0);
+            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_left_red);
+            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
         } else if (transactions.get(position).getType().equals("deposit")) {
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_right_blue, 0, 0, 0);
+            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_right_blue);
+            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
         } else if (transactions.get(position).getType().equals("withdrawal")) {
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_arrow_left_orange, 0, 0, 0);
+            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_left_orange);
+            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
         }
 
         // get text from the data set at this position and replace it in the view
@@ -117,83 +130,33 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         switch (colIndex) {
             case 0:
                 if (asc) {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return (t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()).compareTo(t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> (t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()).compareTo(t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()));
                 } else {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return (t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()).compareTo(t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> (t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()).compareTo(t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()));
                 }
             case 1:
                 if (asc) {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return Double.compare(t1.getQuantity(), t2.getQuantity());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getQuantity(), t2.getQuantity()));
                 } else {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return Double.compare(t2.getQuantity(), t1.getQuantity());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getQuantity(), t1.getQuantity()));
                 }
             case 2:
                 if (asc) {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return Double.compare(t1.getPrice(), t2.getPrice());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getPrice(), t2.getPrice()));
                 } else {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return Double.compare(t2.getPrice(), t1.getPrice());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getPrice(), t1.getPrice()));
                 }
             case 3:
                 if (asc) {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return Double.compare(t1.getTotal(), t2.getTotal());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getTotal(), t2.getTotal()));
                 } else {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return Double.compare(t2.getTotal(), t1.getTotal());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getTotal(), t1.getTotal()));
                 }
             default:
                 if (asc) {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return (t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()).compareTo(t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> (t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()).compareTo(t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()));
                 } else {
-                    Collections.sort(transactions, new Comparator<Transaction>() {
-                        @Override
-                        public int compare(Transaction t1, Transaction t2) {
-                            return (t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()).compareTo(t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode());
-                        }
-                    });
+                    Collections.sort(transactions, (t1, t2) -> (t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()).compareTo(t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()));
                 }
         }
     }

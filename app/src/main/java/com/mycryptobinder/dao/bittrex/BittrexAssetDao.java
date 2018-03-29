@@ -17,27 +17,34 @@
  * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycryptobinder.managers;
+package com.mycryptobinder.dao.bittrex;
 
-import android.content.Context;
+import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.Query;
 
-import com.mycryptobinder.entities.AppDatabase;
+import com.mycryptobinder.entities.bittrex.BittrexAsset;
 
-public class PortfolioManager {
+import java.util.List;
 
-    private static AppDatabase appDatabase;
+@Dao
+public interface BittrexAssetDao {
 
-    public PortfolioManager(Context context) {
-        appDatabase = AppDatabase.getInstance(context);
-    }
+    @Query("select * from bittrex_assets")
+    LiveData<List<BittrexAsset>> getAll();
 
-    /**
-     * Delete all data
-     */
-    public void deleteAll() {
-        appDatabase.transactionDao().deleteAll();
-        appDatabase.currencyDao().deleteAll();
-        appDatabase.exchangeDao().deleteAll();
-    }
+    @Query("select distinct asset_code from bittrex_assets")
+    List<String> getCodes();
+
+    @Insert
+    void insert(BittrexAsset... bittrexAssets);
+
+    @Delete
+    void delete(BittrexAsset bittrexAsset);
+
+    @Query("delete from bittrex_assets")
+    void deleteAll();
 
 }

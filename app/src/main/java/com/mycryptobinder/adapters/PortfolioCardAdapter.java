@@ -21,6 +21,7 @@ package com.mycryptobinder.adapters;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
@@ -59,8 +60,9 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
         notifyDataSetChanged();
     }
 
+    @NonNull
     @Override
-    public PortfolioCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PortfolioCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // inflate the layout (create a new view)
         View v = LayoutInflater.from(context).inflate(R.layout.card_portfolio, parent, false);
 
@@ -80,7 +82,7 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
     }
 
     @Override
-    public void onBindViewHolder(final PortfolioCardViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final PortfolioCardViewHolder holder, int position) {
         HoldingData hd = holdingData.get(position);
         if (hd != null) {
             holder.setItem(hd, pricesFull);

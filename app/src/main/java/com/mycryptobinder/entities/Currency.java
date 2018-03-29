@@ -38,17 +38,18 @@ public class Currency {
     @ColumnInfo(name = "symbol")
     private String symbol;
 
-    public Currency(String isoCode, String name, String symbol) {
+    public Currency(@NonNull String isoCode, String name, String symbol) {
         this.isoCode = isoCode;
         this.name = name;
         this.symbol = symbol;
     }
 
+    @NonNull
     public String getIsoCode() {
         return isoCode;
     }
 
-    public void setIsoCode(String isoCode) {
+    public void setIsoCode(@NonNull String isoCode) {
         this.isoCode = isoCode;
     }
 
@@ -75,15 +76,14 @@ public class Currency {
 
         Currency currency = (Currency) o;
 
-        if (isoCode != null ? !isoCode.equals(currency.isoCode) : currency.isoCode != null)
-            return false;
+        if (!isoCode.equals(currency.isoCode)) return false;
         if (name != null ? !name.equals(currency.name) : currency.name != null) return false;
         return symbol != null ? symbol.equals(currency.symbol) : currency.symbol == null;
     }
 
     @Override
     public int hashCode() {
-        int result = isoCode != null ? isoCode.hashCode() : 0;
+        int result = isoCode.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
         return result;

@@ -306,12 +306,12 @@ public class KrakenManager {
      * @return number of currencies inserted
      */
     public int populateCurrencies() {
-        List<Currency> krakenCurrencyList = appDatabase.currencyDao().getFromKraken();
-        if (krakenCurrencyList != null) {
-            Currency[] currencyArray = new Currency[krakenCurrencyList.size()];
-            currencyArray = krakenCurrencyList.toArray(currencyArray);
+        List<Currency> currencyList = appDatabase.currencyDao().getFromKraken();
+        if (currencyList != null) {
+            Currency[] currencyArray = new Currency[currencyList.size()];
+            currencyArray = currencyList.toArray(currencyArray);
             appDatabase.currencyDao().insert(currencyArray);
-            return krakenCurrencyList.size();
+            return currencyList.size();
         } else {
             return 0;
         }
@@ -335,7 +335,7 @@ public class KrakenManager {
     }
 
     /**
-     * delete all data
+     * Delete all data
      */
     public void deleteAll() {
         appDatabase.krakenTradeDao().deleteAll();

@@ -38,6 +38,15 @@ public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
     private TextView portfolio_card_current_price;
     private TextView portfolio_card_price_24h_change;
 
+    public PortfolioCardViewHolder(View v) {
+        super(v);
+        portfolio_currency_iso_code_textView = v.findViewById(R.id.portfolio_card_currency_iso_code);
+        portfolio_holding_total_value_textView = v.findViewById(R.id.portfolio_card_holding_total_value);
+        portfolio_holding_quantity_textView = v.findViewById(R.id.portfolio_card_holding_quantity);
+        portfolio_card_current_price = v.findViewById(R.id.portfolio_card_current_price);
+        portfolio_card_price_24h_change = v.findViewById(R.id.portfolio_card_price_24h_change);
+    }
+
     public void setItem(HoldingData holdingData, PricesFull pricesFull) {
         DecimalFormat df = new DecimalFormat("#.##");
         DecimalFormat dfp = new DecimalFormat("+#.##;-#");
@@ -64,15 +73,6 @@ public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
         portfolio_card_price_24h_change.setText(changeDayStr);
         portfolio_holding_total_value_textView.setText(eurTotalValueStr);
         portfolio_card_current_price.setText(eurValueStr);
-    }
-
-    public PortfolioCardViewHolder(View v) {
-        super(v);
-        portfolio_currency_iso_code_textView = v.findViewById(R.id.portfolio_card_currency_iso_code);
-        portfolio_holding_total_value_textView = v.findViewById(R.id.portfolio_card_holding_total_value);
-        portfolio_holding_quantity_textView = v.findViewById(R.id.portfolio_card_holding_quantity);
-        portfolio_card_current_price = v.findViewById(R.id.portfolio_card_current_price);
-        portfolio_card_price_24h_change = v.findViewById(R.id.portfolio_card_price_24h_change);
     }
 
 }
