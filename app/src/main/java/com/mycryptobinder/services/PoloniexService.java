@@ -21,6 +21,7 @@ package com.mycryptobinder.services;
 
 import com.mycryptobinder.models.poloniex.PoloniexAssetValue;
 import com.mycryptobinder.models.poloniex.PoloniexDepositsWithdrawals;
+import com.mycryptobinder.models.poloniex.PoloniexError;
 import com.mycryptobinder.models.poloniex.PoloniexTradeValue;
 
 import java.net.URLEncoder;
@@ -48,6 +49,9 @@ public interface PoloniexService {
     @GET("public?command=returnCurrencies")
     Call<Map<String, PoloniexAssetValue>> getAssets();
 
+    @GET("public?command=returnCurrencies")
+    Call<PoloniexError> getAssetsError();
+
     @FormUrlEncoded
     @POST("tradingApi")
     Call<Map<String, List<PoloniexTradeValue>>> getTradeHistory(@HeaderMap Map<String, String> headers,
@@ -55,8 +59,18 @@ public interface PoloniexService {
 
     @FormUrlEncoded
     @POST("tradingApi")
+    Call<PoloniexError> getTradeHistoryError(@HeaderMap Map<String, String> headers,
+                                             @FieldMap Map<String, String> params);
+
+    @FormUrlEncoded
+    @POST("tradingApi")
     Call<PoloniexDepositsWithdrawals> getDepositsWithdrawals(@HeaderMap Map<String, String> headers,
                                                              @FieldMap Map<String, String> params);
+
+    @FormUrlEncoded
+    @POST("tradingApi")
+    Call<PoloniexError> getDepositsWithdrawalsError(@HeaderMap Map<String, String> headers,
+                                                    @FieldMap Map<String, String> params);
 
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);

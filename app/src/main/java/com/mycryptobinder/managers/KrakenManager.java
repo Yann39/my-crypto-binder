@@ -20,10 +20,14 @@
 package com.mycryptobinder.managers;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Base64;
+import android.widget.Toast;
 
+import com.mycryptobinder.R;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.entities.Currency;
+import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.entities.Transaction;
 import com.mycryptobinder.entities.kraken.KrakenAsset;
 import com.mycryptobinder.entities.kraken.KrakenAssetPair;
@@ -40,7 +44,6 @@ import com.mycryptobinder.services.KrakenService;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,31 +57,21 @@ import retrofit2.Call;
 public class KrakenManager {
 
     private static AppDatabase appDatabase;
-    private static String path;
     private static KrakenService krakenService;
     private static List<KrakenTrade> krakenTradeEntities;
-    private static long startTime;
-    private final UtilsHelper uh;
+    private final Context context;
+    private String publicKey;
+    private String privateKey;
 
     public KrakenManager(Context context) {
+        this.context = context;
         appDatabase = AppDatabase.getInstance(context);
-        uh = new UtilsHelper(context);
-        path = "/0/private/TradesHistory";
         krakenService = KrakenService.retrofit.create(KrakenService.class);
         krakenTradeEntities = new ArrayList<>();
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2016);
-        cal.set(Calendar.MONTH, Calendar.DECEMBER);
-        cal.set(Calendar.DAY_OF_MONTH, 13);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        startTime = cal.getTimeInMillis() / 1000;
     }
 
     /**
-     * Calculate the signature for the Kraken API call
+     * Calculate the signature for the Kraken API calls
      * Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
      *
      * @param path  The path of the method to be called (URL part after host name)
@@ -89,14 +82,6 @@ public class KrakenManager {
     private String calculateKrakenSignature(String path, String nonce, String data) {
         String signature = null;
         try {
-            // get encrypted private API key from database
-            String encryptedPrivateKey = appDatabase.exchangeDao().getByName("Kraken").getPrivateApiKey();
-            // decrypt it
-            Properties properties = uh.getProperties();
-            String key = properties.getProperty("RSA_KEY");
-            String initVector = properties.getProperty("RSA_INIT_VECTOR");
-            String privateKey = uh.decrypt(key, initVector, encryptedPrivateKey);
-            // encode it into the signature with other data
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update((nonce + data).getBytes());
             Mac mac = Mac.getInstance("HmacSHA512");
@@ -112,75 +97,89 @@ public class KrakenManager {
     /**
      * Retrieve trade history from Kraken exchange API
      *
-     * @param offset Result offset (there is a limitation to 50 results per call)
+     * @param offset Result offset (there is a limitation of 50 results per call)
      */
     private void getKrakenTrades(int offset) {
-
-        String start = String.valueOf(startTime);
         String nonce = String.valueOf(System.currentTimeMillis());
-        //use alphabetical order as it must be in the same order as POST body parameters
-        String parameters = "nonce=" + nonce + "&ofs=" + offset + "&start=" + start;
-        String sign = calculateKrakenSignature(path, nonce, parameters);
+        // use alphabetical order as it must be in the same order as POST body parameters
+        String parameters = "nonce=" + nonce + "&ofs=" + offset;
+        String sign = calculateKrakenSignature("/0/private/TradesHistory", nonce, parameters);
 
-        // get encrypted public API key from database and decrypt it
-        String encryptedPublicKey = appDatabase.exchangeDao().getByName("Kraken").getPublicApiKey();
-        Properties properties = uh.getProperties();
-        String key = properties.getProperty("RSA_KEY");
-        String initVector = properties.getProperty("RSA_INIT_VECTOR");
-        String publicKey = uh.decrypt(key, initVector, encryptedPublicKey);
-
+        // query headers
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("API-Key", publicKey);
         headerMap.put("API-Sign", sign);
 
+        // query parameters, here order doesn't matter as we will order them in an interceptor while sending request
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("nonce", nonce);
-        paramsMap.put("start", start);
         paramsMap.put("ofs", String.valueOf(offset));
 
+        // service call
         KrakenTrades krakenTrades = null;
+        String errorMessage = null;
         try {
             Call<KrakenTrades> call = krakenService.getTradeHistory(headerMap, paramsMap);
             krakenTrades = call.execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = e.getLocalizedMessage();
         }
 
-        // if it returned something without error
-        if (krakenTrades != null && krakenTrades.getError().size() < 1 && krakenTrades.getResult() != null && krakenTrades.getResult().getTrades().size() > 0) {
+        // if an error occurred on service call
+        if (errorMessage != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+        }
+        // if service call returned null
+        else if (krakenTrades == null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_service_call_returned_null), Toast.LENGTH_SHORT).show();
+        }
+        // if an error was returned in the response body
+        else if (krakenTrades.getError() != null && krakenTrades.getError().size() > 0) {
+            errorMessage = TextUtils.join("; ", krakenTrades.getError());
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+        } else {
+            // if at least one result
+            if (krakenTrades.getResult() != null && krakenTrades.getResult().getTrades() != null && krakenTrades.getResult().getTrades().size() > 0) {
 
-            //get any existing asset
-            List<String> trades = appDatabase.krakenTradeDao().getTradeIds();
+                //todo make sure kraken trade ids are unique ?
+                //get any existing trade
+                List<String> trades = appDatabase.krakenTradeDao().getTradeIds();
 
-            for (Map.Entry<String, KrakenTradeValue> entry : krakenTrades.getResult().getTrades().entrySet()) {
-                String trade = entry.getKey();
+                for (Map.Entry<String, KrakenTradeValue> entry : krakenTrades.getResult().getTrades().entrySet()) {
+                    String trade = entry.getKey();
 
-                // keep only if it does not already exists
-                if (trades == null || !trades.contains(trade)) {
-                    KrakenTradeValue krakenTradeValue = entry.getValue();
-                    String orderTxId = krakenTradeValue.getOrderTxId();
-                    String pair = krakenTradeValue.getPair();
-                    Double time = krakenTradeValue.getTime();
-                    String type = krakenTradeValue.getType();
-                    String orderType = krakenTradeValue.getOrderType();
-                    Double price = krakenTradeValue.getPrice();
-                    Double cost = krakenTradeValue.getCost();
-                    Double fee = krakenTradeValue.getFee();
-                    Double vol = krakenTradeValue.getVol();
-                    Double margin = krakenTradeValue.getMargin();
-                    String misc = krakenTradeValue.getMisc();
+                    // keep only if it does not already exists
+                    if (trades == null || !trades.contains(trade)) {
+                        KrakenTradeValue krakenTradeValue = entry.getValue();
+                        String orderTxId = krakenTradeValue.getOrderTxId();
+                        String pair = krakenTradeValue.getPair();
+                        Double time = krakenTradeValue.getTime();
+                        String type = krakenTradeValue.getType();
+                        String orderType = krakenTradeValue.getOrderType();
+                        Double price = krakenTradeValue.getPrice();
+                        Double cost = krakenTradeValue.getCost();
+                        Double fee = krakenTradeValue.getFee();
+                        Double vol = krakenTradeValue.getVol();
+                        Double margin = krakenTradeValue.getMargin();
+                        String misc = krakenTradeValue.getMisc();
 
-                    // Kraken BTC is named as XBT, change it...
-                    if (pair.contains("XBT")) {
-                        pair = pair.replaceAll("XBT", "BTC");
+                        // Kraken BTC is named XBT, change it...
+                        if (pair.contains("XBT")) {
+                            pair = pair.replaceAll("XBT", "BTC");
+                        }
+
+                        // add it to our result set
+                        krakenTradeEntities.add(new KrakenTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc));
                     }
-
-                    krakenTradeEntities.add(new KrakenTrade(orderTxId, pair, time, type, orderType, price, cost, fee, vol, margin, misc));
                 }
-            }
 
-            // API returns max 50 results so we have to loop
-            getKrakenTrades(offset + 50);
+                // in case API returns max 50 results we have to loop
+                getKrakenTrades(offset + 50);
+            }
         }
     }
 
@@ -190,7 +189,25 @@ public class KrakenManager {
      * @return The number of trades inserted
      */
     public int populateTradeHistory() {
+        UtilsHelper uh = new UtilsHelper(context);
+
+        // get encryption key and vector from properties
+        Properties properties = uh.getProperties();
+        String key = properties.getProperty("RSA_KEY");
+        String initVector = properties.getProperty("RSA_INIT_VECTOR");
+
+        // get encrypted public API key from database and decrypt it
+        String encryptedPublicKey = appDatabase.exchangeDao().getByName("Kraken").getPublicApiKey();
+        publicKey = uh.decrypt(key, initVector, encryptedPublicKey);
+
+        // get encrypted private API key from database and decrypt it
+        String encryptedPrivateKey = appDatabase.exchangeDao().getByName("Kraken").getPrivateApiKey();
+        privateKey = uh.decrypt(key, initVector, encryptedPrivateKey);
+
+        // call to recursive function
         getKrakenTrades(0);
+
+        // insert results into the database
         if (krakenTradeEntities != null && krakenTradeEntities.size() > 0) {
             KrakenTrade[] krakenTradeArray = new KrakenTrade[krakenTradeEntities.size()];
             krakenTradeArray = krakenTradeEntities.toArray(krakenTradeArray);
@@ -206,7 +223,8 @@ public class KrakenManager {
      * @return number of asset pairs inserted, or -1 if an error occurred
      */
     public int populateAssetPairs() {
-        KrakenAssetPairs krakenAssetPairs;
+        KrakenAssetPairs krakenAssetPairs = null;
+        String errorMessage = null;
         try {
             // API synchronous call
             KrakenService krakenService = KrakenService.retrofit.create(KrakenService.class);
@@ -214,41 +232,63 @@ public class KrakenManager {
             krakenAssetPairs = call.execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = e.getLocalizedMessage();
+        }
+
+        // if an error occurred on service call
+        if (errorMessage != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
             return -1;
         }
-        List<KrakenAssetPair> krakenAssetPairEntities = new ArrayList<>();
-        // if it returned something without error
-        if (krakenAssetPairs != null && krakenAssetPairs.getError().size() < 1) {
-
-            // get any existing asset pairs
-            List<String> assetPairs = appDatabase.krakenAssetPairDao().getPairs();
-
-            for (Map.Entry<String, KrakenAssetPairValue> entry : krakenAssetPairs.getResult().entrySet()) {
-                String assetPair = entry.getKey();
-
-                // Kraken BTC is named as XBT, change it...
-                if (assetPair.contains("XBT")) {
-                    assetPair = assetPair.replaceAll("XBT", "BTC");
-                }
-
-                // keep only if it does not already exists
-                if (assetPairs == null || !assetPairs.contains(assetPair)) {
-                    KrakenAssetPairValue krakenAssetPairValue = entry.getValue();
-                    String altname = krakenAssetPairValue.getAltName();
-                    String base = krakenAssetPairValue.getBase();
-                    String quote = krakenAssetPairValue.getQuote();
-                    krakenAssetPairEntities.add(new KrakenAssetPair(assetPair, altname, base, quote));
-                }
-            }
-
-            // insert into the database
-            KrakenAssetPair[] krakenAssetPairsArray = new KrakenAssetPair[krakenAssetPairEntities.size()];
-            krakenAssetPairsArray = krakenAssetPairEntities.toArray(krakenAssetPairsArray);
-            appDatabase.krakenAssetPairDao().insert(krakenAssetPairsArray);
-        } else {
-            return 0;
+        // if service call returned null
+        else if (krakenAssetPairs == null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_service_call_returned_null), Toast.LENGTH_SHORT).show();
+            return -1;
         }
-        return krakenAssetPairEntities.size();
+        // if an error was returned in the response body
+        else if (krakenAssetPairs.getError() != null && krakenAssetPairs.getError().size() > 0) {
+            errorMessage = TextUtils.join("; ", krakenAssetPairs.getError());
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+            return -1;
+        } else {
+            List<KrakenAssetPair> krakenAssetPairEntities = new ArrayList<>();
+
+            // if at least one result
+            if (krakenAssetPairs.getResult() != null && krakenAssetPairs.getResult().size() > 0) {
+
+                // get any existing asset pairs
+                List<String> assetPairs = appDatabase.krakenAssetPairDao().getPairs();
+
+                for (Map.Entry<String, KrakenAssetPairValue> entry : krakenAssetPairs.getResult().entrySet()) {
+                    String assetPair = entry.getKey();
+
+                    // Kraken BTC is named as XBT, change it...
+                    if (assetPair.contains("XBT")) {
+                        assetPair = assetPair.replaceAll("XBT", "BTC");
+                    }
+
+                    // keep only if it does not already exists
+                    if (assetPairs == null || !assetPairs.contains(assetPair)) {
+                        KrakenAssetPairValue krakenAssetPairValue = entry.getValue();
+                        String altname = krakenAssetPairValue.getAltName();
+                        String base = krakenAssetPairValue.getBase();
+                        String quote = krakenAssetPairValue.getQuote();
+                        krakenAssetPairEntities.add(new KrakenAssetPair(assetPair, altname, base, quote));
+                    }
+                }
+
+                // insert into the database
+                KrakenAssetPair[] krakenAssetPairsArray = new KrakenAssetPair[krakenAssetPairEntities.size()];
+                krakenAssetPairsArray = krakenAssetPairEntities.toArray(krakenAssetPairsArray);
+                appDatabase.krakenAssetPairDao().insert(krakenAssetPairsArray);
+            } else {
+                return 0;
+            }
+            return krakenAssetPairEntities.size();
+        }
     }
 
     /**
@@ -257,7 +297,8 @@ public class KrakenManager {
      * @return number of assets inserted, or -1 if an error occurred
      */
     public int populateAssets() {
-        KrakenAssets krakenAssets;
+        KrakenAssets krakenAssets = null;
+        String errorMessage = null;
         try {
             // API synchronous call
             KrakenService krakenService = KrakenService.retrofit.create(KrakenService.class);
@@ -265,39 +306,61 @@ public class KrakenManager {
             krakenAssets = call.execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = e.getLocalizedMessage();
+        }
+
+        // if an error occurred on service call
+        if (errorMessage != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
             return -1;
         }
-        List<KrakenAsset> krakenAssetEntities = new ArrayList<>();
-        // if it returned something without error
-        if (krakenAssets != null && krakenAssets.getError().size() < 1) {
-
-            //get any existing asset
-            List<String> assets = appDatabase.krakenAssetDao().getName();
-
-            for (Map.Entry<String, KrakenAssetValue> entry : krakenAssets.getResult().entrySet()) {
-                String asset = entry.getKey();
-
-                // Kraken BTC is named as XBT, change it...
-                if (asset.contains("XBT")) {
-                    asset = asset.replaceAll("XBT", "BTC");
-                }
-
-                // keep only if it does not already exists
-                if (assets == null || !assets.contains(asset)) {
-                    KrakenAssetValue krakenAssetValue = entry.getValue();
-                    String altname = krakenAssetValue.getAltName();
-                    krakenAssetEntities.add(new KrakenAsset(asset, altname));
-                }
-            }
-
-            // insert into the database
-            KrakenAsset[] krakenAssetArray = new KrakenAsset[krakenAssetEntities.size()];
-            krakenAssetArray = krakenAssetEntities.toArray(krakenAssetArray);
-            appDatabase.krakenAssetDao().insert(krakenAssetArray);
-        } else {
-            return 0;
+        // if service call returned null
+        else if (krakenAssets == null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_service_call_returned_null), Toast.LENGTH_SHORT).show();
+            return -1;
         }
-        return krakenAssetEntities.size();
+        // if an error was returned in the response body
+        else if (krakenAssets.getError() != null && krakenAssets.getError().size() > 0) {
+            errorMessage = TextUtils.join("; ", krakenAssets.getError());
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+            return -1;
+        } else {
+            List<KrakenAsset> krakenAssetEntities = new ArrayList<>();
+
+            // if at least one result
+            if (krakenAssets.getResult() != null && krakenAssets.getResult().size() > 0) {
+
+                //get any existing asset
+                List<String> assets = appDatabase.krakenAssetDao().getName();
+
+                for (Map.Entry<String, KrakenAssetValue> entry : krakenAssets.getResult().entrySet()) {
+                    String asset = entry.getKey();
+
+                    // Kraken BTC is named XBT, change it...
+                    if (asset.contains("XBT")) {
+                        asset = asset.replaceAll("XBT", "BTC");
+                    }
+
+                    // keep only if it does not already exists
+                    if (assets == null || !assets.contains(asset)) {
+                        KrakenAssetValue krakenAssetValue = entry.getValue();
+                        String altname = krakenAssetValue.getAltName();
+                        krakenAssetEntities.add(new KrakenAsset(asset, altname));
+                    }
+                }
+
+                // insert into the database
+                KrakenAsset[] krakenAssetArray = new KrakenAsset[krakenAssetEntities.size()];
+                krakenAssetArray = krakenAssetEntities.toArray(krakenAssetArray);
+                appDatabase.krakenAssetDao().insert(krakenAssetArray);
+            } else {
+                return 0;
+            }
+            return krakenAssetEntities.size();
+        }
     }
 
     /**
@@ -341,6 +404,18 @@ public class KrakenManager {
         appDatabase.krakenTradeDao().deleteAll();
         appDatabase.krakenAssetDao().deleteAll();
         appDatabase.krakenAssetPairDao().deleteAll();
+    }
+
+    /**
+     * Check if the exchange API keys are defined
+     */
+    public boolean areApiKeysDefined() {
+        Exchange exchange = appDatabase.exchangeDao().getByName("Kraken");
+        return exchange != null
+                && exchange.getPublicApiKey() != null
+                && exchange.getPublicApiKey().length() > 0
+                && exchange.getPrivateApiKey() != null
+                && exchange.getPrivateApiKey().length() > 0;
     }
 
 }

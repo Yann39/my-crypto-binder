@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.models.PricesFull;
 
@@ -51,15 +52,22 @@ public class PortfolioCardViewHolder extends RecyclerView.ViewHolder {
         DecimalFormat df = new DecimalFormat("#.##");
         DecimalFormat dfp = new DecimalFormat("+#.##;-#");
 
+        Double eurValue = 0.00;
+        Double changeDay = 0.00;
         String eurValueStr = "0.00";
         String eurTotalValueStr = "0.00";
         String changeDayStr = "0.00%";
+
         if (pricesFull != null && pricesFull.getRaw() != null && pricesFull.getRaw().get(holdingData.getIsoCode()) != null) {
             eurValueStr = pricesFull.getRaw().get(holdingData.getIsoCode()).getEur().getPrice();
-            Double eurValue = Double.parseDouble(eurValueStr);
-            eurValueStr = "€ " + eurValueStr;
-            eurTotalValueStr = "€ " + df.format(holdingData.getQuantity() * eurValue);
-            Double changeDay = pricesFull.getRaw().get(holdingData.getIsoCode()).getEur().getChangeDayPercent();
+            try {
+                eurValue = Double.parseDouble(eurValueStr);
+            } catch (Exception e) {
+                System.out.print("Error when converting price to double");
+            }
+            eurValueStr = "€ " + UtilsHelper.formatNumber(eurValue);
+            eurTotalValueStr = "€ " + UtilsHelper.formatNumber(holdingData.getQuantity() * eurValue);
+            changeDay = pricesFull.getRaw().get(holdingData.getIsoCode()).getEur().getChangeDayPercent();
             if (changeDay > 0) {
                 portfolio_card_price_24h_change.setTextColor(Color.parseColor("#269926"));
             } else if (changeDay < 0) {

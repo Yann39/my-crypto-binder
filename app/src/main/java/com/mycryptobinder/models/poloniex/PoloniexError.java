@@ -17,26 +17,17 @@
  * along with MyCryptoBinder. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.mycryptobinder.managers;
+package com.mycryptobinder.models.poloniex;
 
-import android.content.Context;
+public class PoloniexError {
 
-import com.mycryptobinder.entities.AppDatabase;
+    private String error;
 
-public class PortfolioManager {
-
-    private static AppDatabase appDatabase;
-
-    public PortfolioManager(Context context) {
-        appDatabase = AppDatabase.getInstance(context);
+    public String getError() {
+        return error;
     }
 
-    /**
-     * Delete all data
-     */
-    public void deleteAll() {
-        appDatabase.transactionDao().deleteAll();
-        appDatabase.currencyDao().deleteAll();
+    public void setError(String error) {
+        this.error = error;
     }
-
 }

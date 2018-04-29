@@ -20,9 +20,13 @@
 package com.mycryptobinder.activities;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,11 +39,13 @@ import android.widget.TextView;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.PortfolioCardAdapter;
+import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.models.PriceFull;
 import com.mycryptobinder.models.PricesFull;
 import com.mycryptobinder.viewmodels.PortfolioViewModel;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -47,6 +53,16 @@ public class PortfolioFragment extends Fragment {
 
     private PortfolioCardAdapter portfolioCardAdapter;
     private PortfolioViewModel portfolioViewModel;
+    private DecimalFormat df = new DecimalFormat("#");
+    private DecimalFormat df2 = new DecimalFormat("+#.##;-#");
+    private TextView portfolioCurrencyColumnHeaderText;
+    private TextView portfolioQuantityColumnHeaderText;
+    private TextView portfolioHoldingColumnHeaderText;
+    private Drawable caretDown;
+    private Drawable caretUp;
+    private boolean col0Asc = false;
+    private boolean col1Asc = false;
+    private boolean col2Asc = false;
 
     public PortfolioFragment() {
     }
@@ -81,6 +97,9 @@ public class PortfolioFragment extends Fragment {
         TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
         TextView totalHoldingTextView = view.findViewById(R.id.portfolio_total_value_textView);
         TextView totalChange24hTextView = view.findViewById(R.id.portfolio_last24_value_textView);
+        portfolioCurrencyColumnHeaderText = view.findViewById(R.id.portfolio_currency_column_header_text);
+        portfolioQuantityColumnHeaderText = view.findViewById(R.id.portfolio_quantity_column_header_text);
+        portfolioHoldingColumnHeaderText = view.findViewById(R.id.portfolio_holding_column_header_text);
 
         // display a progress bar while loading holdings data
         ProgressBar progressBar = view.findViewById(R.id.progress_bar);
@@ -98,14 +117,13 @@ public class PortfolioFragment extends Fragment {
             // update data in the adapter
             portfolioCardAdapter.setItems(holdingDataList);
 
-            DecimalFormat df = new DecimalFormat("#");
             double sum = 0.0;
             if (holdingDataList != null) {
                 for (HoldingData holdingData : holdingDataList) {
                     sum += holdingData.getQuantity();
                 }
             }
-            totalHoldingTextView.setText(getString(R.string.label_euro_price, df.format(sum)));
+            totalHoldingTextView.setText(getString(R.string.label_euro_price, UtilsHelper.formatNumber(sum)));
         });
 
         // observe the current prices data from the view model so it will always be up to date in the UI
@@ -114,8 +132,6 @@ public class PortfolioFragment extends Fragment {
             portfolioCardAdapter.setPricesFull(pricesFull);
 
             // update UI
-            DecimalFormat df = new DecimalFormat("#");
-            DecimalFormat df2 = new DecimalFormat("+#.##;-#");
             double sum = 0.0;
             double sum24h = 0.0;
             double totalChange = 0.0;
@@ -126,12 +142,58 @@ public class PortfolioFragment extends Fragment {
                 }
                 totalChange = sum24h / pricesFull.getRaw().values().size();
             }
-            totalHoldingTextView.setText(getString(R.string.label_euro_price, df.format(sum)));
+            totalHoldingTextView.setText(getString(R.string.label_euro_price, UtilsHelper.formatNumber(sum)));
             totalChange24hTextView.setText(getString(R.string.label_percentage, df2.format(totalChange)));
 
             // hide the progress bar
             progressBar.setVisibility(View.GONE);
         });
+
+        if (getActivity() != null && getContext() != null) {
+
+            // prepare drawables (change color)
+            caretDown = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_more_black_24px);
+            if (caretDown != null) {
+                caretDown = DrawableCompat.wrap(caretDown);
+                DrawableCompat.setTint(caretDown, ContextCompat.getColor(getContext(), R.color.colorDark30));
+                DrawableCompat.setTintMode(caretDown, PorterDuff.Mode.SRC_IN);
+                caretDown.setBounds(0, 0, caretDown.getIntrinsicWidth(), caretDown.getIntrinsicHeight());
+            }
+            caretUp = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_less_black_24px);
+            if (caretUp != null) {
+                caretUp = DrawableCompat.wrap(caretUp);
+                DrawableCompat.setTint(caretUp, ContextCompat.getColor(getContext(), R.color.colorDark30));
+                DrawableCompat.setTintMode(caretUp, PorterDuff.Mode.SRC_IN);
+                caretUp.setBounds(0, 0, caretUp.getIntrinsicWidth(), caretUp.getIntrinsicHeight());
+            }
+
+            // add click listener on header to sort rows
+            portfolioCurrencyColumnHeaderText.setOnClickListener(view12 -> {
+                portfolioCardAdapter.sortTransactions(0, col0Asc);
+                portfolioCurrencyColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col0Asc ? caretDown : caretUp, null);
+                portfolioQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                portfolioHoldingColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col0Asc = !col0Asc;
+            });
+
+            // add click listener on header to sort rows
+            portfolioQuantityColumnHeaderText.setOnClickListener(view13 -> {
+                portfolioCardAdapter.sortTransactions(1, col1Asc);
+                portfolioQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col1Asc ? caretDown : caretUp, null);
+                portfolioCurrencyColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                portfolioHoldingColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col1Asc = !col1Asc;
+            });
+
+            // add click listener on header to sort rows
+            portfolioHoldingColumnHeaderText.setOnClickListener(view14 -> {
+                portfolioCardAdapter.sortTransactions(2, col2Asc);
+                portfolioHoldingColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col2Asc ? caretDown : caretUp, null);
+                portfolioCurrencyColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                portfolioQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                col2Asc = !col2Asc;
+            });
+        }
 
         return view;
     }

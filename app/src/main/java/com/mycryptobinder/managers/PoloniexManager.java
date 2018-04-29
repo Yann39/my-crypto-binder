@@ -20,9 +20,12 @@
 package com.mycryptobinder.managers;
 
 import android.content.Context;
+import android.widget.Toast;
 
+import com.mycryptobinder.R;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.entities.Currency;
+import com.mycryptobinder.entities.Exchange;
 import com.mycryptobinder.entities.Transaction;
 import com.mycryptobinder.entities.poloniex.PoloniexAsset;
 import com.mycryptobinder.entities.poloniex.PoloniexDeposit;
@@ -31,6 +34,7 @@ import com.mycryptobinder.entities.poloniex.PoloniexWithdrawal;
 import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.poloniex.PoloniexAssetValue;
 import com.mycryptobinder.models.poloniex.PoloniexDepositsWithdrawals;
+import com.mycryptobinder.models.poloniex.PoloniexError;
 import com.mycryptobinder.models.poloniex.PoloniexTradeValue;
 import com.mycryptobinder.services.PoloniexService;
 
@@ -57,10 +61,14 @@ public class PoloniexManager {
     private static List<PoloniexTrade> poloniexTradeEntities;
     private static List<PoloniexDeposit> poloniexDepositEntities;
     private static List<PoloniexWithdrawal> poloniexWithdrawalEntities;
+    private final Context context;
     private static long startTime;
     private final UtilsHelper uh;
+    private String publicKey;
+    private String privateKey;
 
     public PoloniexManager(Context context) {
+        this.context = context;
         appDatabase = AppDatabase.getInstance(context);
         uh = new UtilsHelper(context);
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", uh.getCurrentLocale());
@@ -68,10 +76,30 @@ public class PoloniexManager {
         poloniexTradeEntities = new ArrayList<>();
         poloniexDepositEntities = new ArrayList<>();
         poloniexWithdrawalEntities = new ArrayList<>();
+
+        // get encryption key and vector from properties
+        Properties properties = uh.getProperties();
+        String key = properties.getProperty("RSA_KEY");
+        String initVector = properties.getProperty("RSA_INIT_VECTOR");
+
+        // get encrypted API keys from database and decrypt them
+        Exchange exchange = appDatabase.exchangeDao().getByName("Poloniex");
+        if (exchange != null) {
+            String encryptedPublicApiKey = exchange.getPublicApiKey();
+            String encryptedPrivateApiKey = exchange.getPrivateApiKey();
+            if (encryptedPublicApiKey != null) {
+                publicKey = uh.decrypt(key, initVector, encryptedPublicApiKey);
+            }
+            if (encryptedPrivateApiKey != null) {
+                privateKey = uh.decrypt(key, initVector, encryptedPrivateApiKey);
+            }
+        }
+
+        // Poloniex was created on january 2014, get trades from that date
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2016);
-        cal.set(Calendar.MONTH, Calendar.DECEMBER);
-        cal.set(Calendar.DAY_OF_MONTH, 13);
+        cal.set(Calendar.YEAR, 2014);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -89,38 +117,13 @@ public class PoloniexManager {
     private String calculatePoloniexSignature(String data) {
         String signature = null;
         try {
-            // get encrypted private API key from database
-            String encryptedPrivateKey = appDatabase.exchangeDao().getByName("Poloniex").getPrivateApiKey();
-            // decrypt it
-            Properties properties = uh.getProperties();
-            String key = properties.getProperty("RSA_KEY");
-            String initVector = properties.getProperty("RSA_INIT_VECTOR");
-            String privateKey = uh.decrypt(key, initVector, encryptedPrivateKey);
-            // encode it into the signature
             Mac mac = Mac.getInstance("HmacSHA512");
             mac.init(new SecretKeySpec(privateKey.getBytes("UTF-8"), "HmacSHA512"));
-            signature = bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
+            signature = uh.bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return signature;
-    }
-
-    /**
-     * Convert a byte array to an hexadecimal String
-     *
-     * @param bytes The byte array to convert
-     * @return The converted byte array as String
-     */
-    private String bytesToHex(byte[] bytes) {
-        char[] hexArray = "0123456789ABCDEF".toCharArray();
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
     }
 
     /**
@@ -134,18 +137,12 @@ public class PoloniexManager {
         String parameters = "command=returnTradeHistory&currencyPair=all&limit=10000&nonce=" + nonce + "&start=" + start;
         String sign = calculatePoloniexSignature(parameters);
 
-        // get encrypted public API key from database and decrypt it
-        String encryptedPublicKey = appDatabase.exchangeDao().getByName("Poloniex").getPublicApiKey();
-        Properties properties = uh.getProperties();
-        String key = properties.getProperty("RSA_KEY");
-        String initVector = properties.getProperty("RSA_INIT_VECTOR");
-        String publicKey = uh.decrypt(key, initVector, encryptedPublicKey);
-
+        // request header
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Key", publicKey);
         headerMap.put("Sign", sign);
 
-        //here order doesn't matter as we will order them in an interceptor while sending request
+        // request parameters, here order doesn't matter as we will order them in an interceptor while sending request
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("command", "returnTradeHistory");
         paramsMap.put("currencyPair", "all");
@@ -153,66 +150,91 @@ public class PoloniexManager {
         paramsMap.put("nonce", nonce);
         paramsMap.put("limit", "10000");
 
+        // service call
         Map<String, List<PoloniexTradeValue>> poloniexTrades = null;
+        PoloniexError poloniexError = null;
+        String errorMessage = null;
         try {
             Call<Map<String, List<PoloniexTradeValue>>> call = poloniexService.getTradeHistory(headerMap, paramsMap);
-            //todo return {"error":"Invalid API key\/secret pair."} if error so it raises Expected BEGIN_ARRAY but was STRING
             poloniexTrades = call.execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = e.getLocalizedMessage();
+            // API does not return the same structure when an error occurred... so let's try again with new structure to get any error message
+            // for example in case of invalid signature it returns {"error":"Invalid API key\/secret pair."} so it raises "Expected BEGIN_ARRAY but was STRING"
+            try {
+                Call<PoloniexError> call = poloniexService.getTradeHistoryError(headerMap, paramsMap);
+                poloniexError = call.execute().body();
+            } catch (IOException e2) {
+                e.printStackTrace();
+                errorMessage = e.getLocalizedMessage();
+            }
         }
 
-        // if it returned something without error
-        if (poloniexTrades != null && !poloniexTrades.isEmpty()) {
-            int cpt = 0;
-            Date highestDate = new Date(startTime);
+        // if an error occurred on service call
+        if (errorMessage != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+        }
+        // if an error was returned in the response body
+        else if (poloniexError != null && poloniexError.getError() != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, poloniexError.getError()), Toast.LENGTH_SHORT).show();
+        } else {
+            // if it returned something
+            if (poloniexTrades != null && !poloniexTrades.isEmpty()) {
+                int cpt = 0;
+                Date highestDate = new Date(startTime);
 
-            // get any existing trades
-            List<Long> trades = appDatabase.poloniexTradeDao().getTradeIds();
+                // get any existing trades
+                List<Long> trades = appDatabase.poloniexTradeDao().getTradeIds();
 
-            for (Map.Entry<String, List<PoloniexTradeValue>> entry : poloniexTrades.entrySet()) {
-                String pair = entry.getKey();
-                for (PoloniexTradeValue poloniexTradeValue : entry.getValue()) {
-                    Long globalTradeId = poloniexTradeValue.getGlobalTradeID();
-                    // keep only if it does not already exists
-                    if (trades == null || !trades.contains(globalTradeId)) {
-                        //get all values as strings
-                        String tradeIdStr = poloniexTradeValue.getTradeId();
-                        String dateStr = poloniexTradeValue.getDate();
-                        String rateStr = poloniexTradeValue.getRate();
-                        String amountStr = poloniexTradeValue.getAmount();
-                        String totalStr = poloniexTradeValue.getTotal();
-                        String feeStr = poloniexTradeValue.getFee();
-                        String orderNumberStr = poloniexTradeValue.getOrderNumber();
-                        String type = poloniexTradeValue.getType();
-                        String category = poloniexTradeValue.getCategory();
+                for (Map.Entry<String, List<PoloniexTradeValue>> entry : poloniexTrades.entrySet()) {
+                    String pair = entry.getKey();
+                    for (PoloniexTradeValue poloniexTradeValue : entry.getValue()) {
+                        Long globalTradeId = poloniexTradeValue.getGlobalTradeID();
+                        // keep only if it does not already exists
+                        if (trades == null || !trades.contains(globalTradeId)) {
+                            //get all values as strings
+                            String tradeIdStr = poloniexTradeValue.getTradeId();
+                            String dateStr = poloniexTradeValue.getDate();
+                            String rateStr = poloniexTradeValue.getRate();
+                            String amountStr = poloniexTradeValue.getAmount();
+                            String totalStr = poloniexTradeValue.getTotal();
+                            String feeStr = poloniexTradeValue.getFee();
+                            String orderNumberStr = poloniexTradeValue.getOrderNumber();
+                            String type = poloniexTradeValue.getType();
+                            String category = poloniexTradeValue.getCategory();
 
-                        Long tradeId = Long.parseLong(tradeIdStr);
-                        Date date = null;
-                        try {
-                            date = sdf.parse(dateStr);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            Date date = null;
+                            if (dateStr != null) {
+                                try {
+                                    date = sdf.parse(dateStr);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            Long tradeId = Long.parseLong(tradeIdStr);
+                            Double rate = Double.parseDouble(rateStr);
+                            Double amount = Double.parseDouble(amountStr);
+                            Double total = Double.parseDouble(totalStr);
+                            Double fee = Double.parseDouble(feeStr);
+                            Long orderNumber = Long.parseLong(orderNumberStr);
+
+                            if (date != null && highestDate.before(date)) {
+                                startTime = date.getTime();
+                            }
+
+                            poloniexTradeEntities.add(new PoloniexTrade(pair, globalTradeId, tradeId, date, rate, amount, total, fee, orderNumber, type, category));
                         }
-                        Double rate = Double.parseDouble(rateStr);
-                        Double amount = Double.parseDouble(amountStr);
-                        Double total = Double.parseDouble(totalStr);
-                        Double fee = Double.parseDouble(feeStr);
-                        Long orderNumber = Long.parseLong(orderNumberStr);
-
-                        if (date != null && highestDate.before(date)) {
-                            startTime = date.getTime();
-                        }
-
-                        poloniexTradeEntities.add(new PoloniexTrade(pair, globalTradeId, tradeId, date, rate, amount, total, fee, orderNumber, type, category));
+                        cpt++;
                     }
-                    cpt++;
                 }
-            }
 
-            // API result is limited to 10000 entries maximum, so if result contains 10000 entries, call it again with a start time corresponding to the highest found trade date
-            if (cpt > 10000) {
-                getPoloniexTrades();
+                // API result is limited to 10000 entries maximum, so if result contains 10000 entries, call it again with a start time corresponding to the highest found trade date
+                if (cpt > 10000) {
+                    getPoloniexTrades();
+                }
             }
         }
 
@@ -228,91 +250,110 @@ public class PoloniexManager {
         String start = String.valueOf(startTime);
         String end = String.valueOf(Calendar.getInstance().getTimeInMillis() / 1000);
         String nonce = String.valueOf(System.currentTimeMillis());
-        //use alphabetical order as it must be in the same order as POST body parameters
+        // use alphabetical order as it must be in the same order as POST body parameters
         String parameters = "command=returnDepositsWithdrawals&end=" + end + "&nonce=" + nonce + "&start=" + start;
         String sign = calculatePoloniexSignature(parameters);
 
-        // get encrypted public API key from database and decrypt it
-        String encryptedPublicKey = appDatabase.exchangeDao().getByName("Poloniex").getPublicApiKey();
-        Properties properties = uh.getProperties();
-        String key = properties.getProperty("RSA_KEY");
-        String initVector = properties.getProperty("RSA_INIT_VECTOR");
-        String publicKey = uh.decrypt(key, initVector, encryptedPublicKey);
-
+        // request header
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Key", publicKey);
         headerMap.put("Sign", sign);
 
-        //here order doesn't matter as we will order them in an interceptor while sending request
+        // request parameters, here order doesn't matter as we will order them in an interceptor while sending request
         Map<String, String> paramsMap = new HashMap<>();
         paramsMap.put("command", "returnDepositsWithdrawals");
         paramsMap.put("start", start);
         paramsMap.put("end", end);
         paramsMap.put("nonce", nonce);
 
+        // service call
         PoloniexDepositsWithdrawals poloniexDepositsWithdrawals = null;
+        PoloniexError poloniexError = null;
+        String errorMessage = null;
         try {
             Call<PoloniexDepositsWithdrawals> call = poloniexService.getDepositsWithdrawals(headerMap, paramsMap);
-            //todo return {"error":"Invalid API key\/secret pair."} if error so it raises Expected BEGIN_ARRAY but was STRING
             poloniexDepositsWithdrawals = call.execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = e.getLocalizedMessage();
+            // API does not return the same structure when an error occurred... so let's try again with new structure to get any error message
+            // for example in case of invalid signature it returns {"error":"Invalid API key\/secret pair."} so it raises "Expected BEGIN_ARRAY but was STRING"
+            try {
+                Call<PoloniexError> call = poloniexService.getDepositsWithdrawalsError(headerMap, paramsMap);
+                poloniexError = call.execute().body();
+            } catch (IOException e2) {
+                e.printStackTrace();
+                errorMessage = e.getLocalizedMessage();
+            }
         }
 
-        // if it returned something without error
-        if (poloniexDepositsWithdrawals != null) {
-
-            // get any existing deposits
-            List<String> deposits = appDatabase.poloniexDepositDao().getTxIds();
-
-            for (com.mycryptobinder.models.poloniex.PoloniexDeposit entry : poloniexDepositsWithdrawals.getDeposits()) {
-                String transactionId = entry.getTxId();
-                // keep only if it does not already exists
-                if (deposits == null || !deposits.contains(transactionId)) {
-                    //get all values
-                    String address = entry.getAddress();
-                    String currency = entry.getCurrency();
-                    long timestamp = entry.getTimestamp();
-                    String status = entry.getStatus();
-                    String amountStr = entry.getAmount();
-                    Double amount = Double.parseDouble(amountStr);
-
-                    poloniexDepositEntities.add(new PoloniexDeposit(transactionId, currency, address, amount, timestamp, status));
-                }
-            }
-
-            // insert into the database
-            PoloniexDeposit[] poloniexDepositArray = new PoloniexDeposit[poloniexDepositEntities.size()];
-            poloniexDepositArray = poloniexDepositEntities.toArray(poloniexDepositArray);
-            appDatabase.poloniexDepositDao().insert(poloniexDepositArray);
-
-            // get any existing withdrawals
-            List<Long> withdrawals = appDatabase.poloniexWithdrawalDao().getWithdrawalNumbers();
-
-            for (com.mycryptobinder.models.poloniex.PoloniexWithdrawal entry : poloniexDepositsWithdrawals.getWithdrawals()) {
-                long withdrawalNumber = entry.getWithdrawalNumber();
-                // keep only if it does not already exists
-                if (withdrawals == null || !withdrawals.contains(withdrawalNumber)) {
-                    //get all values
-                    String address = entry.getAddress();
-                    String currency = entry.getCurrency();
-                    long timestamp = entry.getTimestamp();
-                    String status = entry.getStatus();
-                    String amountStr = entry.getAmount();
-                    Double amount = Double.parseDouble(amountStr);
-
-                    poloniexWithdrawalEntities.add(new PoloniexWithdrawal(withdrawalNumber, currency, address, amount, timestamp, status));
-                }
-            }
-
-            // insert into the database
-            PoloniexWithdrawal[] poloniexWithdrawalArray = new PoloniexWithdrawal[poloniexWithdrawalEntities.size()];
-            poloniexWithdrawalArray = poloniexWithdrawalEntities.toArray(poloniexWithdrawalArray);
-            appDatabase.poloniexWithdrawalDao().insert(poloniexWithdrawalArray);
-
+        // if an error occurred on service call
+        if (errorMessage != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+            return -1;
         }
+        // if an error was returned in the response body
+        else if (poloniexError != null && poloniexError.getError() != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, poloniexError.getError()), Toast.LENGTH_SHORT).show();
+            return -1;
+        } else {
+            // if it returned something
+            if (poloniexDepositsWithdrawals != null) {
 
-        return poloniexDepositEntities.size() + poloniexWithdrawalEntities.size();
+                // get any existing deposits
+                List<String> deposits = appDatabase.poloniexDepositDao().getTxIds();
+
+                for (com.mycryptobinder.models.poloniex.PoloniexDeposit entry : poloniexDepositsWithdrawals.getDeposits()) {
+                    String transactionId = entry.getTxId();
+                    // keep only if it does not already exists
+                    if (deposits == null || !deposits.contains(transactionId)) {
+                        //get all values
+                        String address = entry.getAddress();
+                        String currency = entry.getCurrency();
+                        long timestamp = entry.getTimestamp();
+                        String status = entry.getStatus();
+                        String amountStr = entry.getAmount();
+                        Double amount = Double.parseDouble(amountStr);
+
+                        poloniexDepositEntities.add(new PoloniexDeposit(transactionId, currency, address, amount, timestamp, status));
+                    }
+                }
+
+                // insert into the database
+                PoloniexDeposit[] poloniexDepositArray = new PoloniexDeposit[poloniexDepositEntities.size()];
+                poloniexDepositArray = poloniexDepositEntities.toArray(poloniexDepositArray);
+                appDatabase.poloniexDepositDao().insert(poloniexDepositArray);
+
+                // get any existing withdrawals
+                List<Long> withdrawals = appDatabase.poloniexWithdrawalDao().getWithdrawalNumbers();
+
+                for (com.mycryptobinder.models.poloniex.PoloniexWithdrawal entry : poloniexDepositsWithdrawals.getWithdrawals()) {
+                    long withdrawalNumber = entry.getWithdrawalNumber();
+                    // keep only if it does not already exists
+                    if (withdrawals == null || !withdrawals.contains(withdrawalNumber)) {
+                        //get all values
+                        String address = entry.getAddress();
+                        String currency = entry.getCurrency();
+                        long timestamp = entry.getTimestamp();
+                        String status = entry.getStatus();
+                        String amountStr = entry.getAmount();
+                        Double amount = Double.parseDouble(amountStr);
+
+                        poloniexWithdrawalEntities.add(new PoloniexWithdrawal(withdrawalNumber, currency, address, amount, timestamp, status));
+                    }
+                }
+
+                // insert into the database
+                PoloniexWithdrawal[] poloniexWithdrawalArray = new PoloniexWithdrawal[poloniexWithdrawalEntities.size()];
+                poloniexWithdrawalArray = poloniexWithdrawalEntities.toArray(poloniexWithdrawalArray);
+                appDatabase.poloniexWithdrawalDao().insert(poloniexWithdrawalArray);
+
+            }
+
+            return poloniexDepositEntities.size() + poloniexWithdrawalEntities.size();
+        }
 
     }
 
@@ -322,7 +363,10 @@ public class PoloniexManager {
      * @return The number of trades inserted
      */
     public int populateTradeHistory() {
+        // call to recursive function
         getPoloniexTrades();
+
+        // insert results into the database
         if (poloniexTradeEntities != null && !poloniexTradeEntities.isEmpty()) {
             // insert into the database
             PoloniexTrade[] poloniexTradesArray = new PoloniexTrade[poloniexTradeEntities.size()];
@@ -339,41 +383,68 @@ public class PoloniexManager {
      * @return number of assets inserted, or -1 if an error occurred
      */
     public int populateAssets() {
+
+        //service call
         Map<String, PoloniexAssetValue> poloniexAssets = null;
+        PoloniexError poloniexError = null;
+        String errorMessage = null;
         try {
             // API synchronous call
-            PoloniexService poloniexService = PoloniexService.retrofit.create(PoloniexService.class);
             Call<Map<String, PoloniexAssetValue>> call = poloniexService.getAssets();
             poloniexAssets = call.execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        List<PoloniexAsset> poloniexAssetEntities = new ArrayList<>();
-        // if it returned something without error
-        if (poloniexAssets != null && !poloniexAssets.isEmpty()) {
-
-            //get any existing asset
-            List<String> assets = appDatabase.poloniexAssetDao().getCodes();
-
-            for (Map.Entry<String, PoloniexAssetValue> entry : poloniexAssets.entrySet()) {
-                String asset = entry.getKey();
-
-                // keep only if it does not already exists
-                if (assets == null || !assets.contains(asset)) {
-                    PoloniexAssetValue poloniexAssetValue = entry.getValue();
-                    String name = poloniexAssetValue.getName();
-                    poloniexAssetEntities.add(new PoloniexAsset(asset, name));
-                }
+            errorMessage = e.getLocalizedMessage();
+            // API does not return the same structure when an error occurred... so let's try again with new structure to get any error message
+            // for example in case of invalid signature it returns {"error":"Invalid API key\/secret pair."} so it raises "Expected BEGIN_ARRAY but was STRING"
+            try {
+                Call<PoloniexError> call = poloniexService.getAssetsError();
+                poloniexError = call.execute().body();
+            } catch (IOException e2) {
+                e.printStackTrace();
+                errorMessage = e.getLocalizedMessage();
             }
-
-            // insert into the database
-            PoloniexAsset[] poloniexAssetArray = new PoloniexAsset[poloniexAssetEntities.size()];
-            poloniexAssetArray = poloniexAssetEntities.toArray(poloniexAssetArray);
-            appDatabase.poloniexAssetDao().insert(poloniexAssetArray);
-        } else {
-            return 0;
         }
-        return poloniexAssetEntities.size();
+
+        // if an error occurred on service call
+        if (errorMessage != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, errorMessage), Toast.LENGTH_SHORT).show();
+            return -1;
+        }
+        // if an error was returned in the response body
+        else if (poloniexError != null && poloniexError.getError() != null) {
+            // show a notification about the error
+            Toast.makeText(context, context.getString(R.string.error_retrieving_data_from_api, poloniexError.getError()), Toast.LENGTH_SHORT).show();
+            return -1;
+        } else {
+            List<PoloniexAsset> poloniexAssetEntities = new ArrayList<>();
+            // if it returned something without error
+            if (poloniexAssets != null && !poloniexAssets.isEmpty()) {
+
+                //get any existing asset
+                List<String> assets = appDatabase.poloniexAssetDao().getCodes();
+
+                for (Map.Entry<String, PoloniexAssetValue> entry : poloniexAssets.entrySet()) {
+                    String asset = entry.getKey();
+
+                    // keep only if it does not already exists
+                    if (assets == null || !assets.contains(asset)) {
+                        PoloniexAssetValue poloniexAssetValue = entry.getValue();
+                        String name = poloniexAssetValue.getName();
+                        poloniexAssetEntities.add(new PoloniexAsset(asset, name));
+                    }
+                }
+
+                // insert into the database
+                PoloniexAsset[] poloniexAssetArray = new PoloniexAsset[poloniexAssetEntities.size()];
+                poloniexAssetArray = poloniexAssetEntities.toArray(poloniexAssetArray);
+                appDatabase.poloniexAssetDao().insert(poloniexAssetArray);
+            } else {
+                return 0;
+            }
+            return poloniexAssetEntities.size();
+        }
     }
 
     /**
@@ -416,6 +487,18 @@ public class PoloniexManager {
     public void deleteAll() {
         appDatabase.poloniexTradeDao().deleteAll();
         appDatabase.poloniexAssetDao().deleteAll();
+    }
+
+    /**
+     * Check if the exchange API keys are defined
+     */
+    public boolean areApiKeysDefined() {
+        Exchange exchange = appDatabase.exchangeDao().getByName("Poloniex");
+        return exchange != null
+                && exchange.getPublicApiKey() != null
+                && exchange.getPublicApiKey().length() > 0
+                && exchange.getPrivateApiKey() != null
+                && exchange.getPrivateApiKey().length() > 0;
     }
 
 }

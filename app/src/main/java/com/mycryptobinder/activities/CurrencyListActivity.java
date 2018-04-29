@@ -21,11 +21,11 @@ package com.mycryptobinder.activities;
 
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -36,13 +36,17 @@ import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.adapters.CurrencyCardAdapter;
+import com.mycryptobinder.components.SectionItemDecoration;
 import com.mycryptobinder.entities.Currency;
 import com.mycryptobinder.viewmodels.CurrencyListViewModel;
+
+import java.util.List;
 
 public class CurrencyListActivity extends AppCompatActivity implements View.OnClickListener {
 
     private CurrencyCardAdapter currencyCardAdapter;
     private CurrencyListViewModel currencyListViewModel;
+    private SectionItemDecoration sectionItemDecoration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +65,11 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
 
         // prepare the recycler view with a linear layout
         RecyclerView currencyListRecyclerView = findViewById(R.id.currency_list_recycler_view);
-        currencyListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //currencyListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        currencyListRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+
+        //sectionItemDecoration = new SectionItemDecoration(getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin), true);
+        //currencyListRecyclerView.addItemDecoration(sectionItemDecoration);
 
         // initialize the adapter for the list
         currencyCardAdapter = new CurrencyCardAdapter(this);
@@ -71,7 +79,10 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
         currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
 
         // observe the currency list from the view model so it is always up to date
-        currencyListViewModel.getPagedCurrencyList().observe(this, pagedList -> currencyCardAdapter.setList(pagedList));
+        currencyListViewModel.getCurrencyList().observe(this, list -> {
+            currencyCardAdapter.setList(list);
+            //sectionItemDecoration.setSectionCallback(getSectionCallback(list));
+        });
 
         // set click listener for the add currency button
         FloatingActionButton button = findViewById(R.id.btn_add_currency);
@@ -96,13 +107,13 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View view) {
+        // get the clicked currency, stored in this view as a tag
         Currency currency = (Currency) view.getTag();
+
         // show a confirm dialog
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle(getString(R.string.title_confirmation));
-        alert.setMessage(Html.fromHtml(getString(R.string.confirm_delete_currency, " <b>" + currency.getName() + "</b>")));
-
-        Context context = this;
+        alert.setMessage(Html.fromHtml(getString(R.string.confirm_delete_currency, " <b>" + currency.getIsoCode() + "</b>")));
 
         // "yes" button click
         alert.setPositiveButton(getString(R.string.label_yes), (dialog, which) -> {
@@ -110,7 +121,7 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
             currencyListViewModel.deleteItem(currency);
 
             // show a notification about the removed item
-            Toast.makeText(context, getString(R.string.success_currency_removed, currency.getIsoCode()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), getString(R.string.success_currency_removed, currency.getIsoCode()), Toast.LENGTH_SHORT).show();
 
             dialog.dismiss();
         });
@@ -119,5 +130,22 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
         alert.setNegativeButton(getString(R.string.label_no), (dialog, which) -> dialog.dismiss());
 
         alert.show();
+    }
+
+    private SectionItemDecoration.SectionCallback getSectionCallback(final List<Currency> currencies) {
+        return new SectionItemDecoration.SectionCallback() {
+            @Override
+            public boolean isSection(int position) {
+                return currencies.get(position) != null && (position == 0 || currencies.get(position).getIsoCode().charAt(0) != currencies.get(position - 1).getIsoCode().charAt(0));
+            }
+
+            @Override
+            public CharSequence getSectionHeader(int position) {
+                if (currencies.get(position) == null) {
+                    return "?";
+                }
+                return currencies.get(position).getIsoCode().subSequence(0, 1);
+            }
+        };
     }
 }

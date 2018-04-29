@@ -21,6 +21,7 @@ package com.mycryptobinder.adapters;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -31,10 +32,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.HoldingData;
 import com.mycryptobinder.models.PricesFull;
 import com.mycryptobinder.viewholders.PortfolioCardViewHolder;
 
+import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -92,6 +96,40 @@ public class PortfolioCardAdapter extends RecyclerView.Adapter<PortfolioCardView
     @Override
     public int getItemCount() {
         return holdingData.size();
+    }
+
+    public void sortTransactions(int colIndex, boolean asc) {
+        switch (colIndex) {
+            case 0:
+                if (asc) {
+                    Collections.sort(holdingData, (t1, t2) -> (t1.getIsoCode()).compareTo(t2.getIsoCode()));
+                } else {
+                    Collections.sort(holdingData, (t1, t2) -> (t2.getIsoCode()).compareTo(t1.getIsoCode()));
+                }
+                break;
+            case 1:
+                if (asc) {
+                    Collections.sort(holdingData, (t1, t2) -> Double.compare(t1.getQuantity() != null ? t1.getQuantity() : 0, t2.getQuantity() != null ? t2.getQuantity() : 0));
+                } else {
+                    Collections.sort(holdingData, (t1, t2) -> Double.compare(t2.getQuantity() != null ? t2.getQuantity() : 0, t1.getQuantity() != null ? t1.getQuantity() : 0));
+                }
+                break;
+            case 2:
+                if (asc) {
+                    Collections.sort(holdingData, (t1, t2) -> Double.compare(t1.getQuantity() != null ? t1.getQuantity() : 0, t2.getQuantity() != null ? t2.getQuantity() : 0));
+                } else {
+                    Collections.sort(holdingData, (t1, t2) -> Double.compare(t2.getQuantity() != null ? t2.getQuantity() : 0, t1.getQuantity() != null ? t1.getQuantity() : 0));
+                }
+                break;
+            default:
+                if (asc) {
+                    Collections.sort(holdingData, (t1, t2) -> (t1.getIsoCode()).compareTo(t2.getIsoCode()));
+                } else {
+                    Collections.sort(holdingData, (t1, t2) -> (t2.getIsoCode()).compareTo(t1.getIsoCode()));
+                }
+                break;
+        }
+        notifyDataSetChanged();
     }
 
 }

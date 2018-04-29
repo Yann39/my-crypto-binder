@@ -62,7 +62,13 @@ public interface TransactionDao {
             "pd.currency as currency1_iso_code, null as currency2_iso_code, " +
             "null as fee, pd.timestamp as date, 'deposit' as type, pd.amount as quantity, null as price, null as total, " +
             "null as comment " +
-            "from poloniex_deposits pd")
+            "from poloniex_deposits pd " +
+            "union all " +
+            "select null as id, 'Poloniex' as exchange_name, pw.withdrawal_number as transaction_id, " +
+            "null as currency1_iso_code, pw.currency as currency2_iso_code, " +
+            "null as fee, pw.timestamp as date, 'withdrawal' as type, pw.amount as quantity, null as price, null as total, " +
+            "null as comment " +
+            "from poloniex_withdrawals pw")
     List<Transaction> getPoloniexTransactions();
 
     @Query("select null as id, 'Bittrex' as exchange_name, bt.order_uuid as transaction_id, " +
@@ -72,11 +78,17 @@ public interface TransactionDao {
             "null as comment " +
             "from bittrex_trades bt " +
             "union all " +
-            "select null as id, 'Bittrex' as exchange_name, bd.payment_uuid as transaction_id, " +
+            "select null as id, 'Bittrex' as exchange_name, bd.deposit_id as transaction_id, " +
             "bd.currency as currency1_iso_code, null as currency2_iso_code, " +
-            "null as fee, bd.opened as date, 'deposit' as type, bd.amount as quantity, null as price, null as total, " +
+            "null as fee, bd.last_updated as date, 'deposit' as type, bd.amount as quantity, null as price, null as total, " +
             "null as comment " +
-            "from bittrex_deposits bd")
+            "from bittrex_deposits bd " +
+            "union all " +
+            "select null as id, 'Bittrex' as exchange_name, bw.payment_uuid as transaction_id, " +
+            "null as currency1_iso_code, bw.currency as currency2_iso_code, " +
+            "null as fee, bw.opened as date, 'withdrawal' as type, bw.amount as quantity, null as price, null as total, " +
+            "null as comment " +
+            "from bittrex_withdrawals bw")
     List<Transaction> getBittrexTransactions();
 
     @Query("select sum(total) from ( " +

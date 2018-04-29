@@ -36,8 +36,8 @@ public interface BittrexDepositDao {
     @Query("select * from bittrex_deposits")
     LiveData<List<BittrexDeposit>> getAll();
 
-    @Query("select distinct payment_uuid from bittrex_deposits")
-    List<String> getPaymentUuids();
+    @Query("select distinct deposit_id from bittrex_deposits")
+    List<Long> getPaymentUuids();
 
     @Insert
     void insert(BittrexDeposit... bittrexDeposits);

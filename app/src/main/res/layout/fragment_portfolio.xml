@@ -124,6 +124,7 @@
                 android:id="@+id/portfolio_currency_column_header_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:height="20dp"
                 android:text="PAIR"
                 android:textColor="@color/white" />
         </LinearLayout>
@@ -140,6 +141,7 @@
                 android:id="@+id/portfolio_quantity_column_header_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:height="20dp"
                 android:text="HOLDING"
                 android:textColor="@color/white" />
         </LinearLayout>
@@ -156,6 +158,7 @@
                 android:id="@+id/portfolio_holding_column_header_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:height="20dp"
                 android:text="PRICE"
                 android:textColor="@color/white" />
         </LinearLayout>
@@ -170,8 +173,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/portfolio_list_header"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/portfolio_list_header" />
 
     <ScrollView
         android:layout_width="0dp"
@@ -184,10 +186,10 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/portfolio_recycler_view"
+            style="@style/scrollbar_shape_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorDark80"
-            style="@style/scrollbar_shape_style"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

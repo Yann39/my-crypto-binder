@@ -31,12 +31,7 @@ import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.entities.AppSetting;
-import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.viewmodels.AddAppSettingsViewModel;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class AddAppSettingActivity extends AppCompatActivity {
 
@@ -84,22 +79,8 @@ public class AddAppSettingActivity extends AppCompatActivity {
             } else if (settingValue.trim().equals("")) {
                 appSettingValueEditText.setError(getString(R.string.error_setting_value_required));
             } else {
-
-                // encrypt value
-                Properties properties = new Properties();
-                try {
-                    InputStream inputStream = getApplicationContext().getAssets().open("myCryptoBinder.properties");
-                    properties.load(inputStream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String key = properties.getProperty("RSA_KEY");
-                String initVector = properties.getProperty("RSA_INIT_VECTOR");
-                UtilsHelper uh = new UtilsHelper(getApplicationContext());
-                String secret = uh.encrypt(key, initVector, settingValue);
-
                 // add record to the view model who will trigger the insert
-                addAppSettingsViewModel.addAppSetting(new AppSetting(settingName, secret));
+                addAppSettingsViewModel.addAppSetting(new AppSetting(settingName, settingValue));
 
                 // close current activity and return to previous activity if there is any
                 finish();

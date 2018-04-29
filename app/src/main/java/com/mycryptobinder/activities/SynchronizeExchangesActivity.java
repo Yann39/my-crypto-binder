@@ -38,6 +38,8 @@ import java.util.List;
 
 public class SynchronizeExchangesActivity extends AppCompatActivity implements MultiSpinner.MultiSpinnerListener {
 
+    private boolean[] selectedExchanges;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,11 +78,11 @@ public class SynchronizeExchangesActivity extends AppCompatActivity implements M
         settingsViewModel.getPercentDone().observe(this, percent -> synchronizeLogProgressBar.setProgress(percent != null ? percent : 0));
 
         // set click listener for the synchronize button
-        synchronizeButton.setOnClickListener(view12 -> settingsViewModel.populateDatabase(checkBox.isChecked()));
+        synchronizeButton.setOnClickListener(view12 -> settingsViewModel.populateDatabase(checkBox.isChecked(), selectedExchanges));
     }
 
     public void onItemsSelected(boolean[] selected) {
-
+        selectedExchanges = selected;
     }
 
     @Override

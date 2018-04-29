@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -74,6 +75,12 @@ public class AddIcoActivity extends AppCompatActivity {
         addIcoDateEditText = findViewById(R.id.add_ico_date_editText);
         addIcoTokenDateEditText = findViewById(R.id.add_ico_token_date_editText);
         Spinner addIcoCurrencySpinner = findViewById(R.id.add_ico_currency_spinner);
+        Button createIcoButton = findViewById(R.id.btn_create_ico);
+        Button editIcoButton = findViewById(R.id.btn_update_ico);
+
+        // hide edit button and show create button
+        editIcoButton.setVisibility(View.INVISIBLE);
+        createIcoButton.setVisibility(View.VISIBLE);
 
         // get the view models
         addIcoViewModel = ViewModelProviders.of(this).get(AddIcoViewModel.class);
@@ -123,6 +130,9 @@ public class AddIcoActivity extends AppCompatActivity {
             }
         });
 
+        // set click listener for the create ICO button
+        createIcoButton.setOnClickListener(view -> createIco());
+
     }
 
     @Override
@@ -145,101 +155,110 @@ public class AddIcoActivity extends AppCompatActivity {
 
         // save icon click
         if (id == R.id.save_add_ico) {
+            createIco();
+        }
 
-            // get view components
-            EditText addIcoNameEditText = findViewById(R.id.add_ico_name_editText);
-            EditText addIcoAmountEditText = findViewById(R.id.add_ico_amount_editText);
-            Spinner addIcoCurrencySpinner = findViewById(R.id.add_ico_currency_spinner);
-            EditText addIcoTokenNameEditText = findViewById(R.id.add_ico_token_name_editText);
-            EditText addIcoTokenQuantityEditText = findViewById(R.id.add_ico_token_quantity_editText);
-            EditText addIcoFeeEditText = findViewById(R.id.add_ico_fee_editText);
-            EditText addIcoBonusEditText = findViewById(R.id.add_ico_bonus_editText);
-            EditText addIcoCommentEditText = findViewById(R.id.add_ico_comment_editText);
-
-            // get field values
-            String name = addIcoNameEditText.getText().toString();
-            String currencyIsoCode = currencyAutoCompleteAdapter1.getItem(addIcoCurrencySpinner.getSelectedItemPosition());
-            String amountStr = addIcoAmountEditText.getText().toString();
-            String dateStr = addIcoDateEditText.getText().toString();
-            String tokenName = addIcoTokenNameEditText.getText().toString();
-            String tokenDateStr = addIcoTokenDateEditText.getText().toString();
-            String tokenQuantityStr = addIcoTokenQuantityEditText.getText().toString();
-            String feeStr = addIcoFeeEditText.getText().toString();
-            String bonusStr = addIcoBonusEditText.getText().toString();
-            String comment = addIcoCommentEditText.getText().toString();
-
-            // format doubles
-            Double amount = null;
-            Double tokenQuantity = null;
-            Double fee = null;
-            Double bonus = null;
-            try {
-                amount = Double.parseDouble(amountStr);
-                tokenQuantity = Double.parseDouble(tokenQuantityStr);
-                fee = Double.parseDouble(feeStr);
-                bonus = Double.parseDouble(bonusStr);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-
-            // format dates
-            Date date = null;
-            Date tokenDate = null;
-            try {
-                date = sdf.parse(dateStr);
-                tokenDate = sdf.parse(tokenDateStr);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            // check mandatory fields
-            if (name.trim().equals("")) {
-                addIcoNameEditText.setError(getString(R.string.error_ico_name_required));
-            } else if (currencyIsoCode == null || currencyIsoCode.trim().equals("")) {
-                // setError on spinner not possible, so let's use a fake TextView
-                TextView errorText = (TextView) addIcoCurrencySpinner.getSelectedView();
-                errorText.setError("Anything here, just for the icon to be displayed");
-                errorText.setTextColor(Color.RED);
-                errorText.setText(getString(R.string.error_ico_currency_required));
-            } else if (amountStr.trim().equals("")) {
-                addIcoAmountEditText.setError(getString(R.string.error_ico_amount_required));
-            } else if (amount == null) {
-                addIcoAmountEditText.setError(getString(R.string.error_ico_amount_not_valid));
-            } else if (dateStr.trim().equals("")) {
-                addIcoDateEditText.setError(getString(R.string.error_ico_date_required));
-            } else if (date == null) {
-                addIcoDateEditText.setError(getString(R.string.error_ico_date_not_valid));
-            } else if (tokenName.trim().equals("")) {
-                addIcoTokenNameEditText.setError(getString(R.string.error_ico_token_name_required));
-            } else if (tokenDateStr.trim().equals("")) {
-                addIcoTokenDateEditText.setError(getString(R.string.error_ico_token_date_required));
-            } else if (tokenDate == null) {
-                addIcoTokenDateEditText.setError(getString(R.string.error_ico_token_date_invalid));
-            } else if (tokenQuantityStr.trim().equals("")) {
-                addIcoTokenQuantityEditText.setError(getString(R.string.error_ico_token_quantity_required));
-            } else if (tokenQuantity == null) {
-                addIcoTokenQuantityEditText.setError(getString(R.string.error_ico_token_quantity_invalid));
-            } else if (feeStr.trim().equals("")) {
-                addIcoFeeEditText.setError(getString(R.string.error_ico_fee_required));
-            } else if (fee == null) {
-                addIcoFeeEditText.setError(getString(R.string.error_ico_fee_invalid));
-            } else if (bonusStr.trim().equals("")) {
-                addIcoBonusEditText.setError(getString(R.string.error_ico_bonus_required));
-            } else if (bonus == null) {
-                addIcoBonusEditText.setError(getString(R.string.error_ico_bonus_invalid));
-            } else {
-                // add record to the view model who will trigger the insert
-                addIcoViewModel.addIco(new Ico(name, currencyIsoCode, amount, fee, date, tokenName, tokenDate, tokenQuantity, bonus, comment));
-
-                // close current activity and return to previous activity if there is any
-                finish();
-
-                // show a notification about the created item
-                final View view = findViewById(R.id.save_add_ico);
-                Toast.makeText(view.getContext(), getString(R.string.success_ico_created, name), Toast.LENGTH_SHORT).show();
-            }
+        // cancel icon click
+        if (id == R.id.save_add_ico) {
+            // close current activity and return to previous activity if there is any
+            finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createIco() {
+        // get view components
+        EditText addIcoNameEditText = findViewById(R.id.add_ico_name_editText);
+        EditText addIcoAmountEditText = findViewById(R.id.add_ico_amount_editText);
+        Spinner addIcoCurrencySpinner = findViewById(R.id.add_ico_currency_spinner);
+        EditText addIcoTokenNameEditText = findViewById(R.id.add_ico_token_name_editText);
+        EditText addIcoTokenQuantityEditText = findViewById(R.id.add_ico_token_quantity_editText);
+        EditText addIcoFeeEditText = findViewById(R.id.add_ico_fee_editText);
+        EditText addIcoBonusEditText = findViewById(R.id.add_ico_bonus_editText);
+        EditText addIcoCommentEditText = findViewById(R.id.add_ico_comment_editText);
+
+        // get field values
+        String name = addIcoNameEditText.getText().toString();
+        String currencyIsoCode = currencyAutoCompleteAdapter1.getItem(addIcoCurrencySpinner.getSelectedItemPosition());
+        String amountStr = addIcoAmountEditText.getText().toString();
+        String dateStr = addIcoDateEditText.getText().toString();
+        String tokenName = addIcoTokenNameEditText.getText().toString();
+        String tokenDateStr = addIcoTokenDateEditText.getText().toString();
+        String tokenQuantityStr = addIcoTokenQuantityEditText.getText().toString();
+        String feeStr = addIcoFeeEditText.getText().toString();
+        String bonusStr = addIcoBonusEditText.getText().toString();
+        String comment = addIcoCommentEditText.getText().toString();
+
+        // format doubles
+        Double amount = null;
+        Double tokenQuantity = null;
+        Double fee = null;
+        Double bonus = null;
+        try {
+            amount = Double.parseDouble(amountStr);
+            tokenQuantity = Double.parseDouble(tokenQuantityStr);
+            fee = Double.parseDouble(feeStr);
+            bonus = Double.parseDouble(bonusStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        // format dates
+        Date date = null;
+        Date tokenDate = null;
+        try {
+            date = sdf.parse(dateStr);
+            tokenDate = sdf.parse(tokenDateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // check mandatory fields
+        if (name.trim().equals("")) {
+            addIcoNameEditText.setError(getString(R.string.error_ico_name_required));
+        } else if (currencyIsoCode == null || currencyIsoCode.trim().equals("")) {
+            // setError on spinner not possible, so let's use a fake TextView
+            TextView errorText = (TextView) addIcoCurrencySpinner.getSelectedView();
+            errorText.setError("Anything here, just for the icon to be displayed");
+            errorText.setTextColor(Color.RED);
+            errorText.setText(getString(R.string.error_ico_currency_required));
+        } else if (amountStr.trim().equals("")) {
+            addIcoAmountEditText.setError(getString(R.string.error_ico_amount_required));
+        } else if (amount == null) {
+            addIcoAmountEditText.setError(getString(R.string.error_ico_amount_not_valid));
+        } else if (dateStr.trim().equals("")) {
+            addIcoDateEditText.setError(getString(R.string.error_ico_date_required));
+        } else if (date == null) {
+            addIcoDateEditText.setError(getString(R.string.error_ico_date_not_valid));
+        } else if (tokenName.trim().equals("")) {
+            addIcoTokenNameEditText.setError(getString(R.string.error_ico_token_name_required));
+        } else if (tokenDateStr.trim().equals("")) {
+            addIcoTokenDateEditText.setError(getString(R.string.error_ico_token_date_required));
+        } else if (tokenDate == null) {
+            addIcoTokenDateEditText.setError(getString(R.string.error_ico_token_date_invalid));
+        } else if (tokenQuantityStr.trim().equals("")) {
+            addIcoTokenQuantityEditText.setError(getString(R.string.error_ico_token_quantity_required));
+        } else if (tokenQuantity == null) {
+            addIcoTokenQuantityEditText.setError(getString(R.string.error_ico_token_quantity_invalid));
+        } else if (feeStr.trim().equals("")) {
+            addIcoFeeEditText.setError(getString(R.string.error_ico_fee_required));
+        } else if (fee == null) {
+            addIcoFeeEditText.setError(getString(R.string.error_ico_fee_invalid));
+        } else if (bonusStr.trim().equals("")) {
+            addIcoBonusEditText.setError(getString(R.string.error_ico_bonus_required));
+        } else if (bonus == null) {
+            addIcoBonusEditText.setError(getString(R.string.error_ico_bonus_invalid));
+        } else {
+            // add record to the view model who will trigger the insert
+            addIcoViewModel.addIco(new Ico(name, currencyIsoCode, amount, fee, date, tokenName, tokenDate, tokenQuantity, bonus, comment));
+
+            // close current activity and return to previous activity if there is any
+            finish();
+
+            // show a notification about the created item
+            final View view = findViewById(R.id.save_add_ico);
+            Toast.makeText(view.getContext(), getString(R.string.success_ico_created, name), Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

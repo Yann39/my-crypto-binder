@@ -27,7 +27,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -41,8 +43,10 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mycryptobinder.R;
+import com.mycryptobinder.adapters.CurrencySpinnerAdapter;
 import com.mycryptobinder.helpers.UtilsHelper;
 import com.mycryptobinder.models.HistoDayPrice;
+import com.mycryptobinder.viewmodels.CurrencyListViewModel;
 import com.mycryptobinder.viewmodels.StatisticsViewModel;
 
 import java.text.SimpleDateFormat;
@@ -53,9 +57,19 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
 
     private StatisticsViewModel statisticsViewModel;
     private LineChart lineChart;
-    private SeekBar nbDaysSeekBar;
-    private TextView nbDaysTextView;
+    //private TextView nbDaysTextView;
+    private TextView oneDayTextView;
+    private TextView oneWeekTextView;
+    private TextView twoWeeksTextView;
+    private TextView oneMonthTextView;
+    private TextView twoMonthsTextView;
+    private TextView threeMonthsTextView;
+    private TextView sixMonthsTextView;
+    private TextView oneYearTextView;
+    private Spinner currencySpinner;
+    private CurrencySpinnerAdapter currencySpinnerAdapter;
     private UtilsHelper uh;
+    private String selectedIsoCode;
 
     public StatisticsFragment() {
         // required empty public constructor
@@ -81,13 +95,22 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
         UtilsHelper uh = new UtilsHelper(getContext());
 
         // get UI components
-        nbDaysTextView = view.findViewById(R.id.historical_day_price_nb_days_textView);
-        nbDaysSeekBar = view.findViewById(R.id.historical_day_price_nb_days_seekBar);
+        //nbDaysTextView = view.findViewById(R.id.historical_day_price_nb_days_textView);
+        oneDayTextView = view.findViewById(R.id.historical_day_price_one_day_textView);
+        oneWeekTextView = view.findViewById(R.id.historical_day_price_one_week_textView);
+        twoWeeksTextView = view.findViewById(R.id.historical_day_price_two_weeks_textView);
+        oneMonthTextView = view.findViewById(R.id.historical_day_price_one_month_textView);
+        twoMonthsTextView = view.findViewById(R.id.historical_day_price_two_months_textView);
+        threeMonthsTextView = view.findViewById(R.id.historical_day_price_three_months_textView);
+        sixMonthsTextView = view.findViewById(R.id.historical_day_price_six_months_textView);
+        oneYearTextView = view.findViewById(R.id.historical_day_price_one_year_textView);
+        SeekBar nbDaysSeekBar = view.findViewById(R.id.historical_day_price_nb_days_seekBar);
         lineChart = view.findViewById(R.id.historical_day_price);
+        currencySpinner = view.findViewById(R.id.historical_day_price_currency_spinner);
 
-        // initialize to 30 days
+        // initialize to 1 year
         nbDaysSeekBar.setProgress(7);
-        nbDaysTextView.setText(getString(R.string.label_one_year));
+        //nbDaysTextView.setText(getString(R.string.label_one_year));
 
         // add seek bar listener
         nbDaysSeekBar.setOnSeekBarChangeListener(this);
@@ -107,11 +130,31 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
         // set view offsets
         lineChart.setViewPortOffsets(0f, 0f, 0f, 0f);
 
-        // get view model
+        // get view models
         statisticsViewModel = ViewModelProviders.of(this).get(StatisticsViewModel.class);
+        CurrencyListViewModel currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
 
-        // set the currency for which we want historical price
-        statisticsViewModel.setDayPriceFilter("BTC", 365);
+        // initialize currencies spinner adapter
+        currencySpinnerAdapter = new CurrencySpinnerAdapter(new ArrayList<>(), currencySpinner.getContext(), android.R.layout.simple_spinner_dropdown_item);
+        currencySpinnerAdapter.setDropDownViewResource(R.layout.row_spinner);
+        currencySpinner.setAdapter(currencySpinnerAdapter);
+
+        // observe the currency list from the view model so the currency spinner is always up to date
+        currencyListViewModel.getCurrencyList().observe(StatisticsFragment.this, currencies -> currencySpinnerAdapter.addItems(currencies));
+
+        // set selected item listener on the currency spinner to update the chart on item selection
+        currencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedIsoCode = currencySpinnerAdapter.getItem(currencySpinner.getSelectedItemPosition());
+                statisticsViewModel.setDayPriceFilter(selectedIsoCode, 365);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         // observe the historical prices data from the view model so it will always be up to date in the UI
         statisticsViewModel.getHistoricalDayPrice().observe(this, historicalDayPrices -> {
@@ -124,7 +167,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
                 }
 
                 // create a data set and customize it
-                LineDataSet set1 = new LineDataSet(entries, "BTC " + getString(R.string.label_one_day));
+                LineDataSet set1 = new LineDataSet(entries, getString(R.string.label_one_day));
                 set1.setAxisDependency(YAxis.AxisDependency.LEFT);
                 set1.setColor(ColorTemplate.getHoloBlue());
                 set1.setValueTextColor(ColorTemplate.getHoloBlue());
@@ -188,6 +231,8 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+        // arrays to match values and labels depending on current progress
         int[] valuesInt = {1, 7, 15, 30, 60, 90, 180, 365};
         String[] valuesStr = {
                 getString(R.string.label_one_day),
@@ -199,8 +244,41 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
                 getString(R.string.label_six_months),
                 getString(R.string.label_one_year)
         };
-        nbDaysTextView.setText(valuesStr[nbDaysSeekBar.getProgress()]);
-        statisticsViewModel.setDayPriceFilter("BTC", valuesInt[nbDaysSeekBar.getProgress()]);
+
+        //nbDaysTextView.setText(valuesStr[progress]);
+
+        // reset label colors
+        int defaultColor = oneDayTextView.getCurrentTextColor();
+        oneDayTextView.setTextColor(defaultColor);
+        oneWeekTextView.setTextColor(defaultColor);
+        twoWeeksTextView.setTextColor(defaultColor);
+        oneMonthTextView.setTextColor(defaultColor);
+        twoMonthsTextView.setTextColor(defaultColor);
+        threeMonthsTextView.setTextColor(defaultColor);
+        sixMonthsTextView.setTextColor(defaultColor);
+        oneYearTextView.setTextColor(defaultColor);
+
+        // change current item label color
+        int selectionColor = getResources().getColor(R.color.primary);
+        if (progress == 0) {
+            oneDayTextView.setTextColor(selectionColor);
+        } else if (progress == 1) {
+            oneWeekTextView.setTextColor(selectionColor);
+        } else if (progress == 2) {
+            twoWeeksTextView.setTextColor(selectionColor);
+        } else if (progress == 3) {
+            oneMonthTextView.setTextColor(selectionColor);
+        } else if (progress == 4) {
+            twoMonthsTextView.setTextColor(selectionColor);
+        } else if (progress == 5) {
+            threeMonthsTextView.setTextColor(selectionColor);
+        } else if (progress == 6) {
+            sixMonthsTextView.setTextColor(selectionColor);
+        } else if (progress == 7) {
+            oneYearTextView.setTextColor(selectionColor);
+        }
+        statisticsViewModel.setDayPriceFilter(selectedIsoCode, valuesInt[progress]);
+
         // redraw
         lineChart.invalidate();
     }

@@ -61,7 +61,8 @@ public class SettingsFragment extends Fragment {
                 getString(R.string.label_menu_item_currencies),
                 getString(R.string.label_menu_item_exchanges),
                 getString(R.string.label_menu_item_app_setting),
-                getString(R.string.label_menu_item_synchronize_with_exchanges)
+                getString(R.string.label_menu_item_synchronize_with_exchanges),
+                getString(R.string.label_menu_item_backup_restore)
         });
         listView.setAdapter(adapter);
 
@@ -89,6 +90,12 @@ public class SettingsFragment extends Fragment {
             // synchronize with exchanges item click
             else if (position == 3) {
                 Intent intent = new Intent(getActivity(), SynchronizeExchangesActivity.class);
+                startActivity(intent);
+            }
+
+            // backup / restore item click
+            else if (position == 4) {
+                Intent intent = new Intent(getActivity(), BackupRestoreActivity.class);
                 startActivity(intent);
             }
         });

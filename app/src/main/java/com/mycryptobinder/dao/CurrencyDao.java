@@ -20,7 +20,7 @@
 package com.mycryptobinder.dao;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.paging.LivePagedListProvider;
+import android.arch.paging.DataSource;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -34,11 +34,11 @@ import java.util.List;
 @Dao
 public interface CurrencyDao {
 
-    @Query("select * from currencies")
+    @Query("select * from currencies order by iso_code")
     LiveData<List<Currency>> getAll();
 
-    @Query("select * from currencies")
-    LivePagedListProvider<Integer, Currency> getAllPaged();
+    @Query("select * from currencies order by iso_code")
+    DataSource.Factory<Integer, Currency> getAllPaged();
 
     @Query("select pa.asset_code as iso_code, pa.asset_name as name, null as symbol " +
             "from poloniex_assets pa " +
@@ -57,6 +57,11 @@ public interface CurrencyDao {
             "left join currencies c on c.iso_code = ba.asset_code " +
             "where c.iso_code is null")
     List<Currency> getFromBittrex();
+
+    @Query("select distinct c.iso_code, c.name, c.symbol from currencies c " +
+            "inner join transactions t on c.iso_code = t.currency1_iso_code or c.iso_code = t.currency2_iso_code " +
+            "order by c.iso_code")
+    LiveData<List<Currency>> getAllUsed();
 
     @Insert
     void insert(Currency... currencies);

@@ -34,11 +34,9 @@ import java.util.List;
 public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsViewHolder> {
 
     private List<AppSetting> appSettings;
-    private View.OnLongClickListener longClickListener;
 
-    public AppSettingsListAdapter(List<AppSetting> appSettings, View.OnLongClickListener longClickListener) {
+    public AppSettingsListAdapter(List<AppSetting> appSettings) {
         this.appSettings = appSettings;
-        this.longClickListener = longClickListener;
     }
 
     @NonNull
@@ -53,7 +51,6 @@ public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsView
         holder.nameTextView.setText(appSetting.getName());
         holder.valueTextView.setText(appSetting.getValue());
         holder.itemView.setTag(appSetting);
-        holder.itemView.setOnLongClickListener(longClickListener);
     }
 
     @Override

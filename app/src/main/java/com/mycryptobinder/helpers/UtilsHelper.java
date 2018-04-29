@@ -28,8 +28,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Base64;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -130,6 +133,13 @@ public class UtilsHelper {
         return null;
     }
 
+    /**
+     * Convert a Vector graphic to a Bitmap image
+     *
+     * @param context The context
+     * @param drawableId The vector drawable id
+     * @return a Bitmap object representing the new Bitmap image generated from the vector drawable
+     */
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -143,6 +153,76 @@ public class UtilsHelper {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    /**
+     * Convert a byte array to an hexadecimal String
+     *
+     * @param bytes The byte array to convert
+     * @return The converted byte array as String
+     */
+    public String bytesToHex(byte[] bytes) {
+        char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    /**
+     * Escape a string to be written in a CSV file
+     * Actually enclose value with " and double the ones in the string (" become "")
+     *
+     * @param value The value to escape
+     * @return The escaped value
+     */
+    public static String escapeForCsv(String value) {
+        if (value != null && value.length() > 0) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return "";
+    }
+
+    /**
+     * Unescape a string got from a CSV file
+     * Actually remove enclosing " and replace the double ones in the string ("" become ")
+     *
+     * @param value The value to unescape
+     * @return The unescaped value
+     */
+    public static String unescapeFromCsv(String value) {
+        if (value != null && value.length() > 0) {
+            return value.substring(1, value.length()-1).replace("\"\"", "\"");
+        }
+        return "";
+    }
+
+    /**
+     * Format a number to short notation
+     * 1200 -> 1.2k, -15894 -> -15.89k, 4526800 -> 4.53m, etc.
+     *
+     * @param number The number to format
+     * @return The formatted number as string
+     */
+    public static String formatNumber(double number) {
+        String[] denominations = {"", "k", "m", "b", "t"};
+        int denominationIndex = 0;
+
+        // if number is greater than 1000, divide it by 1000 and increment the index for the denomination
+        while (number > 1000.0 || number < -1000) {
+            denominationIndex++;
+            number = number / 1000.0;
+        }
+
+        // round it to 2 digits
+        BigDecimal bigDecimal = new BigDecimal(number);
+        bigDecimal = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+
+        // concat number and denomination to get the final value
+        return bigDecimal + denominations[denominationIndex];
     }
 
 }

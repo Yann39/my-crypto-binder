@@ -37,6 +37,7 @@ public class PortfolioViewModel extends AndroidViewModel {
     private final LiveData<List<HoldingData>> holdings;
     private final LiveData<List<String>> differentCurrencies;
     private final LiveData<PricesFull> pricesFull;
+    //private final LiveData<List<HoldingFull>> allHoldings;
     private final MutableLiveData<List<String>> codes = new MutableLiveData<>();
     private final CryptoCompareManager cryptoCompareManager;
 

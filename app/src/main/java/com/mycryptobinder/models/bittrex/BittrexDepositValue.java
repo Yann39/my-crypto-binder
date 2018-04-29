@@ -23,43 +23,27 @@ import com.google.gson.annotations.SerializedName;
 
 public class BittrexDepositValue {
 
-    @SerializedName("PaymentUuid")
-    private String paymentUuid;
-    @SerializedName("Currency")
-    private String currency;
+    @SerializedName("Id")
+    private long id;
     @SerializedName("Amount")
     private Double amount;
-    @SerializedName("Address")
-    private String address;
-    @SerializedName("Opened")
-    private String opened;
-    @SerializedName("Authorized")
-    private boolean authorized;
-    @SerializedName("PendingPayment")
-    private boolean pendingPayment;
-    @SerializedName("TxCost")
-    private Double txCost;
+    @SerializedName("Currency")
+    private String currency;
+    @SerializedName("Confirmations")
+    private int confirmations;
+    @SerializedName("LastUpdated")
+    private String lastUpdated;
     @SerializedName("TxId")
     private String txId;
-    @SerializedName("Canceled")
-    private boolean canceled;
-    @SerializedName("InvalidAddress")
-    private boolean invalidAddress;
+    @SerializedName("CryptoAddress")
+    private String cryptoAddress;
 
-    public String getPaymentUuid() {
-        return paymentUuid;
+    public long getId() {
+        return id;
     }
 
-    public void setPaymentUuid(String paymentUuid) {
-        this.paymentUuid = paymentUuid;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Double getAmount() {
@@ -70,44 +54,28 @@ public class BittrexDepositValue {
         this.amount = amount;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
-    public String getOpened() {
-        return opened;
+    public int getConfirmations() {
+        return confirmations;
     }
 
-    public void setOpened(String opened) {
-        this.opened = opened;
+    public void setConfirmations(int confirmations) {
+        this.confirmations = confirmations;
     }
 
-    public boolean isAuthorized() {
-        return authorized;
+    public String getLastUpdated() {
+        return lastUpdated;
     }
 
-    public void setAuthorized(boolean authorized) {
-        this.authorized = authorized;
-    }
-
-    public boolean isPendingPayment() {
-        return pendingPayment;
-    }
-
-    public void setPendingPayment(boolean pendingPayment) {
-        this.pendingPayment = pendingPayment;
-    }
-
-    public Double getTxCost() {
-        return txCost;
-    }
-
-    public void setTxCost(Double txCost) {
-        this.txCost = txCost;
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public String getTxId() {
@@ -118,19 +86,11 @@ public class BittrexDepositValue {
         this.txId = txId;
     }
 
-    public boolean isCanceled() {
-        return canceled;
+    public String getCryptoAddress() {
+        return cryptoAddress;
     }
 
-    public void setCanceled(boolean canceled) {
-        this.canceled = canceled;
-    }
-
-    public boolean isInvalidAddress() {
-        return invalidAddress;
-    }
-
-    public void setInvalidAddress(boolean invalidAddress) {
-        this.invalidAddress = invalidAddress;
+    public void setCryptoAddress(String cryptoAddress) {
+        this.cryptoAddress = cryptoAddress;
     }
 }

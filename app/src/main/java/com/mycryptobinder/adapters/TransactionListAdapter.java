@@ -73,28 +73,47 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
 
         // set right arrow icon depending on transaction type
         viewHolder.transactionItemPairTextView.setCompoundDrawablePadding(15);
-        if (transactions.get(position).getType().equals("buy")) {
-            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_right_green);
-            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
-        } else if (transactions.get(position).getType().equals("sell")) {
-            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_left_red);
-            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
-        } else if (transactions.get(position).getType().equals("deposit")) {
-            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_right_blue);
-            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
-        } else if (transactions.get(position).getType().equals("withdrawal")) {
-            Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_left_orange);
-            Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
-            viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
+        switch (transactions.get(position).getType()) {
+            case "buy": {
+                Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_right_green);
+                Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+                viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
+                break;
+            }
+            case "sell": {
+                Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_left_red);
+                Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+                viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
+                break;
+            }
+            case "deposit": {
+                Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_right_blue);
+                Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+                viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
+                break;
+            }
+            case "withdrawal": {
+                Bitmap bitmap = UtilsHelper.getBitmapFromVectorDrawable(context, R.drawable.ic_arrow_left_orange);
+                Drawable d = new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, 70, 70, true));
+                viewHolder.transactionItemPairTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null);
+                break;
+            }
         }
 
         // get text from the data set at this position and replace it in the view
-        viewHolder.transactionItemPairTextView.setText(context.getResources().getString(R.string.label_transaction_pair, transactions.get(position).getCurrency1IsoCode(), transactions.get(position).getCurrency2IsoCode()));
+        String curr1 = transactions.get(position).getCurrency1IsoCode();
+        String curr2 = transactions.get(position).getCurrency2IsoCode();
+        if (curr1 != null && curr2 != null) {
+            viewHolder.transactionItemPairTextView.setText(context.getResources().getString(R.string.label_transaction_pair, transactions.get(position).getCurrency1IsoCode(), transactions.get(position).getCurrency2IsoCode()));
+        }
+        if (curr1 != null && curr2 == null) {
+            viewHolder.transactionItemPairTextView.setText(transactions.get(position).getCurrency1IsoCode());
+        }
+        if (curr1 == null && curr2 != null) {
+            viewHolder.transactionItemPairTextView.setText(transactions.get(position).getCurrency2IsoCode());
+        }
         viewHolder.transactionItemQuantityTextView.setText(df.format(transactions.get(position).getQuantity() != null ? transactions.get(position).getQuantity() : 0));
-        viewHolder.transactionItemPriceTextView.setText(transactions.get(position).getPrice() != null ? df.format(transactions.get(position).getPrice().doubleValue()) : "");
+        viewHolder.transactionItemPriceTextView.setText(df.format(transactions.get(position).getPrice() != null ? transactions.get(position).getPrice() : 0));
         viewHolder.transactionItemTotalTextView.setText(df.format(transactions.get(position).getTotal() != null ? transactions.get(position).getTotal() : 0));
 
         // set click initializer for item row
@@ -134,30 +153,36 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
                 } else {
                     Collections.sort(transactions, (t1, t2) -> (t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()).compareTo(t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()));
                 }
+                break;
             case 1:
                 if (asc) {
-                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getQuantity(), t2.getQuantity()));
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getQuantity() != null ? t1.getQuantity() : 0, t2.getQuantity() != null ? t2.getQuantity() : 0));
                 } else {
-                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getQuantity(), t1.getQuantity()));
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getQuantity() != null ? t2.getQuantity() : 0, t1.getQuantity() != null ? t1.getQuantity() : 0));
                 }
+                break;
             case 2:
                 if (asc) {
-                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getPrice(), t2.getPrice()));
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getPrice() != null ? t1.getPrice() : 0, t2.getPrice() != null ? t2.getPrice() : 0));
                 } else {
-                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getPrice(), t1.getPrice()));
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getPrice() != null ? t2.getPrice() : 0, t1.getPrice() != null ? t1.getPrice() : 0));
                 }
+                break;
             case 3:
                 if (asc) {
-                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getTotal(), t2.getTotal()));
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t1.getTotal() != null ? t1.getTotal() : 0, t2.getTotal() != null ? t2.getTotal() : 0));
                 } else {
-                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getTotal(), t1.getTotal()));
+                    Collections.sort(transactions, (t1, t2) -> Double.compare(t2.getTotal() != null ? t2.getTotal() : 0, t1.getTotal() != null ? t1.getTotal() : 0));
                 }
+                break;
             default:
                 if (asc) {
                     Collections.sort(transactions, (t1, t2) -> (t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()).compareTo(t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()));
                 } else {
                     Collections.sort(transactions, (t1, t2) -> (t2.getCurrency1IsoCode() + "/" + t2.getCurrency2IsoCode()).compareTo(t1.getCurrency1IsoCode() + "/" + t1.getCurrency2IsoCode()));
                 }
+                break;
         }
+        notifyDataSetChanged();
     }
 }

@@ -6,24 +6,116 @@
     android:orientation="vertical"
     tools:context="com.mycryptobinder.activities.StatisticsFragment">
 
+    <Spinner
+        android:id="@+id/historical_day_price_currency_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorDark80"
+        android:popupBackground="@color/colorDark80" />
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/historical_day_price"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/historical_day_price_nb_days_textView" />
+        android:layout_above="@+id/historical_day_price_linearLayout"
+        android:layout_below="@+id/historical_day_price_currency_spinner" />
 
-    <TextView
-        android:id="@+id/historical_day_price_nb_days_textView"
+    <LinearLayout
+        android:id="@+id/historical_day_price_linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/historical_day_price_nb_days_seekBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:textSize="12sp"
-        android:text="1 year"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/historical_day_price_one_day_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_1d"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_one_week_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_1w"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_two_weeks_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_2w"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_one_month_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_1m"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_two_months_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_2m"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_three_months_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_3m"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_six_months_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_6m"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/historical_day_price_one_year_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:text="@string/label_1y"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="12sp" />
+
+    </LinearLayout>
 
     <SeekBar
         android:id="@+id/historical_day_price_nb_days_seekBar"
@@ -33,6 +125,9 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:max="7" />
+        android:max="7"
+        android:progressTint="@color/primary"
+        android:tickMark="@drawable/ic_tickmark_black"
+        android:tickMarkTint="@color/primary" />
 
 </RelativeLayout>

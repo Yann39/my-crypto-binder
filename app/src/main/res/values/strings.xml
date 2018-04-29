@@ -49,10 +49,11 @@
     <string name="btn_update_transaction">Update transaction</string>
 
     <string name="btn_create_ico">Add new ICO</string>
+    <string name="btn_update_ico">Update ICO</string>
 
     <string name="lbl_exchange_synchronization_title">Exchange synchronization</string>
     <string name="lbl_select_exchanges">Select exchanges</string>
-    <string name="msg_synchronize_exchanges_intro">Use this functionality to synchronize your data with online exchanges. Please note that you must have provided your private and public API key in the \'Keys configuration\' menu for the exchanges you want to synchronize.</string>
+    <string name="msg_synchronize_exchanges_intro">Use this functionality to synchronize your data with online exchanges. Please note that you must have provided your private and public API key in the \'Exchanges\' setting menu for the exchanges you want to synchronize.</string>
     <string name="lbl_perform_clean_import">Perform clean import</string>
     <string name="btn_synchronize">Synchronize</string>
     <string name="btn_select">Select</string>
@@ -103,6 +104,7 @@
     <string name="title_currency_list">Currency list</string>
     <string name="title_exchange_list">Exchange list</string>
     <string name="title_exchange_synchronization">Exchange synchronization</string>
+    <string name="title_backup_restore">Backup / restore</string>
 
     <!--region labels-->
     <string name="label_transaction_currency1_buy">Buy</string>
@@ -117,6 +119,7 @@
     <string name="label_menu_item_exchanges">Exchanges</string>
     <string name="label_menu_item_app_setting">AppSetting</string>
     <string name="label_menu_item_synchronize_with_exchanges">Synchronize with exchanges</string>
+    <string name="label_menu_item_backup_restore">Backup / restore</string>
     <string name="label_exchange_name_kraken">Kraken</string>
     <string name="label_exchange_name_poloniex">Poloniex</string>
     <string name="label_exchange_name_bittrex">Bittrex</string>
@@ -131,6 +134,14 @@
     <string name="label_three_months">3 months</string>
     <string name="label_six_months">6 months</string>
     <string name="label_one_year">1 year</string>
+    <string name="label_1d">1D</string>
+    <string name="label_1w">1W</string>
+    <string name="label_2w">2W</string>
+    <string name="label_1m">1M</string>
+    <string name="label_2m">2M</string>
+    <string name="label_3m">3M</string>
+    <string name="label_6m">6M</string>
+    <string name="label_1y">1Y</string>
     <string name="label_price_history">price history</string>
     <!--endregion-->
 
@@ -168,9 +179,11 @@
     <string name="error_transaction_total_required">Total is required!</string>
     <string name="error_transaction_total_not_valid">Total is invalid!</string>
     <string name="error_transaction_type_required">Type is required!</string>
+    <string name="error_service_call_returned_null">An error occurred when retrieving data from API, service call returned null</string>
     <string name="error_retrieving_data_from_api">An error occurred when retrieving data from API : %1$s</string>
     <string name="error_retrieving_price_full">Error occurred when retrieving pricemultifull from cryptoCompare API : %1$s</string>
     <string name="error_retrieving_historical_day_price">Error occurred when retrieving histoday from cryptoCompare API : %1$s</string>
+    <string name="error_api_keys_not_defined_fro_exchange">API keys have not been defined for %1$s exchange</string>
     <!--endregion-->
 
     <!--region success messages-->
@@ -192,5 +205,7 @@
     <!--endregion-->
 
     <string name="title_confirmation">Confirmation</string>
+    <string name="btn_backup">Backup</string>
+    <string name="btn_restore">Restore</string>
 
 </resources>

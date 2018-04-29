@@ -74,7 +74,7 @@ import java.util.concurrent.Executors;
         Currency.class,
         Exchange.class,
         Ico.class,
-        Transaction.class}, version = 17, exportSchema = false)
+        Transaction.class}, version = 18, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 

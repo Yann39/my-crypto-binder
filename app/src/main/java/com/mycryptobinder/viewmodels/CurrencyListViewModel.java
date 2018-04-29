@@ -40,9 +40,9 @@ public class CurrencyListViewModel extends AndroidViewModel {
     public CurrencyListViewModel(Application application) {
         super(application);
         appDatabase = AppDatabase.getInstance(this.getApplication());
-        currencyList = appDatabase.currencyDao().getAll();
-        //pagedCurrencyList = appDatabase.currencyDao().getAllPaged().create(0, new PagedList.Config.Builder().setPageSize(50).setPrefetchDistance(50).build());
-        pagedCurrencyList = new LivePagedListBuilder<>(appDatabase.currencyDao().getAllPaged(), 20).build();
+        currencyList = appDatabase.currencyDao().getAllUsed();
+        PagedList.Config pagedListConfig = (new PagedList.Config.Builder()).setEnablePlaceholders(true).setPrefetchDistance(10).setPageSize(20).build();
+        pagedCurrencyList = new LivePagedListBuilder<>(appDatabase.currencyDao().getAllPaged(), pagedListConfig).build();
     }
 
     public LiveData<List<Currency>> getCurrencyList() {

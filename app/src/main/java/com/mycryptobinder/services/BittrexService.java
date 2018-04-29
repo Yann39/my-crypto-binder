@@ -23,101 +23,34 @@ import com.mycryptobinder.models.bittrex.BittrexAssets;
 import com.mycryptobinder.models.bittrex.BittrexDeposits;
 import com.mycryptobinder.models.bittrex.BittrexTrades;
 import com.mycryptobinder.models.bittrex.BittrexWithdrawals;
-import com.mycryptobinder.models.poloniex.PoloniexDepositsWithdrawals;
-import com.mycryptobinder.models.poloniex.PoloniexTradeValue;
 
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.FieldMap;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
-import retrofit2.http.POST;
+import retrofit2.http.QueryMap;
 
 public interface BittrexService {
 
     @GET("public/getcurrencies")
     Call<BittrexAssets> getAssets();
 
-    @FormUrlEncoded
-    @POST("account/getorderhistory")
-    Call<BittrexTrades> getTradeHistory(@HeaderMap Map<String, String> headers,
-                                        @FieldMap Map<String, String> params);
+    @GET("account/getorderhistory")
+    Call<BittrexTrades> getTradeHistory(@HeaderMap Map<String, String> headers, @QueryMap Map<String, String> params);
 
-    @FormUrlEncoded
-    @POST("account/getwithdrawalhistory?currency=BTC ")
-    Call<BittrexDeposits> getDeposits(@HeaderMap Map<String, String> headers,
-                                      @FieldMap Map<String, String> params);
+    @GET("account/getdeposithistory")
+    Call<BittrexDeposits> getDeposits(@HeaderMap Map<String, String> headers, @QueryMap Map<String, String> params);
 
-    @FormUrlEncoded
-    @POST("account/getwithdrawalhistory?currency=BTC  ")
-    Call<BittrexWithdrawals> getWithdrawals(@HeaderMap Map<String, String> headers,
-                                            @FieldMap Map<String, String> params);
-
+    @GET("account/getwithdrawalhistory")
+    Call<BittrexWithdrawals> getWithdrawals(@HeaderMap Map<String, String> headers, @QueryMap Map<String, String> params);
 
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
-    OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging).addInterceptor(chain -> {
-        Request original = chain.request();
-
-        // sort request body parameters alphabetically so they are in the same order as the one used to generate the HMAC
-        RequestBody body = original.body();
-        FormBody formBody = (FormBody) body;
-        Map<String, String> unsortedParams = new HashMap<>();
-        if (formBody != null) {
-            for (int i = 0; i < formBody.size(); i++) {
-                unsortedParams.put(formBody.name(i), formBody.value(i));
-            }
-        }
-        Map<String, String> sortedParams = new TreeMap<>(unsortedParams);
-
-        // convert map to URL string
-        StringBuilder sb = new StringBuilder();
-        for (HashMap.Entry<String, String> e : sortedParams.entrySet()) {
-            if (sb.length() > 0) {
-                sb.append('&');
-            }
-            sb.append(URLEncoder.encode(e.getKey(), "UTF-8")).append('=').append(URLEncoder.encode(e.getValue(), "UTF-8"));
-        }
-        String newPostBody = sb.toString();
-
-        // set as new POST body
-        RequestBody requestBody = null;
-        if (body != null) {
-            requestBody = RequestBody.create(body.contentType(), newPostBody);
-        }
-
-        // replace body only for POST and PUT requests, GET does not have body
-        Request request;
-        if (requestBody != null) {
-            switch (original.method()) {
-                case "POST":
-                    request = original.newBuilder().method(original.method(), original.body()).post(requestBody).build();
-                    break;
-                case "PUT":
-                    request = original.newBuilder().method(original.method(), original.body()).put(requestBody).build();
-                    break;
-                default:
-                    request = original.newBuilder().method(original.method(), original.body()).build();
-                    break;
-            }
-        } else {
-            request = original.newBuilder().method(original.method(), original.body()).build();
-        }
-
-        return chain.proceed(request);
-    });
+    OkHttpClient.Builder httpClient = new OkHttpClient.Builder().addInterceptor(logging);
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://bittrex.com/api/v1.1/")

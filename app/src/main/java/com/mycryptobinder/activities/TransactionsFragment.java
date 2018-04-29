@@ -120,6 +120,7 @@ public class TransactionsFragment extends Fragment {
         transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
 
         if (getActivity() != null && getContext() != null) {
+
             // prepare drawables (change color)
             caretDown = ContextCompat.getDrawable(getActivity(), R.drawable.ic_expand_more_black_24px);
             if (caretDown != null) {
@@ -139,7 +140,6 @@ public class TransactionsFragment extends Fragment {
             // add click listener on header to sort rows
             transactionsPairColumnHeader.setOnClickListener(view12 -> {
                 transactionListAdapter.sortTransactions(0, col0Asc);
-                transactionListAdapter.notifyDataSetChanged();
                 transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col0Asc ? caretDown : caretUp, null);
                 transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
@@ -150,7 +150,6 @@ public class TransactionsFragment extends Fragment {
             // add click listener on header to sort rows
             transactionsQuantityColumnHeader.setOnClickListener(view13 -> {
                 transactionListAdapter.sortTransactions(1, col1Asc);
-                transactionListAdapter.notifyDataSetChanged();
                 transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col1Asc ? caretDown : caretUp, null);
                 transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
@@ -161,7 +160,6 @@ public class TransactionsFragment extends Fragment {
             // add click listener on header to sort rows
             transactionsPriceColumnHeader.setOnClickListener(view14 -> {
                 transactionListAdapter.sortTransactions(2, col2Asc);
-                transactionListAdapter.notifyDataSetChanged();
                 transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col2Asc ? caretDown : caretUp, null);
                 transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 transactionsPairColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
@@ -172,7 +170,6 @@ public class TransactionsFragment extends Fragment {
             // add click listener on header to sort rows
             transactionsTotalColumnHeader.setOnClickListener(view15 -> {
                 transactionListAdapter.sortTransactions(3, col3Asc);
-                transactionListAdapter.notifyDataSetChanged();
                 transactionsTotalColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, col3Asc ? caretDown : caretUp, null);
                 transactionsQuantityColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 transactionsPriceColumnHeaderText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);

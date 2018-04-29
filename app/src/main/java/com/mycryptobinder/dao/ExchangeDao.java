@@ -36,6 +36,9 @@ public interface ExchangeDao {
     @Query("select * from exchanges")
     LiveData<List<Exchange>> getAll();
 
+    @Query("select * from exchanges")
+    List<Exchange> exportAll();
+
     @Query("select * from exchanges where name = :name")
     Exchange getByName(String name);
 
