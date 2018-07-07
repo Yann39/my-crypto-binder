@@ -28,15 +28,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Base64;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -46,10 +40,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class UtilsHelper {
 
-    private Context context;
 
-    public UtilsHelper(Context c) {
-        context = c;
+    public UtilsHelper() {
     }
 
     /**
@@ -57,10 +49,10 @@ public class UtilsHelper {
      *
      * @return The current locale
      */
-    public Locale getCurrentLocale(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+    public static Locale getCurrentLocale(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.getResources().getConfiguration().getLocales().get(0);
-        } else{
+        } else {
             return context.getResources().getConfiguration().locale;
         }
     }
@@ -70,7 +62,7 @@ public class UtilsHelper {
      *
      * @return The set of properties from the myCryptoBinder property file
      */
-    public Properties getProperties() {
+    public static Properties getProperties(Context context) {
         Properties properties = new Properties();
         try {
             InputStream inputStream = context.getAssets().open("myCryptoBinder.properties");
@@ -84,12 +76,12 @@ public class UtilsHelper {
     /**
      * AES Encrypt the specified string using the specified key and initial vector
      *
-     * @param key The key used for encryption
+     * @param key        The key used for encryption
      * @param initVector The initial vector to use
-     * @param value The value to encrypt
+     * @param value      The value to encrypt
      * @return The encrypted value
      */
-    public String encrypt(String key, String initVector, String value) {
+    public static String encrypt(String key, String initVector, String value) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -99,7 +91,7 @@ public class UtilsHelper {
 
             byte[] encrypted = cipher.doFinal(value.getBytes());
 
-            return Base64.encodeToString(encrypted, Base64.DEFAULT);
+            return Base64.encodeToString(encrypted, Base64.NO_WRAP);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -110,12 +102,12 @@ public class UtilsHelper {
     /**
      * AES Decrypt the specified string using the specified key and initial vector
      *
-     * @param key The key used for encryption
+     * @param key        The key used for encryption
      * @param initVector The initial vector to use
-     * @param encrypted The encrypted value to decrypt
+     * @param encrypted  The encrypted value to decrypt
      * @return The decrypted value
      */
-    public String decrypt(String key, String initVector, String encrypted) {
+    public static String decrypt(String key, String initVector, String encrypted) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -123,7 +115,7 @@ public class UtilsHelper {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
-            byte[] original = cipher.doFinal(Base64.decode(encrypted, Base64.DEFAULT));
+            byte[] original = cipher.doFinal(Base64.decode(encrypted, Base64.NO_WRAP));
 
             return new String(original);
         } catch (Exception ex) {
@@ -136,23 +128,26 @@ public class UtilsHelper {
     /**
      * Convert a Vector graphic to a Bitmap image
      *
-     * @param context The context
+     * @param context    The context
      * @param drawableId The vector drawable id
      * @return a Bitmap object representing the new Bitmap image generated from the vector drawable
      */
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
+        if (drawable != null) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                drawable = (DrawableCompat.wrap(drawable)).mutate();
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+
+            return bitmap;
         }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
+        return null;
     }
 
     /**
@@ -161,7 +156,7 @@ public class UtilsHelper {
      * @param bytes The byte array to convert
      * @return The converted byte array as String
      */
-    public String bytesToHex(byte[] bytes) {
+    public static String bytesToHex(byte[] bytes) {
         char[] hexArray = "0123456789ABCDEF".toCharArray();
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -195,7 +190,7 @@ public class UtilsHelper {
      */
     public static String unescapeFromCsv(String value) {
         if (value != null && value.length() > 0) {
-            return value.substring(1, value.length()-1).replace("\"\"", "\"");
+            return value.substring(1, value.length() - 1).replace("\"\"", "\"");
         }
         return "";
     }

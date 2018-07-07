@@ -19,26 +19,36 @@
 
 package com.mycryptobinder.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.mycryptobinder.R;
+import com.mycryptobinder.adapters.IcoListAdapter;
+import com.mycryptobinder.viewmodels.IcoListViewModel;
+
+import java.util.ArrayList;
 
 public class IcoFragment extends Fragment {
+
+    private IcoListAdapter icoListAdapter;
 
     public IcoFragment() {
         // required empty public constructor
     }
 
     public static IcoFragment newInstance() {
-        IcoFragment fragment = new IcoFragment();
-        Bundle args = new Bundle();
+        final IcoFragment fragment = new IcoFragment();
+        final Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,12 +61,30 @@ public class IcoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_ico, container, false);
+        final View view = inflater.inflate(R.layout.fragment_ico, container, false);
+
+        // prepare the recycler view with a linear layout
+        final RecyclerView icoListRecyclerView = view.findViewById(R.id.ico_list_recycler_view);
+        icoListRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+        // add horizontal separator between rows
+        final DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(icoListRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        icoListRecyclerView.addItemDecoration(mDividerItemDecoration);
+
+        // initialize the adapter for the list
+        icoListAdapter = new IcoListAdapter(new ArrayList<>());
+        icoListRecyclerView.setAdapter(icoListAdapter);
+
+        // get view model
+        final IcoListViewModel icoListViewModel = ViewModelProviders.of(this).get(IcoListViewModel.class);
+
+        // observe the ICO list from the view model so it is always up to date
+        icoListViewModel.getIcoList().observe(IcoFragment.this, icos -> icoListAdapter.addItems(icos));
 
         // set click listener for the add ico button
-        Button button = view.findViewById(R.id.btn_add_ico);
+        final FloatingActionButton button = view.findViewById(R.id.btn_add_ico);
         button.setOnClickListener(view1 -> {
-            Intent add_ico = new Intent(view1.getContext(), AddIcoActivity.class);
+            final Intent add_ico = new Intent(view1.getContext(), AddIcoActivity.class);
             startActivity(add_ico);
         });
 

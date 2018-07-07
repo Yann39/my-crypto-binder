@@ -47,7 +47,7 @@ public class EditCurrencyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_currency);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -60,18 +60,18 @@ public class EditCurrencyActivity extends AppCompatActivity {
         currencyNameEditText = findViewById(R.id.add_currency_name_editText);
         currencyIsoCodeEditText = findViewById(R.id.add_currency_iso_code_editText);
         currencySymbolEditText = findViewById(R.id.add_currency_symbol_editText);
-        Button createCurrencyButton = findViewById(R.id.btn_create_currency);
-        Button editCurrencyButton = findViewById(R.id.btn_update_currency);
+        final Button createCurrencyButton = findViewById(R.id.btn_create_currency);
+        final Button editCurrencyButton = findViewById(R.id.btn_update_currency);
 
         // hide create button and show edit button
         createCurrencyButton.setVisibility(View.INVISIBLE);
         editCurrencyButton.setVisibility(View.VISIBLE);
 
         // get the intent data and set field values
-        Intent intent = getIntent();
-        String isoCode = intent.getStringExtra("isoCode");
-        String name = intent.getStringExtra("name");
-        String symbol = intent.getStringExtra("symbol");
+        final Intent intent = getIntent();
+        final String isoCode = intent.getStringExtra("isoCode");
+        final String name = intent.getStringExtra("name");
+        final String symbol = intent.getStringExtra("symbol");
         currencyIsoCodeEditText.setText(isoCode);
         currencyNameEditText.setText(name);
         currencySymbolEditText.setText(symbol);
@@ -82,9 +82,9 @@ public class EditCurrencyActivity extends AppCompatActivity {
         // set click listener for the update currency button
         editCurrencyButton.setOnClickListener(view -> {
             // get field values
-            String isoCode1 = currencyIsoCodeEditText.getText().toString();
-            String name1 = currencyNameEditText.getText().toString();
-            String symbol1 = currencySymbolEditText.getText().toString();
+            final String isoCode1 = currencyIsoCodeEditText.getText().toString();
+            final String name1 = currencyNameEditText.getText().toString();
+            final String symbol1 = currencySymbolEditText.getText().toString();
 
             // check mandatory fields
             if (name1.trim().equals("")) {
@@ -106,7 +106,7 @@ public class EditCurrencyActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {

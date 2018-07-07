@@ -63,22 +63,20 @@ public class PoloniexManager {
     private static List<PoloniexWithdrawal> poloniexWithdrawalEntities;
     private final Context context;
     private static long startTime;
-    private final UtilsHelper uh;
     private String publicKey;
     private String privateKey;
 
     public PoloniexManager(Context context) {
         this.context = context;
         appDatabase = AppDatabase.getInstance(context);
-        uh = new UtilsHelper(context);
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", uh.getCurrentLocale());
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", UtilsHelper.getCurrentLocale(context));
         poloniexService = PoloniexService.retrofit.create(PoloniexService.class);
         poloniexTradeEntities = new ArrayList<>();
         poloniexDepositEntities = new ArrayList<>();
         poloniexWithdrawalEntities = new ArrayList<>();
 
         // get encryption key and vector from properties
-        Properties properties = uh.getProperties();
+        Properties properties = UtilsHelper.getProperties(context);
         String key = properties.getProperty("RSA_KEY");
         String initVector = properties.getProperty("RSA_INIT_VECTOR");
 
@@ -88,10 +86,10 @@ public class PoloniexManager {
             String encryptedPublicApiKey = exchange.getPublicApiKey();
             String encryptedPrivateApiKey = exchange.getPrivateApiKey();
             if (encryptedPublicApiKey != null) {
-                publicKey = uh.decrypt(key, initVector, encryptedPublicApiKey);
+                publicKey = UtilsHelper.decrypt(key, initVector, encryptedPublicApiKey);
             }
             if (encryptedPrivateApiKey != null) {
-                privateKey = uh.decrypt(key, initVector, encryptedPrivateApiKey);
+                privateKey = UtilsHelper.decrypt(key, initVector, encryptedPrivateApiKey);
             }
         }
 
@@ -119,7 +117,7 @@ public class PoloniexManager {
         try {
             Mac mac = Mac.getInstance("HmacSHA512");
             mac.init(new SecretKeySpec(privateKey.getBytes("UTF-8"), "HmacSHA512"));
-            signature = uh.bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
+            signature = UtilsHelper.bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
         } catch (Exception e) {
             e.printStackTrace();
         }

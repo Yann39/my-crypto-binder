@@ -60,8 +60,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/imgbtn_delete_exchange_desc"
-            android:src="@android:drawable/ic_menu_delete" />
+            android:contentDescription="@string/img_btn_delete_exchange_desc"
+            android:src="@android:drawable/ic_menu_delete"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 

@@ -64,8 +64,8 @@ public class TransactionsFragment extends Fragment {
     }
 
     public static TransactionsFragment newInstance() {
-        TransactionsFragment fragment = new TransactionsFragment();
-        Bundle args = new Bundle();
+        final TransactionsFragment fragment = new TransactionsFragment();
+        final Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,10 +79,10 @@ public class TransactionsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // inflate the layout (create a new view)
-        View view = inflater.inflate(R.layout.fragment_transactions, container, false);
+        final View view = inflater.inflate(R.layout.fragment_transactions, container, false);
 
         // prepare the recycler view with a linear layout
-        RecyclerView transactionsRecyclerView = view.findViewById(R.id.transactions_list_recycler_view);
+        final RecyclerView transactionsRecyclerView = view.findViewById(R.id.transactions_list_recycler_view);
         transactionsRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         // initialize the adapter for the list
@@ -99,24 +99,24 @@ public class TransactionsFragment extends Fragment {
         });
 
         // add horizontal separator between rows
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(transactionsRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        final DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(transactionsRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
         transactionsRecyclerView.addItemDecoration(mDividerItemDecoration);
 
         // set click listener for the add transaction button
-        FloatingActionButton button = view.findViewById(R.id.btn_add_transaction);
+        final FloatingActionButton button = view.findViewById(R.id.btn_add_transaction);
         button.setOnClickListener(view1 -> {
-            Intent add_trans = new Intent(view1.getContext(), AddTransactionActivity.class);
+            final Intent add_trans = new Intent(view1.getContext(), AddTransactionActivity.class);
             startActivityForResult(add_trans, 1);
         });
 
         // get view elements
-        LinearLayout transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
+        final LinearLayout transactionsPairColumnHeader = view.findViewById(R.id.transactions_pair_column_header);
         transactionsPairColumnHeaderText = view.findViewById(R.id.transactions_pair_column_header_text);
-        LinearLayout transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
+        final LinearLayout transactionsQuantityColumnHeader = view.findViewById(R.id.transactions_quantity_column_header);
         transactionsQuantityColumnHeaderText = view.findViewById(R.id.transactions_quantity_column_header_text);
-        LinearLayout transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
+        final LinearLayout transactionsPriceColumnHeader = view.findViewById(R.id.transactions_price_column_header);
         transactionsPriceColumnHeaderText = view.findViewById(R.id.transactions_price_column_header_text);
-        LinearLayout transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
+        final LinearLayout transactionsTotalColumnHeader = view.findViewById(R.id.transactions_total_column_header);
         transactionsTotalColumnHeaderText = view.findViewById(R.id.transactions_total_column_header_text);
 
         if (getActivity() != null && getContext() != null) {

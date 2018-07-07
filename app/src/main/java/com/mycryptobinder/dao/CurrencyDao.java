@@ -58,6 +58,12 @@ public interface CurrencyDao {
             "where c.iso_code is null")
     List<Currency> getFromBittrex();
 
+    @Query("select ba.asset_code as iso_code, null as name, null as symbol " +
+            "from bitfinex_assets ba " +
+            "left join currencies c on c.iso_code = ba.asset_code " +
+            "where c.iso_code is null")
+    List<Currency> getFromBitfinex();
+
     @Query("select distinct c.iso_code, c.name, c.symbol from currencies c " +
             "inner join transactions t on c.iso_code = t.currency1_iso_code or c.iso_code = t.currency2_iso_code " +
             "order by c.iso_code")

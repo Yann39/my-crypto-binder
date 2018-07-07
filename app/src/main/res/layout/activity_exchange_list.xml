@@ -33,7 +33,8 @@
             android:layout_margin="@dimen/fab_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:srcCompat="@drawable/ic_add_white_24px" />
+            app:srcCompat="@drawable/ic_add_white_24px"
+            android:visibility="invisible" />
 
     </android.support.constraint.ConstraintLayout>
 </LinearLayout>

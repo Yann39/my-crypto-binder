@@ -38,7 +38,7 @@ import java.util.List;
 
 public class SynchronizeExchangesActivity extends AppCompatActivity implements MultiSpinner.MultiSpinnerListener {
 
-    private boolean[] selectedExchanges;
+    private boolean[] selectedExchanges = {true, true, true, true};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class SynchronizeExchangesActivity extends AppCompatActivity implements M
         setContentView(R.layout.activity_synchronize_exchanges);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -56,22 +56,22 @@ public class SynchronizeExchangesActivity extends AppCompatActivity implements M
         }
 
         // fill exchange list
-        List<String> items = new ArrayList<>();
+        final List<String> items = new ArrayList<>();
         items.add(getString(R.string.label_exchange_name_kraken));
         items.add(getString(R.string.label_exchange_name_poloniex));
         items.add(getString(R.string.label_exchange_name_bittrex));
         items.add(getString(R.string.label_exchange_name_bitfinex));
-        MultiSpinner multiSpinner = findViewById(R.id.synchronize_exchange_MultiSpinner);
+        final MultiSpinner multiSpinner = findViewById(R.id.synchronize_exchange_MultiSpinner);
         multiSpinner.setItems(items, getString(R.string.label_all), this);
 
         // get view model
         final SettingsViewModel settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
 
         // get view elements
-        TextView synchronizeLogEditText = findViewById(R.id.synchronize_exchanges_log_editText);
-        ProgressBar synchronizeLogProgressBar = findViewById(R.id.synchronize_exchanges_log_progressBar);
-        Button synchronizeButton = findViewById(R.id.btn_synchronize_exchanges);
-        CheckBox checkBox = findViewById(R.id.checkbox_clean_synchronize_exchanges);
+        final TextView synchronizeLogEditText = findViewById(R.id.synchronize_exchanges_log_editText);
+        final ProgressBar synchronizeLogProgressBar = findViewById(R.id.synchronize_exchanges_log_progressBar);
+        final Button synchronizeButton = findViewById(R.id.btn_synchronize_exchanges);
+        final CheckBox checkBox = findViewById(R.id.checkbox_clean_synchronize_exchanges);
 
         // observe logs and percentage done from the view model so it will always be up to date in the UI
         settingsViewModel.getCurrentLogs().observe(this, s -> synchronizeLogEditText.setText(s));
@@ -87,7 +87,7 @@ public class SynchronizeExchangesActivity extends AppCompatActivity implements M
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {

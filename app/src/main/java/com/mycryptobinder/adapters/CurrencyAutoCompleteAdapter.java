@@ -33,26 +33,27 @@ import java.util.List;
 public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
 
     private List<Currency> currencies;
-    private List<Currency> filteredCurrencies;
+    //private List<Currency> filteredCurrencies;
 
     public CurrencyAutoCompleteAdapter(List<Currency> currencies, Context context, int layoutResourceId) {
         super(context, layoutResourceId);
         this.currencies = currencies;
-        this.filteredCurrencies = currencies;
+        //this.filteredCurrencies = currencies;
     }
 
     @Override
     public int getCount() {
-        return filteredCurrencies.size();
+        return currencies.size();
     }
 
     @Override
     public String getItem(int index) {
-        return filteredCurrencies.get(index).getIsoCode();
+        return currencies.get(index).getIsoCode();
     }
 
     public void addItems(List<Currency> currencies) {
         this.currencies = currencies;
+        //this.filteredCurrencies = currencies;
         notifyDataSetChanged();
     }
 
@@ -67,7 +68,7 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
                 if (constraint != null && currencies != null) {
                     List<Currency> tmpCurrencies = new ArrayList<>();
                     for (Currency c : currencies) {
-                        if (c.getName().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (c.getIsoCode().toLowerCase().contains(constraint.toString().toLowerCase())) {
                             tmpCurrencies.add(c);
                         }
                     }
@@ -81,10 +82,9 @@ public class CurrencyAutoCompleteAdapter extends ArrayAdapter<String> implements
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results.count > 0) {
-                    filteredCurrencies = (ArrayList<Currency>) results.values;
+                    currencies = (ArrayList<Currency>) results.values;
                     notifyDataSetChanged();
                 } else {
-                    filteredCurrencies = currencies;
                     notifyDataSetInvalidated();
                 }
             }

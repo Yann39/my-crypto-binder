@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -54,7 +53,7 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_currency_list);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -64,7 +63,7 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
         }
 
         // prepare the recycler view with a linear layout
-        RecyclerView currencyListRecyclerView = findViewById(R.id.currency_list_recycler_view);
+        final RecyclerView currencyListRecyclerView = findViewById(R.id.currency_list_recycler_view);
         //currencyListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         currencyListRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
@@ -85,16 +84,16 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
         });
 
         // set click listener for the add currency button
-        FloatingActionButton button = findViewById(R.id.btn_add_currency);
+        final FloatingActionButton button = findViewById(R.id.btn_add_currency);
         button.setOnClickListener(view -> {
-            Intent intent = new Intent(view.getContext(), AddCurrencyActivity.class);
+            final Intent intent = new Intent(view.getContext(), AddCurrencyActivity.class);
             startActivity(intent);
         });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {
@@ -108,12 +107,12 @@ public class CurrencyListActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View view) {
         // get the clicked currency, stored in this view as a tag
-        Currency currency = (Currency) view.getTag();
+        final Currency currency = (Currency) view.getTag();
 
         // show a confirm dialog
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle(getString(R.string.title_confirmation));
-        alert.setMessage(Html.fromHtml(getString(R.string.confirm_delete_currency, " <b>" + currency.getIsoCode() + "</b>")));
+        alert.setMessage(Html.fromHtml(getString(R.string.confirm_delete_currency, currency.getIsoCode())));
 
         // "yes" button click
         alert.setPositiveButton(getString(R.string.label_yes), (dialog, which) -> {

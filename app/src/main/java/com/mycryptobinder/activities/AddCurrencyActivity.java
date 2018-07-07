@@ -23,8 +23,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -48,7 +46,7 @@ public class AddCurrencyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_currency);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -61,8 +59,8 @@ public class AddCurrencyActivity extends AppCompatActivity {
         currencyNameEditText = findViewById(R.id.add_currency_name_editText);
         currencyIsoCodeEditText = findViewById(R.id.add_currency_iso_code_editText);
         currencySymbolEditText = findViewById(R.id.add_currency_symbol_editText);
-        Button createCurrencyButton = findViewById(R.id.btn_create_currency);
-        Button editCurrencyButton = findViewById(R.id.btn_update_currency);
+        final Button createCurrencyButton = findViewById(R.id.btn_create_currency);
+        final Button editCurrencyButton = findViewById(R.id.btn_update_currency);
 
         // hide edit button and show create button
         editCurrencyButton.setVisibility(View.INVISIBLE);
@@ -74,9 +72,9 @@ public class AddCurrencyActivity extends AppCompatActivity {
         // set click listener for the create currency button
         createCurrencyButton.setOnClickListener(view -> {
             // get field values
-            String isoCode = currencyIsoCodeEditText.getText().toString();
-            String name = currencyNameEditText.getText().toString();
-            String symbol = currencySymbolEditText.getText().toString();
+            final String isoCode = currencyIsoCodeEditText.getText().toString();
+            final String name = currencyNameEditText.getText().toString();
+            final String symbol = currencySymbolEditText.getText().toString();
 
             // check mandatory fields
             if (name.trim().equals("")) {
@@ -98,16 +96,8 @@ public class AddCurrencyActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // add the save/cancel buttons to the options menu
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add_currency_action_bar, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {

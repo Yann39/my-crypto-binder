@@ -38,8 +38,8 @@ public class SettingsFragment extends Fragment {
     }
 
     public static SettingsFragment newInstance() {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
+        final SettingsFragment fragment = new SettingsFragment();
+        final Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,10 +53,10 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        final View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         // get the list view and add items
-        ListView listView = view.findViewById(R.id.settings_listView);
+        final ListView listView = view.findViewById(R.id.settings_listView);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.simple_list_item_1, new String[]{
                 getString(R.string.label_menu_item_currencies),
                 getString(R.string.label_menu_item_exchanges),
@@ -71,31 +71,31 @@ public class SettingsFragment extends Fragment {
 
             // currencies item click
             if (position == 0) {
-                Intent intent = new Intent(getActivity(), CurrencyListActivity.class);
+                final Intent intent = new Intent(getActivity(), CurrencyListActivity.class);
                 startActivity(intent);
             }
 
             // exchanges item click
             else if (position == 1) {
-                Intent intent = new Intent(getActivity(), ExchangeListActivity.class);
+                final Intent intent = new Intent(getActivity(), ExchangeListActivity.class);
                 startActivity(intent);
             }
 
             // app settings item click
             else if (position == 2) {
-                Intent intent = new Intent(getActivity(), AppSettingListActivity.class);
+                final Intent intent = new Intent(getActivity(), AppSettingListActivity.class);
                 startActivity(intent);
             }
 
             // synchronize with exchanges item click
             else if (position == 3) {
-                Intent intent = new Intent(getActivity(), SynchronizeExchangesActivity.class);
+                final Intent intent = new Intent(getActivity(), SynchronizeExchangesActivity.class);
                 startActivity(intent);
             }
 
             // backup / restore item click
             else if (position == 4) {
-                Intent intent = new Intent(getActivity(), BackupRestoreActivity.class);
+                final Intent intent = new Intent(getActivity(), BackupRestoreActivity.class);
                 startActivity(intent);
             }
         });

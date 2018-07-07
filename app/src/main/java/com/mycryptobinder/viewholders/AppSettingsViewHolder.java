@@ -32,8 +32,8 @@ public class AppSettingsViewHolder extends RecyclerView.ViewHolder {
 
     public AppSettingsViewHolder(View view) {
         super(view);
-        nameTextView = view.findViewById(R.id.app_settings_name_column_header_text);
-        valueTextView = view.findViewById(R.id.app_settings_value_column_header_text);
+        nameTextView = view.findViewById(R.id.app_setting_name_textView);
+        valueTextView = view.findViewById(R.id.app_setting_value_textView);
     }
 
 }

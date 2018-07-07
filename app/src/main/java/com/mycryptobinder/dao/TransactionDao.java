@@ -91,6 +91,14 @@ public interface TransactionDao {
             "from bittrex_withdrawals bw")
     List<Transaction> getBittrexTransactions();
 
+    @Query("select null as id, 'Bitfinex' as exchange_name, bo.order_id as transaction_id, " +
+            "substr(bo.symbol, 1, 3) as currency1_iso_code, " +
+            "substr(bo.symbol, 4, 3) as currency2_iso_code, " +
+            "null as fee, bo.timestamp as date, bo.type, null as quantity, bo.price, null as total, " +
+            "null as comment " +
+            "from bitfinex_orders bo ")
+    List<Transaction> getBitfinexTransactions();
+
     @Query("select sum(total) from ( " +
             "select total * case when type = 'buy' then 1 else -1 end as Total " +
             "from transactions where currency1_iso_code = :currencyCode " +

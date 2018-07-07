@@ -84,7 +84,10 @@ public class Transaction {
     @ColumnInfo(name = "comment")
     private String comment;
 
-    public Transaction(String exchangeName, String transactionId, String currency1IsoCode, String currency2IsoCode, Double fee, Date date, String type, Double quantity, Double price, Double total, String comment) {
+    public Transaction(Long id, String exchangeName, String transactionId, String currency1IsoCode, String currency2IsoCode, Double fee, Date date, String type, Double quantity, Double price, Double total, String comment) {
+        if(id != null && id > 0) {
+            this.id = id;
+        }
         this.exchangeName = exchangeName;
         this.transactionId = transactionId;
         this.currency1IsoCode = currency1IsoCode;

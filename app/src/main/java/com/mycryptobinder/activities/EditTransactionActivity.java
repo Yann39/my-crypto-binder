@@ -55,6 +55,7 @@ import java.util.Date;
 public class EditTransactionActivity extends AppCompatActivity {
 
     private AddTransactionViewModel addTransactionViewModel;
+    private TextView transactionIdTextView;
     private Spinner transactionExchangeSpinner;
     private EditText transactionDateEditText;
     private AutoCompleteTextView transactionCurrency1AutoCompleteText;
@@ -69,6 +70,8 @@ public class EditTransactionActivity extends AppCompatActivity {
     private EditText transactionTotalEditText;
     private EditText transactionCommentEditText;
     private EditText transactionTxIdEditText;
+    private TextView transactionCurrency1TextView;
+    private TextView transactionCurrency2TextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +79,7 @@ public class EditTransactionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_transaction);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -86,10 +89,13 @@ public class EditTransactionActivity extends AppCompatActivity {
         }
 
         // get view components
+        transactionIdTextView = findViewById(R.id.transaction_id_textView);
         transactionCurrency1AutoCompleteText = findViewById(R.id.transaction_currency1_autoCompleteText);
         transactionCurrency2AutoCompleteText = findViewById(R.id.transaction_currency2_autoCompleteText);
-        RadioButton transactionTypeBuyRadioButton = findViewById(R.id.buy_layout_rb);
-        RadioButton transactionTypeSellRadioButton = findViewById(R.id.sell_layout_rb);
+        final RadioButton transactionTypeBuyRadioButton = findViewById(R.id.buy_layout_rb);
+        final RadioButton transactionTypeSellRadioButton = findViewById(R.id.sell_layout_rb);
+        final RadioButton transactionTypeDepositRadioButton = findViewById(R.id.deposit_layout_rb);
+        final RadioButton transactionTypeWithdrawalRadioButton = findViewById(R.id.withdrawal_layout_rb);
         transactionExchangeSpinner = findViewById(R.id.transaction_exchange_spinner);
         transactionDateEditText = findViewById(R.id.transaction_date_edittext);
         transactionQuantityEditText = findViewById(R.id.transaction_quantity_edittext);
@@ -98,8 +104,10 @@ public class EditTransactionActivity extends AppCompatActivity {
         transactionTotalEditText = findViewById(R.id.transaction_total_edittext);
         transactionCommentEditText = findViewById(R.id.transaction_comment_edittext);
         transactionTxIdEditText = findViewById(R.id.transaction_txid_edittext);
-        Button createTransactionButton = findViewById(R.id.btn_create_transaction);
-        Button editTransactionButton = findViewById(R.id.btn_update_transaction);
+        final Button createTransactionButton = findViewById(R.id.btn_create_transaction);
+        final Button editTransactionButton = findViewById(R.id.btn_update_transaction);
+        transactionCurrency1TextView = findViewById(R.id.transaction_currency1_textview);
+        transactionCurrency2TextView = findViewById(R.id.transaction_currency2_textview);
 
         // hide create button and show edit button
         createTransactionButton.setVisibility(View.INVISIBLE);
@@ -107,8 +115,8 @@ public class EditTransactionActivity extends AppCompatActivity {
 
         // get the view models
         addTransactionViewModel = ViewModelProviders.of(this).get(AddTransactionViewModel.class);
-        CurrencyListViewModel currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
-        ExchangeListViewModel exchangeListViewModel = ViewModelProviders.of(this).get(ExchangeListViewModel.class);
+        final CurrencyListViewModel currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
+        final ExchangeListViewModel exchangeListViewModel = ViewModelProviders.of(this).get(ExchangeListViewModel.class);
 
         // initialize currencies auto complete adapters
         currencyAutoCompleteAdapter1 = new CurrencyAutoCompleteAdapter(new ArrayList<>(), transactionCurrency1AutoCompleteText.getContext(), android.R.layout.simple_dropdown_item_1line);
@@ -116,10 +124,45 @@ public class EditTransactionActivity extends AppCompatActivity {
         currencyAutoCompleteAdapter2 = new CurrencyAutoCompleteAdapter(new ArrayList<>(), transactionCurrency2AutoCompleteText.getContext(), android.R.layout.simple_dropdown_item_1line);
         transactionCurrency2AutoCompleteText.setAdapter(currencyAutoCompleteAdapter2);
 
+        // set date format that will be used for date pickers
+        sdf = new SimpleDateFormat("dd/MM/yyyy", UtilsHelper.getCurrentLocale(getApplicationContext()));
+
+        // get the intent data and set field values
+        final Intent intent = getIntent();
+        final String name = intent.getStringExtra("type");
+        if ("buy".equals(name.toLowerCase())) {
+            transactionTypeBuyRadioButton.setChecked(true);
+            setModeBuy();
+        }
+        else if ("sell".equals(name.toLowerCase())) {
+            transactionTypeSellRadioButton.setChecked(true);
+            setModeSend();
+        }
+        else if ("deposit".equals(name.toLowerCase())) {
+            transactionTypeDepositRadioButton.setChecked(true);
+            setModeDeposit();
+        }
+        else if ("withdrawal".equals(name.toLowerCase())) {
+            transactionTypeWithdrawalRadioButton.setChecked(true);
+            setModeWithdrawal();
+        }
+        transactionIdTextView.setText(String.valueOf(intent.getLongExtra("id", -1)));
+        transactionCurrency1AutoCompleteText.setText(intent.getStringExtra("currency1"));
+        transactionCurrency2AutoCompleteText.setText(intent.getStringExtra("currency2"));
+        transactionQuantityEditText.setText(String.valueOf(intent.getDoubleExtra("quantity", 0.0)));
+        transactionPriceEditText.setText(String.valueOf(intent.getDoubleExtra("price", 0.0)));
+        transactionFeeEditText.setText(String.valueOf(intent.getDoubleExtra("fees", 0.0)));
+        transactionTotalEditText.setText(String.valueOf(intent.getDoubleExtra("total", 0.0)));
+        transactionTxIdEditText.setText(intent.getStringExtra("txId"));
+        transactionCommentEditText.setText(intent.getStringExtra("comment"));
+        transactionDateEditText.setText(sdf.format((Date) intent.getSerializableExtra("date")));
+
         // observe the currency list from the view model so the auto complete texts will always be up to date
         currencyListViewModel.getCurrencyList().observe(EditTransactionActivity.this, currencies -> {
             currencyAutoCompleteAdapter1.addItems(currencies);
             currencyAutoCompleteAdapter2.addItems(currencies);
+            // set selection here once items are set
+            transactionExchangeSpinner.setSelection(exchangeSpinnerAdapter.getPosition(intent.getStringExtra("exchange")));
         });
 
         // initialize exchanges spinner adapter
@@ -129,56 +172,22 @@ public class EditTransactionActivity extends AppCompatActivity {
         // observe the exchange list from the view model so the auto complete text will always be up to date
         exchangeListViewModel.getExchangeList().observe(EditTransactionActivity.this, exchanges -> exchangeSpinnerAdapter.addItems(exchanges));
 
-        // set date format that will be used for date pickers
-        UtilsHelper uh = new UtilsHelper(getApplicationContext());
-        sdf = new SimpleDateFormat("dd/MM/yyyy", uh.getCurrentLocale());
-
-        // get the intent data and set field values
-        Intent intent = getIntent();
-        String name = intent.getStringExtra("type");
-        if ("buy".equals(name.toLowerCase())) {
-            transactionTypeBuyRadioButton.setChecked(true);
-        }
-        if ("sell".equals(name.toLowerCase())) {
-            transactionTypeSellRadioButton.setChecked(true);
-        }
-        transactionCurrency1AutoCompleteText.setText(intent.getStringExtra("currency1"));
-        transactionCurrency2AutoCompleteText.setText(intent.getStringExtra("currency2"));
-        transactionExchangeSpinner.setSelection(exchangeSpinnerAdapter.getPosition(intent.getStringExtra("exchange")));
-        transactionQuantityEditText.setText(String.valueOf(intent.getDoubleExtra("quantity", 0.0)));
-        transactionPriceEditText.setText(String.valueOf(intent.getDoubleExtra("price", 0.0)));
-        transactionFeeEditText.setText(String.valueOf(intent.getDoubleExtra("fees", 0.0)));
-        transactionTotalEditText.setText(String.valueOf(intent.getDoubleExtra("total", 0.0)));
-        transactionTxIdEditText.setText(intent.getStringExtra("txId"));
-        transactionCommentEditText.setText(intent.getStringExtra("comment"));
-        transactionDateEditText.setText(sdf.format((Date) intent.getSerializableExtra("date")));
-
-        // set click listener on the Buy radio button
-        transactionTypeBuyRadioButton.setOnClickListener(v -> {
-            TextView transactionCurrency1TextView = findViewById(R.id.transaction_currency1_textview);
-            TextView transactionCurrency2TextView = findViewById(R.id.transaction_currency2_textview);
-            transactionCurrency1TextView.setText(getString(R.string.label_transaction_currency1_buy));
-            transactionCurrency2TextView.setText(getString(R.string.label_transaction_currency2_with));
-        });
-
-        // set click listener on the Sell radio button
-        transactionTypeSellRadioButton.setOnClickListener(v -> {
-            TextView transactionCurrency1TextView = findViewById(R.id.transaction_currency1_textview);
-            TextView transactionCurrency2TextView = findViewById(R.id.transaction_currency2_textview);
-            transactionCurrency1TextView.setText(getString(R.string.label_transaction_currency1_sell));
-            transactionCurrency2TextView.setText(getString(R.string.label_transaction_currency2_for));
-        });
+        // set click listener on the type radio buttons
+        transactionTypeBuyRadioButton.setOnClickListener(v -> setModeBuy());
+        transactionTypeSellRadioButton.setOnClickListener(v -> setModeSend());
+        transactionTypeDepositRadioButton.setOnClickListener(v -> setModeDeposit());
+        transactionTypeWithdrawalRadioButton.setOnClickListener(v -> setModeWithdrawal());
 
         // set focus listener to display a date picker on transaction date field focus
         transactionDateEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 // get current date to initialize the date picker
-                Calendar c = Calendar.getInstance();
+                final Calendar c = Calendar.getInstance();
 
                 // open the date picker
                 new DatePickerDialog(v.getContext(), (view, year, monthOfYear, dayOfMonth) -> {
                     // format the date and display it in the related text box
-                    Calendar c1 = Calendar.getInstance();
+                    final Calendar c1 = Calendar.getInstance();
                     c1.set(year, monthOfYear - 1, dayOfMonth, 0, 0);
                     transactionDateEditText.setText(sdf.format(c1.getTime()));
                 }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
@@ -186,23 +195,32 @@ public class EditTransactionActivity extends AppCompatActivity {
         });
 
         // set click listener for the create transaction button
-        createTransactionButton.setOnClickListener(view -> {
+        editTransactionButton.setOnClickListener(view -> {
 
             // get view components
-            RadioGroup transactionTypeRadioGroup = findViewById(R.id.transaction_type_radio_group);
-            RadioButton radioButton = findViewById(transactionTypeRadioGroup.getCheckedRadioButtonId());
+            final RadioGroup transactionTypeRadioGroup = findViewById(R.id.transaction_type_radio_group);
+            final RadioButton radioButton = findViewById(transactionTypeRadioGroup.getCheckedRadioButtonId());
 
             // get field values
-            String currency1 = currencyAutoCompleteAdapter1.getItem(0);
-            String currency2 = currencyAutoCompleteAdapter2.getItem(0);
-            String exchange = exchangeSpinnerAdapter.getItem(transactionExchangeSpinner.getSelectedItemPosition());
-            String txId = transactionTxIdEditText.getText().toString();
-            String quantityStr = transactionQuantityEditText.getText().toString();
-            String priceStr = transactionPriceEditText.getText().toString();
-            String feeStr = transactionFeeEditText.getText().toString();
-            String totalStr = transactionTotalEditText.getText().toString();
-            String comment = transactionCommentEditText.getText().toString();
+            final String idStr = transactionIdTextView.getText().toString();
+            String currency1 = transactionCurrency1AutoCompleteText.getText().toString();
+            String currency2 = transactionCurrency2AutoCompleteText.getText().toString();
+            final String exchange = exchangeSpinnerAdapter.getItem(transactionExchangeSpinner.getSelectedItemPosition());
+            final String txId = transactionTxIdEditText.getText().toString();
+            final String quantityStr = transactionQuantityEditText.getText().toString();
+            final String priceStr = transactionPriceEditText.getText().toString();
+            final String feeStr = transactionFeeEditText.getText().toString();
+            final String totalStr = transactionTotalEditText.getText().toString();
+            final String comment = transactionCommentEditText.getText().toString();
             String type = radioButton.getText().toString();
+
+            // format long
+            long id = -1;
+            try {
+                id = Long.parseLong(idStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
 
             // format doubles
             Double quantity = null;
@@ -226,10 +244,24 @@ public class EditTransactionActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            // format types (radio button hold shorten values) and update currency values
+            if (type.toLowerCase().equals("dep")) {
+                type = "deposit";
+                currency2 = null;
+            } else if (type.toLowerCase().equals("wdrl")) {
+                type = "withdrawal";
+                currency1 = null;
+            } else {
+                type = type.toLowerCase();
+            }
+
             // check mandatory fields
-            if (currency1 == null || currency1.trim().equals("")) {
+            if (id <= 0) {
+                // todo useless as field is hidden
+                transactionIdTextView.setError(getString(R.string.error_ico_id_invalid));
+            } else if ((currency1 == null || currency1.trim().equals("")) && !type.equals("withdrawal")) {
                 transactionCurrency1AutoCompleteText.setError(getString(R.string.error_transaction_currency1_required));
-            } else if (currency2 == null || currency2.trim().equals("")) {
+            } else if ((currency2 == null || currency2.trim().equals("")) && !type.equals("deposit")) {
                 transactionCurrency2AutoCompleteText.setError(getString(R.string.error_transaction_currency1_required));
             } else if (exchange == null || exchange.trim().equals("")) {
                 // setError on spinner not possible, so I use a fake TextView
@@ -260,7 +292,7 @@ public class EditTransactionActivity extends AppCompatActivity {
             } else {
 
                 // add record to the view model who will trigger the insert
-                addTransactionViewModel.updateTransaction(new Transaction(exchange, txId, currency1, currency2, fee, date, type, quantity, price, total, comment));
+                addTransactionViewModel.updateTransaction(new Transaction(id, exchange, txId, currency1, currency2, fee, date, type, quantity, price, total, comment));
 
                 // close current activity and return to previous activity if there is any
                 finish();
@@ -273,7 +305,7 @@ public class EditTransactionActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {
@@ -282,5 +314,39 @@ public class EditTransactionActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setModeBuy() {
+        transactionCurrency1TextView.setText(getString(R.string.label_buy));
+        transactionCurrency2TextView.setText(getString(R.string.label_with));
+        transactionCurrency1TextView.setVisibility(View.VISIBLE);
+        transactionCurrency2TextView.setVisibility(View.VISIBLE);
+        transactionCurrency1AutoCompleteText.setVisibility(View.VISIBLE);
+        transactionCurrency2AutoCompleteText.setVisibility(View.VISIBLE);
+    }
+
+    private void setModeSend() {
+        transactionCurrency1TextView.setText(getString(R.string.label_sell));
+        transactionCurrency2TextView.setText(getString(R.string.label_for));
+        transactionCurrency1TextView.setVisibility(View.VISIBLE);
+        transactionCurrency2TextView.setVisibility(View.VISIBLE);
+        transactionCurrency1AutoCompleteText.setVisibility(View.VISIBLE);
+        transactionCurrency2AutoCompleteText.setVisibility(View.VISIBLE);
+    }
+
+    private void setModeDeposit() {
+        transactionCurrency1TextView.setText(getString(R.string.label_currency));
+        transactionCurrency1TextView.setVisibility(View.VISIBLE);
+        transactionCurrency2TextView.setVisibility(View.GONE);
+        transactionCurrency1AutoCompleteText.setVisibility(View.VISIBLE);
+        transactionCurrency2AutoCompleteText.setVisibility(View.GONE);
+    }
+
+    private void setModeWithdrawal() {
+        transactionCurrency2TextView.setText(getString(R.string.label_currency));
+        transactionCurrency1TextView.setVisibility(View.GONE);
+        transactionCurrency2TextView.setVisibility(View.VISIBLE);
+        transactionCurrency1AutoCompleteText.setVisibility(View.GONE);
+        transactionCurrency2AutoCompleteText.setVisibility(View.VISIBLE);
     }
 }

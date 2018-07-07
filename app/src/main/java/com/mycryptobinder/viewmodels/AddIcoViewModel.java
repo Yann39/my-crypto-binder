@@ -39,6 +39,10 @@ public class AddIcoViewModel extends AndroidViewModel {
         new addAsyncTask(appDatabase).execute(ico);
     }
 
+    public void editIco(Ico ico) {
+        new editAsyncTask(appDatabase).execute(ico);
+    }
+
     private static class addAsyncTask extends AsyncTask<Ico, Void, Void> {
 
         private AppDatabase db;
@@ -50,6 +54,22 @@ public class AddIcoViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(final Ico... icos) {
             db.icoDao().insert(icos[0]);
+            return null;
+        }
+
+    }
+
+    private static class editAsyncTask extends AsyncTask<Ico, Void, Void> {
+
+        private AppDatabase db;
+
+        editAsyncTask(AppDatabase appDatabase) {
+            db = appDatabase;
+        }
+
+        @Override
+        protected Void doInBackground(final Ico... icos) {
+            db.icoDao().update(icos[0]);
             return null;
         }
 

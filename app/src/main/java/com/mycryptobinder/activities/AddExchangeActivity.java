@@ -53,7 +53,7 @@ public class AddExchangeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_exchange);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -68,8 +68,8 @@ public class AddExchangeActivity extends AppCompatActivity {
         exchangeDescriptionEditText = findViewById(R.id.add_exchange_description_editText);
         appSettingApiPublicKeyEditText = findViewById(R.id.add_exchange_api_public_key_editText);
         appSettingApiPrivateKeyEditText = findViewById(R.id.add_exchange_api_private_key_editText);
-        Button createExchangeButton = findViewById(R.id.btn_create_exchange);
-        Button editExchangeButton = findViewById(R.id.btn_update_exchange);
+        final Button createExchangeButton = findViewById(R.id.btn_create_exchange);
+        final Button editExchangeButton = findViewById(R.id.btn_update_exchange);
 
         // hide edit button and show create button
         editExchangeButton.setVisibility(View.INVISIBLE);
@@ -81,11 +81,11 @@ public class AddExchangeActivity extends AppCompatActivity {
         // set click listener for the create exchange button
         createExchangeButton.setOnClickListener(view -> {
             // get field values
-            String name = exchangeNameEditText.getText().toString();
-            String link = exchangeLinkEditText.getText().toString();
-            String description = exchangeDescriptionEditText.getText().toString();
-            String apiPublicKey = appSettingApiPublicKeyEditText.getText().toString();
-            String apiPrivateKey = appSettingApiPrivateKeyEditText.getText().toString();
+            final String name = exchangeNameEditText.getText().toString();
+            final String link = exchangeLinkEditText.getText().toString();
+            final String description = exchangeDescriptionEditText.getText().toString();
+            final String apiPublicKey = appSettingApiPublicKeyEditText.getText().toString();
+            final String apiPrivateKey = appSettingApiPrivateKeyEditText.getText().toString();
 
             // check mandatory fields
             if (name.trim().equals("")) {
@@ -93,18 +93,17 @@ public class AddExchangeActivity extends AppCompatActivity {
             } else {
 
                 // encrypt keys
-                Properties properties = new Properties();
+                final Properties properties = new Properties();
                 try {
-                    InputStream inputStream = getApplicationContext().getAssets().open("myCryptoBinder.properties");
+                    final InputStream inputStream = getApplicationContext().getAssets().open("myCryptoBinder.properties");
                     properties.load(inputStream);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                String key = properties.getProperty("RSA_KEY");
-                String initVector = properties.getProperty("RSA_INIT_VECTOR");
-                UtilsHelper uh = new UtilsHelper(getApplicationContext());
-                String secretApiPublicKey = uh.encrypt(key, initVector, apiPublicKey);
-                String secretApiPrivateKey = uh.encrypt(key, initVector, apiPrivateKey);
+                final String key = properties.getProperty("RSA_KEY");
+                final String initVector = properties.getProperty("RSA_INIT_VECTOR");
+                final String secretApiPublicKey = UtilsHelper.encrypt(key, initVector, apiPublicKey);
+                final String secretApiPrivateKey = UtilsHelper.encrypt(key, initVector, apiPrivateKey);
 
                 // add record to the view model who will trigger the insert
                 addExchangeViewModel.addExchange(new Exchange(name, link, description, secretApiPublicKey, secretApiPrivateKey));
@@ -121,7 +120,7 @@ public class AddExchangeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {

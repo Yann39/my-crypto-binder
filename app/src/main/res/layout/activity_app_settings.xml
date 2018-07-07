@@ -36,7 +36,7 @@
                     android:id="@+id/app_settings_name_column_header_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_app_setting_header_name"
+                    android:text="@string/label_app_setting_header_name"
                     android:textColor="@color/white" />
             </LinearLayout>
 
@@ -51,7 +51,7 @@
                     android:id="@+id/app_settings_value_column_header_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_app_setting_header_value"
+                    android:text="@string/label_app_setting_header_value"
                     android:textColor="@color/white" />
             </LinearLayout>
 

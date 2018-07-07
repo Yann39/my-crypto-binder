@@ -1,36 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
     tools:context=".activities.BackupRestoreActivity">
 
-    <Button
-        android:id="@+id/btn_backup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/custom_button"
-        app:layout_constraintBottom_toTopOf="@+id/btn_restore"
-        android:text="@string/btn_backup"
-        android:textColor="#ffffff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <include layout="@layout/appbar" />
 
-    <Button
-        android:id="@+id/btn_restore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/btn_backup"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/custom_button"
-        android:text="@string/btn_restore"
-        android:textColor="#ffffff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/backup_restore_title_backup_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            android:text="@string/title_backup"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/backup_restore_intro_restore_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            android:text="@string/message_choose_file_name_for_backup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_title_backup_textView" />
+
+        <EditText
+            android:id="@+id/backup_restore_filename_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_file_name"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_intro_restore_textView" />
+
+        <Button
+            android:id="@+id/backup_restore_backup_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/custom_button"
+            android:text="@string/btn_backup"
+            android:textColor="#ffffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_filename_editText" />
+
+        <TextView
+            android:id="@+id/backup_restore_title_restore_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            android:paddingTop="20dp"
+            android:text="@string/title_restore"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_backup_button" />
+
+        <TextView
+            android:id="@+id/backup_restore_intro_backup_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="14dp"
+            android:text="@string/message_select_file_to_restore"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_title_restore_textView" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/backup_restore_fileList_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@color/colorDark80"
+            android:scrollbars="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_intro_backup_textView" />
+
+        <Button
+            android:id="@+id/backup_restore_restore_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/custom_button"
+            android:text="@string/btn_restore"
+            android:textColor="#ffffff"
+            app:layout_constraintEnd_toStartOf="@+id/backup_restore_delete_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_fileList_recyclerView" />
+
+        <Button
+            android:id="@+id/backup_restore_delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/button_red"
+            android:text="@string/btn_delete"
+            android:textColor="#ffffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/backup_restore_restore_button"
+            app:layout_constraintTop_toBottomOf="@+id/backup_restore_fileList_recyclerView" />
+
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

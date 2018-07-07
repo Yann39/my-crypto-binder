@@ -45,7 +45,7 @@ public class AppSettingListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_app_settings);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -55,7 +55,7 @@ public class AppSettingListActivity extends AppCompatActivity {
         }
 
         // prepare the recycler view with a linear layout
-        RecyclerView appSettingsListRecyclerView = findViewById(R.id.app_settings_list_recycler_view);
+        final RecyclerView appSettingsListRecyclerView = findViewById(R.id.app_settings_list_recycler_view);
         appSettingsListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // initialize the adapter for the list
@@ -63,22 +63,22 @@ public class AppSettingListActivity extends AppCompatActivity {
         appSettingsListRecyclerView.setAdapter(appSettingsListAdapter);
 
         // get view model
-        AppSettingListViewModel appSettingListViewModel = ViewModelProviders.of(this).get(AppSettingListViewModel.class);
+        final AppSettingListViewModel appSettingListViewModel = ViewModelProviders.of(this).get(AppSettingListViewModel.class);
 
         // observe the application settings list from the view model so it is always up to date
         appSettingListViewModel.getAppSettingsList().observe(AppSettingListActivity.this, appSettings -> appSettingsListAdapter.addItems(appSettings));
 
-        // set click listener for the add currency button
-        FloatingActionButton button = findViewById(R.id.btn_add_app_setting);
+        // set click listener for the add application setting button
+        final FloatingActionButton button = findViewById(R.id.btn_add_app_setting);
         button.setOnClickListener(view -> {
-            Intent intent = new Intent(view.getContext(), AddAppSettingActivity.class);
+            final Intent intent = new Intent(view.getContext(), AddAppSettingActivity.class);
             startActivity(intent);
         });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {

@@ -42,11 +42,8 @@ import com.mycryptobinder.models.bittrex.BittrexWithdrawals;
 import com.mycryptobinder.services.BittrexService;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -67,22 +64,20 @@ public class BittrexManager {
     private static List<BittrexDeposit> bittrexDepositEntities;
     private static List<BittrexWithdrawal> bittrexWithdrawalEntities;
     private final Context context;
-    private final UtilsHelper uh;
     private String publicKey;
     private String privateKey;
 
     public BittrexManager(Context context) {
         this.context = context;
         appDatabase = AppDatabase.getInstance(context);
-        uh = new UtilsHelper(context);
-        sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", uh.getCurrentLocale());
+        sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", UtilsHelper.getCurrentLocale(context));
         bittrexService = BittrexService.retrofit.create(BittrexService.class);
         bittrexTradeEntities = new ArrayList<>();
         bittrexDepositEntities = new ArrayList<>();
         bittrexWithdrawalEntities = new ArrayList<>();
 
         // get encryption key and vector from properties
-        Properties properties = uh.getProperties();
+        Properties properties = UtilsHelper.getProperties(context);
         String key = properties.getProperty("RSA_KEY");
         String initVector = properties.getProperty("RSA_INIT_VECTOR");
 
@@ -92,10 +87,10 @@ public class BittrexManager {
             String encryptedPublicApiKey = exchange.getPublicApiKey();
             String encryptedPrivateApiKey = exchange.getPrivateApiKey();
             if (encryptedPublicApiKey != null) {
-                publicKey = uh.decrypt(key, initVector, encryptedPublicApiKey);
+                publicKey = UtilsHelper.decrypt(key, initVector, encryptedPublicApiKey);
             }
             if (encryptedPrivateApiKey != null) {
-                privateKey = uh.decrypt(key, initVector, encryptedPrivateApiKey);
+                privateKey = UtilsHelper.decrypt(key, initVector, encryptedPrivateApiKey);
             }
         }
 
@@ -113,7 +108,7 @@ public class BittrexManager {
         try {
             Mac mac = Mac.getInstance("HmacSHA512");
             mac.init(new SecretKeySpec(privateKey.getBytes("UTF-8"), "HmacSHA512"));
-            signature = uh.bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
+            signature = UtilsHelper.bytesToHex(mac.doFinal(data.getBytes("UTF-8")));
         } catch (Exception e) {
             e.printStackTrace();
         }

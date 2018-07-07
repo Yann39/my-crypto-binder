@@ -19,17 +19,14 @@
 
 package com.mycryptobinder.adapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mycryptobinder.R;
 import com.mycryptobinder.activities.EditExchangeActivity;
@@ -42,10 +39,12 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
 
     private List<Exchange> exchanges;
     private Context context;
+    private View.OnClickListener clickListener;
 
-    public ExchangeCardAdapter(List<Exchange> exchanges, Context context) {
+    public ExchangeCardAdapter(List<Exchange> exchanges, Context context, View.OnClickListener clickListener) {
         this.exchanges = exchanges;
         this.context = context;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -64,36 +63,18 @@ public class ExchangeCardAdapter extends RecyclerView.Adapter<ExchangeCardViewHo
     @Override
     public void onBindViewHolder(@NonNull final ExchangeCardViewHolder holder, int position) {
         // get text from the data set at this position and replace it in the view
-        holder.exchange_name_textView.setText(exchanges.get(holder.getAdapterPosition()).getName());
-        holder.exchange_link_textView.setText(exchanges.get(holder.getAdapterPosition()).getLink());
-        holder.exchange_description_textView.setText(exchanges.get(holder.getAdapterPosition()).getDescription());
-        holder.exchange_publicApiKey_textView.setText(exchanges.get(holder.getAdapterPosition()).getPublicApiKey());
-        holder.exchange_privateApiKey_textView.setText(exchanges.get(holder.getAdapterPosition()).getPrivateApiKey());
+        Exchange exchange = exchanges.get(holder.getAdapterPosition());
+        holder.exchange_name_textView.setText(exchange.getName());
+        holder.exchange_link_textView.setText(exchange.getLink());
+        holder.exchange_description_textView.setText(exchange.getDescription());
+        holder.exchange_publicApiKey_textView.setText(exchange.getPublicApiKey());
+        holder.exchange_privateApiKey_textView.setText(exchange.getPrivateApiKey());
 
         // delete button click
-        holder.exchange_delete_imageButton.setOnClickListener(view -> {
+        holder.exchange_delete_imageButton.setOnClickListener(clickListener);
 
-            // position of the clicked item
-            final int position1 = holder.getAdapterPosition();
-            final String itemName = exchanges.get(position1).getName();
-
-            // show a confirm dialog
-            AlertDialog.Builder alert = new AlertDialog.Builder(context);
-            alert.setTitle(context.getResources().getString(R.string.title_confirmation));
-            // because Html.fromHtml is deprecated in last Android versions
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                alert.setMessage(Html.fromHtml(context.getResources().getString(R.string.confirm_delete_exchange, " <b>" + itemName + "</b>"), Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                alert.setMessage(Html.fromHtml(context.getResources().getString(R.string.confirm_delete_exchange, " <b>" + itemName + "</b>")));
-            }
-            alert.setPositiveButton(context.getResources().getString(R.string.label_yes), (dialog, which) -> {
-                // show a notification about the removed item
-                Toast.makeText(context, context.getResources().getString(R.string.success_exchange_removed, itemName), Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            });
-            alert.setNegativeButton(context.getResources().getString(R.string.label_no), (dialog, which) -> dialog.dismiss());
-            alert.show();
-        });
+        // set exchange as tag so we can get it in the click listener later
+        holder.exchange_delete_imageButton.setTag(exchange);
 
         // card click
         holder.itemView.setOnClickListener(v -> {

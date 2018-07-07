@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context="com.mycryptobinder.activities.AddTransactionActivity">
 
     <include layout="@layout/appbar" />
@@ -22,6 +24,12 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:id="@+id/transaction_id_textView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible" />
+
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -30,16 +38,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/lbl_transaction_type"
+                    android:text="@string/label_type"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <RadioGroup
                     android:id="@+id/transaction_type_radio_group"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:checkedButton="@+id/buy_layout_rb"
-                    android:gravity="center_horizontal"
+                    android:gravity="start"
                     android:orientation="horizontal"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -51,13 +59,25 @@
                         android:id="@+id/buy_layout_rb"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/label_transaction_currency1_buy" />
+                        android:text="@string/label_buy" />
 
                     <RadioButton
                         android:id="@+id/sell_layout_rb"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/label_transaction_currency1_sell" />
+                        android:text="@string/label_sell" />
+
+                    <RadioButton
+                        android:id="@+id/deposit_layout_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_deposit_short"/>
+
+                    <RadioButton
+                        android:id="@+id/withdrawal_layout_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_withdrawal_short" />
                 </RadioGroup>
             </TableRow>
 
@@ -70,7 +90,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_currency1_selection"
+                    android:text="@string/label_send"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <AutoCompleteTextView
@@ -85,7 +105,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_currency2_selection"
+                    android:text="@string/label_for"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <AutoCompleteTextView
@@ -104,7 +124,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_exchange_selection"
+                    android:text="@string/label_exchange"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <Spinner
@@ -123,7 +143,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_transaction_id"
+                    android:text="@string/label_transaction_id"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -143,7 +163,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_quantity"
+                    android:text="@string/label_quantity"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -163,7 +183,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_price"
+                    android:text="@string/label_price"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -183,7 +203,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_fees"
+                    android:text="@string/label_fees"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -203,7 +223,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_total"
+                    android:text="@string/label_total"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -223,7 +243,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_date"
+                    android:text="@string/label_date"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -244,7 +264,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="@string/lbl_comment"
+                    android:text="@string/label_comment"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText

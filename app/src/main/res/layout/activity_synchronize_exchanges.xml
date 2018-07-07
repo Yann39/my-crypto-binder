@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="14dp"
-            android:text="@string/lbl_exchange_synchronization_title"
+            android:text="@string/title_exchange_synchronization"
             android:textSize="20sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -31,14 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="14dp"
-            android:text="@string/msg_synchronize_exchanges_intro"
+            android:text="@string/message_synchronize_exchanges_intro"
             app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_title_editText" />
 
         <TextView
             android:id="@+id/synchronize_exchange_label_TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_select_exchanges"
+            android:text="@string/label_select_exchanges"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/synchronize_exchange_MultiSpinner"
             app:layout_constraintTop_toBottomOf="@+id/synchronize_exchanges_intro_editText" />
@@ -55,7 +55,7 @@
             android:id="@+id/synchronize_exchange_clean_label_TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_perform_clean_import"
+            android:text="@string/label_perform_clean_import"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/checkbox_clean_synchronize_exchanges"
             app:layout_constraintTop_toBottomOf="@+id/synchronize_exchange_MultiSpinner" />

@@ -189,20 +189,18 @@ public class KrakenManager {
      * @return The number of trades inserted
      */
     public int populateTradeHistory() {
-        UtilsHelper uh = new UtilsHelper(context);
-
         // get encryption key and vector from properties
-        Properties properties = uh.getProperties();
+        Properties properties = UtilsHelper.getProperties(context);
         String key = properties.getProperty("RSA_KEY");
         String initVector = properties.getProperty("RSA_INIT_VECTOR");
 
         // get encrypted public API key from database and decrypt it
         String encryptedPublicKey = appDatabase.exchangeDao().getByName("Kraken").getPublicApiKey();
-        publicKey = uh.decrypt(key, initVector, encryptedPublicKey);
+        publicKey = UtilsHelper.decrypt(key, initVector, encryptedPublicKey);
 
         // get encrypted private API key from database and decrypt it
         String encryptedPrivateKey = appDatabase.exchangeDao().getByName("Kraken").getPrivateApiKey();
-        privateKey = uh.decrypt(key, initVector, encryptedPrivateKey);
+        privateKey = UtilsHelper.decrypt(key, initVector, encryptedPrivateKey);
 
         // call to recursive function
         getKrakenTrades(0);

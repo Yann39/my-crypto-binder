@@ -36,7 +36,7 @@ import java.util.List;
 public class CurrencyCardAdapter extends PagedListAdapter<Currency, CurrencyCardViewHolder> {
 
     private View.OnClickListener clickListener;
-    private final AsyncListDiffer<Currency> mDiffer = new AsyncListDiffer(this, DIFF_CALLBACK);
+    private final AsyncListDiffer<Currency> mDiffer = new AsyncListDiffer<>(this, DIFF_CALLBACK);
 
     public CurrencyCardAdapter(View.OnClickListener clickListener) {
         super(DIFF_CALLBACK);

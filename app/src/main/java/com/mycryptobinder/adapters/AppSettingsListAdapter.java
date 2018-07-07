@@ -42,7 +42,7 @@ public class AppSettingsListAdapter extends RecyclerView.Adapter<AppSettingsView
     @NonNull
     @Override
     public AppSettingsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new AppSettingsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_app_settings, parent, false));
+        return new AppSettingsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_app_setting, parent, false));
     }
 
     @Override

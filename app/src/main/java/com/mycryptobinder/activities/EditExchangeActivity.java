@@ -49,7 +49,6 @@ public class EditExchangeActivity extends AppCompatActivity {
     private EditText appSettingApiPrivateKeyEditText;
     private String key;
     private String initVector;
-    private UtilsHelper uh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +56,7 @@ public class EditExchangeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_exchange);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -72,8 +71,8 @@ public class EditExchangeActivity extends AppCompatActivity {
         exchangeDescriptionEditText = findViewById(R.id.add_exchange_description_editText);
         appSettingApiPublicKeyEditText = findViewById(R.id.add_exchange_api_public_key_editText);
         appSettingApiPrivateKeyEditText = findViewById(R.id.add_exchange_api_private_key_editText);
-        Button createExchangeButton = findViewById(R.id.btn_create_exchange);
-        Button editExchangeButton = findViewById(R.id.btn_update_exchange);
+        final Button createExchangeButton = findViewById(R.id.btn_create_exchange);
+        final Button editExchangeButton = findViewById(R.id.btn_update_exchange);
 
         // hide create button and show edit button
         createExchangeButton.setVisibility(View.INVISIBLE);
@@ -83,28 +82,27 @@ public class EditExchangeActivity extends AppCompatActivity {
         addExchangeViewModel = ViewModelProviders.of(this).get(AddExchangeViewModel.class);
 
         // get the intent data so we get name of clicked exchange
-        Intent intent = getIntent();
-        String exchangeName = intent.getStringExtra("name");
-        String exchangeLink = intent.getStringExtra("link");
-        String exchangeDescription = intent.getStringExtra("description");
-        String encryptedExchangePublicApiKey = intent.getStringExtra("publicApiKey");
-        String encryptedExchangePrivateApiKey = intent.getStringExtra("privateApiKey");
+        final Intent intent = getIntent();
+        final String exchangeName = intent.getStringExtra("name");
+        final String exchangeLink = intent.getStringExtra("link");
+        final String exchangeDescription = intent.getStringExtra("description");
+        final String encryptedExchangePublicApiKey = intent.getStringExtra("publicApiKey");
+        final String encryptedExchangePrivateApiKey = intent.getStringExtra("privateApiKey");
 
         // decrypt keys
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         try {
-            InputStream inputStream = getApplicationContext().getAssets().open("myCryptoBinder.properties");
+            final InputStream inputStream = getApplicationContext().getAssets().open("myCryptoBinder.properties");
             properties.load(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
         key = properties.getProperty("RSA_KEY");
         initVector = properties.getProperty("RSA_INIT_VECTOR");
-        uh = new UtilsHelper(getApplicationContext());
-        String exchangePublicApiKey = uh.decrypt(key, initVector, encryptedExchangePublicApiKey);
-        String exchangePrivateApiKey = uh.decrypt(key, initVector, encryptedExchangePrivateApiKey);
+        final String exchangePublicApiKey = UtilsHelper.decrypt(key, initVector, encryptedExchangePublicApiKey);
+        final String exchangePrivateApiKey = UtilsHelper.decrypt(key, initVector, encryptedExchangePrivateApiKey);
 
-        // get the exchange data from database and set field values
+        // set field values
         exchangeNameEditText.setText(exchangeName);
         exchangeLinkEditText.setText(exchangeLink);
         exchangeDescriptionEditText.setText(exchangeDescription);
@@ -115,19 +113,19 @@ public class EditExchangeActivity extends AppCompatActivity {
         editExchangeButton.setOnClickListener(view -> {
 
             // get field values
-            String name = exchangeNameEditText.getText().toString();
-            String link = exchangeLinkEditText.getText().toString();
-            String description = exchangeDescriptionEditText.getText().toString();
-            String apiPublicKey = appSettingApiPublicKeyEditText.getText().toString();
-            String apiPrivateKey = appSettingApiPrivateKeyEditText.getText().toString();
+            final String name = exchangeNameEditText.getText().toString();
+            final String link = exchangeLinkEditText.getText().toString();
+            final String description = exchangeDescriptionEditText.getText().toString();
+            final String apiPublicKey = appSettingApiPublicKeyEditText.getText().toString();
+            final String apiPrivateKey = appSettingApiPrivateKeyEditText.getText().toString();
 
             // check mandatory fields
             if (name.trim().equals("")) {
                 exchangeNameEditText.setError(getString(R.string.error_exchange_name_required));
             } else {
                 // encrypt keys before storage
-                String secretApiPublicKey = uh.encrypt(key, initVector, apiPublicKey);
-                String secretApiPrivateKey = uh.encrypt(key, initVector, apiPrivateKey);
+                final String secretApiPublicKey = UtilsHelper.encrypt(key, initVector, apiPublicKey);
+                final String secretApiPrivateKey = UtilsHelper.encrypt(key, initVector, apiPrivateKey);
 
                 // add record to the view model who will trigger the insert
                 addExchangeViewModel.updateExchange(new Exchange(name, link, description, secretApiPublicKey, secretApiPrivateKey));
@@ -143,7 +141,7 @@ public class EditExchangeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {

@@ -74,7 +74,10 @@ public class Ico {
     @ColumnInfo(name = "comment")
     private String comment;
 
-    public Ico(String name, String currencyIsoCode, Double amount, Double fee, Date investDate, String token, Date tokenDate, Double tokenQuantity, Double bonus, String comment) {
+    public Ico(Long id, String name, String currencyIsoCode, Double amount, Double fee, Date investDate, String token, Date tokenDate, Double tokenQuantity, Double bonus, String comment) {
+        if(id != null && id > 0) {
+            this.id = id;
+        }
         this.name = name;
         this.currencyIsoCode = currencyIsoCode;
         this.amount = amount;

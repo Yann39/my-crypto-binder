@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.mycryptobinder.R;
 import com.mycryptobinder.entities.AppDatabase;
 import com.mycryptobinder.helpers.UtilsHelper;
+import com.mycryptobinder.managers.BitfinexManager;
 import com.mycryptobinder.managers.BittrexManager;
 import com.mycryptobinder.managers.KrakenManager;
 import com.mycryptobinder.managers.PoloniexManager;
@@ -52,8 +53,7 @@ public class SettingsViewModel extends AndroidViewModel {
         appDatabase = AppDatabase.getInstance(application.getBaseContext());
         logs = new MutableLiveData<>();
         percentDone = new MutableLiveData<>();
-        UtilsHelper uh = new UtilsHelper(application.getBaseContext());
-        sdfLog = new SimpleDateFormat("k:mm:ss", uh.getCurrentLocale());
+        sdfLog = new SimpleDateFormat("k:mm:ss", UtilsHelper.getCurrentLocale(application.getBaseContext()));
     }
 
     /**
@@ -124,6 +124,7 @@ public class SettingsViewModel extends AndroidViewModel {
             KrakenManager krakenManager = new KrakenManager(app.getBaseContext());
             PoloniexManager poloniexManager = new PoloniexManager(app.getBaseContext());
             BittrexManager bittrexManager = new BittrexManager(app.getBaseContext());
+            BitfinexManager bitfinexManager = new BitfinexManager(app.getBaseContext());
             PortfolioManager portfolioManager = new PortfolioManager(app.getBaseContext());
 
             percentDone.postValue(2);
@@ -134,10 +135,11 @@ public class SettingsViewModel extends AndroidViewModel {
                 krakenManager.deleteAll();
                 poloniexManager.deleteAll();
                 bittrexManager.deleteAll();
+                bitfinexManager.deleteAll();
                 portfolioManager.deleteAll();
                 logInfo("All data has been cleared");
             }
-            percentDone.postValue(10);
+            percentDone.postValue(8);
 
             // if at least one exchange selected
             if (selectedExchanges != null && selectedExchanges.length > 0) {
@@ -157,35 +159,32 @@ public class SettingsViewModel extends AndroidViewModel {
                         logInfo("Collecting trade history from Kraken API...");
                         nbIns = krakenManager.populateTradeHistory();
                         logInfo(nbIns + " new trades inserted");
-                        percentDone.postValue(30);
 
                         // insert Kraken asset pairs from API
                         logInfo("Collecting asset pairs from Kraken API...");
                         nbIns = krakenManager.populateAssetPairs();
                         logInfo(nbIns + " new asset pairs inserted");
-                        percentDone.postValue(37);
 
                         // insert Kraken assets from API
                         logInfo("Collecting assets from Kraken API...");
                         nbIns = krakenManager.populateAssets();
                         logInfo(nbIns + " new assets inserted");
-                        percentDone.postValue(42);
 
                         // insert Kraken currencies from assets
                         logInfo("Inserting currencies from Kraken assets...");
                         nbIns = krakenManager.populateCurrencies();
                         logInfo(nbIns + " currencies inserted");
-                        percentDone.postValue(47);
 
                         // insert Kraken transactions from trade history
                         logInfo("Inserting transactions from Kraken trade history...");
                         nbIns = krakenManager.populateTransactions();
                         logInfo(nbIns + " transactions inserted");
-                        percentDone.postValue(52);
                     } else {
                         Toast.makeText(app.getBaseContext(), app.getBaseContext().getString(R.string.error_api_keys_not_defined_fro_exchange, "Kraken"), Toast.LENGTH_SHORT).show();
                     }
                 }
+
+                percentDone.postValue(31);
 
                 // Poloniex exchange
                 if (selectedExchanges.length > 1 && selectedExchanges[1]) {
@@ -194,35 +193,31 @@ public class SettingsViewModel extends AndroidViewModel {
                         logInfo("Collecting deposits/withdrawals from Poloniex API...");
                         nbIns = poloniexManager.populateDepositsWithdrawals();
                         logInfo(nbIns + " new deposits/withdrawals inserted");
-                        percentDone.postValue(60);
 
                         // insert Poloniex trade history from API
                         logInfo("Collecting trade history from Poloniex API...");
                         nbIns = poloniexManager.populateTradeHistory();
                         logInfo(nbIns + " new trades inserted");
-                        percentDone.postValue(82);
 
                         // insert Poloniex assets from API
                         logInfo("Collecting assets from Poloniex assets...");
                         nbIns = poloniexManager.populateAssets();
                         logInfo(nbIns + " currencies inserted");
-                        percentDone.postValue(89);
 
                         // insert Poloniex currencies from assets
                         logInfo("Inserting currencies from Poloniex assets...");
                         nbIns = poloniexManager.populateCurrencies();
                         logInfo(nbIns + " currencies inserted");
-                        percentDone.postValue(94);
 
                         // insert Poloniex transactions from trade history
                         logInfo("Inserting transactions from Poloniex trade history...");
                         nbIns = poloniexManager.populateTransactions();
                         logInfo(nbIns + " transactions inserted");
-                        percentDone.postValue(100);
                     } else {
                         Toast.makeText(app.getBaseContext(), app.getBaseContext().getString(R.string.error_api_keys_not_defined_fro_exchange, "Poloniex"), Toast.LENGTH_SHORT).show();
                     }
                 }
+                percentDone.postValue(54);
 
                 // Bittrex exchange
                 if (selectedExchanges.length > 2 && selectedExchanges[2]) {
@@ -231,42 +226,66 @@ public class SettingsViewModel extends AndroidViewModel {
                         logInfo("Collecting deposits from Bittrex API...");
                         nbIns = bittrexManager.populateDeposits();
                         logInfo(nbIns + " new deposits/withdrawals inserted");
-                        percentDone.postValue(60);
 
                         // insert Bittrex withdrawals from API
                         logInfo("Collecting withdrawals from Bittrex API...");
                         nbIns = bittrexManager.populateWithdrawals();
                         logInfo(nbIns + " new withdrawals inserted");
-                        percentDone.postValue(60);
 
                         // insert Bittrex trade history from API
                         logInfo("Collecting trade history from Bittrex API...");
                         nbIns = bittrexManager.populateTradeHistory();
                         logInfo(nbIns + " new trades inserted");
-                        percentDone.postValue(100);
 
                         // insert Bittrex assets from API
                         logInfo("Collecting assets from Bittrex assets...");
                         nbIns = bittrexManager.populateAssets();
                         logInfo(nbIns + " currencies inserted");
-                        percentDone.postValue(100);
 
                         // insert Bittrex currencies from assets
                         logInfo("Inserting currencies from Bittrex assets...");
                         nbIns = bittrexManager.populateCurrencies();
                         logInfo(nbIns + " currencies inserted");
-                        percentDone.postValue(100);
 
                         // insert Bittrex transactions from trade history
                         logInfo("Inserting transactions from Bittrex trade history...");
                         nbIns = bittrexManager.populateTransactions();
                         logInfo(nbIns + " transactions inserted");
-                        percentDone.postValue(100);
                     } else {
                         Toast.makeText(app.getBaseContext(), app.getBaseContext().getString(R.string.error_api_keys_not_defined_fro_exchange, "Bittrex"), Toast.LENGTH_SHORT).show();
                     }
                 }
+                percentDone.postValue(77);
+
+                // Bitfinex exchange
+                if (selectedExchanges.length > 3 && selectedExchanges[3]) {
+                    if (bitfinexManager.areApiKeysDefined()) {
+                        // insert Bitfinex trade history from API
+                        logInfo("Collecting trade history from Bitfinex API...");
+                        nbIns = bitfinexManager.populateOrderHistory();
+                        logInfo(nbIns + " new trades inserted");
+
+                        // insert Bitfinex assets from API
+                        logInfo("Collecting assets from Bitfinex assets...");
+                        nbIns = bitfinexManager.populateAssets();
+                        logInfo(nbIns + " currencies inserted");
+
+                        // insert Bitfinex currencies from assets
+                        logInfo("Inserting currencies from Bitfinex assets...");
+                        nbIns = bitfinexManager.populateCurrencies();
+                        logInfo(nbIns + " currencies inserted");
+
+                        // insert Bitfinex transactions from trade history
+                        logInfo("Inserting transactions from Bitfinex trade history...");
+                        nbIns = bitfinexManager.populateTransactions();
+                        logInfo(nbIns + " transactions inserted");
+                    } else {
+                        Toast.makeText(app.getBaseContext(), app.getBaseContext().getString(R.string.error_api_keys_not_defined_fro_exchange, "Bitfinex"), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
+            percentDone.postValue(100);
+
 
             return null;
         }

@@ -68,7 +68,6 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
     private TextView oneYearTextView;
     private Spinner currencySpinner;
     private CurrencySpinnerAdapter currencySpinnerAdapter;
-    private UtilsHelper uh;
     private String selectedIsoCode;
 
     public StatisticsFragment() {
@@ -76,8 +75,8 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
     }
 
     public static StatisticsFragment newInstance() {
-        StatisticsFragment fragment = new StatisticsFragment();
-        Bundle args = new Bundle();
+        final StatisticsFragment fragment = new StatisticsFragment();
+        final Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,9 +89,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_statistics, container, false);
-
-        UtilsHelper uh = new UtilsHelper(getContext());
+        final View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
         // get UI components
         //nbDaysTextView = view.findViewById(R.id.historical_day_price_nb_days_textView);
@@ -104,7 +101,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
         threeMonthsTextView = view.findViewById(R.id.historical_day_price_three_months_textView);
         sixMonthsTextView = view.findViewById(R.id.historical_day_price_six_months_textView);
         oneYearTextView = view.findViewById(R.id.historical_day_price_one_year_textView);
-        SeekBar nbDaysSeekBar = view.findViewById(R.id.historical_day_price_nb_days_seekBar);
+        final SeekBar nbDaysSeekBar = view.findViewById(R.id.historical_day_price_nb_days_seekBar);
         lineChart = view.findViewById(R.id.historical_day_price);
         currencySpinner = view.findViewById(R.id.historical_day_price_currency_spinner);
 
@@ -132,7 +129,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
 
         // get view models
         statisticsViewModel = ViewModelProviders.of(this).get(StatisticsViewModel.class);
-        CurrencyListViewModel currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
+        final CurrencyListViewModel currencyListViewModel = ViewModelProviders.of(this).get(CurrencyListViewModel.class);
 
         // initialize currencies spinner adapter
         currencySpinnerAdapter = new CurrencySpinnerAdapter(new ArrayList<>(), currencySpinner.getContext(), android.R.layout.simple_spinner_dropdown_item);
@@ -161,13 +158,13 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
             if (historicalDayPrices != null && historicalDayPrices.getData() != null) {
 
                 // fill chart entries with our values
-                ArrayList<Entry> entries = new ArrayList<>();
+                final ArrayList<Entry> entries = new ArrayList<>();
                 for (HistoDayPrice histoDayPrice : historicalDayPrices.getData()) {
                     entries.add(new Entry(histoDayPrice.getTime(), histoDayPrice.getHigh().floatValue()));
                 }
 
                 // create a data set and customize it
-                LineDataSet set1 = new LineDataSet(entries, getString(R.string.label_one_day));
+                final LineDataSet set1 = new LineDataSet(entries, getString(R.string.label_one_day));
                 set1.setAxisDependency(YAxis.AxisDependency.LEFT);
                 set1.setColor(ColorTemplate.getHoloBlue());
                 set1.setValueTextColor(ColorTemplate.getHoloBlue());
@@ -180,7 +177,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
                 set1.setDrawCircleHole(false);
 
                 // create a data object with the data set
-                LineData data = new LineData(set1);
+                final LineData data = new LineData(set1);
                 data.setValueTextColor(Color.WHITE);
                 data.setValueTextSize(9f);
 
@@ -189,11 +186,11 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
                 lineChart.invalidate();
 
                 // disable the legend (only possible after setting data)
-                Legend l = lineChart.getLegend();
+                final Legend l = lineChart.getLegend();
                 l.setEnabled(false);
 
                 // customize X axis
-                XAxis xAxis = lineChart.getXAxis();
+                final XAxis xAxis = lineChart.getXAxis();
                 xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
                 xAxis.setTextSize(10f);
                 xAxis.setTextColor(Color.WHITE);
@@ -203,17 +200,16 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
                 xAxis.setCenterAxisLabels(true);
                 xAxis.setGranularity(24f); // one day
                 xAxis.setValueFormatter(new IAxisValueFormatter() {
-                    private SimpleDateFormat mFormat = new SimpleDateFormat("dd MMM", uh.getCurrentLocale());
+                    private SimpleDateFormat mFormat = new SimpleDateFormat("dd MMM", UtilsHelper.getCurrentLocale(getContext()));
 
                     @Override
                     public String getFormattedValue(float value, AxisBase axis) {
-
                         return mFormat.format(new Date((long) value * 1000L));
                     }
                 });
 
                 // customize Y axis
-                YAxis leftAxis = lineChart.getAxisLeft();
+                final YAxis leftAxis = lineChart.getAxisLeft();
                 leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
                 leftAxis.setTextColor(ColorTemplate.getHoloBlue());
                 leftAxis.setDrawGridLines(true);
@@ -221,7 +217,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
                 leftAxis.setYOffset(-9f);
                 leftAxis.setTextColor(Color.rgb(255, 192, 56));
 
-                YAxis rightAxis = lineChart.getAxisRight();
+                final YAxis rightAxis = lineChart.getAxisRight();
                 rightAxis.setEnabled(false);
             }
         });
@@ -233,7 +229,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
         // arrays to match values and labels depending on current progress
-        int[] valuesInt = {1, 7, 15, 30, 60, 90, 180, 365};
+        final int[] valuesInt = {1, 7, 15, 30, 60, 90, 180, 365};
         String[] valuesStr = {
                 getString(R.string.label_one_day),
                 getString(R.string.label_seven_days),
@@ -248,7 +244,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
         //nbDaysTextView.setText(valuesStr[progress]);
 
         // reset label colors
-        int defaultColor = oneDayTextView.getCurrentTextColor();
+        final int defaultColor = oneDayTextView.getCurrentTextColor();
         oneDayTextView.setTextColor(defaultColor);
         oneWeekTextView.setTextColor(defaultColor);
         twoWeeksTextView.setTextColor(defaultColor);
@@ -259,7 +255,7 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
         oneYearTextView.setTextColor(defaultColor);
 
         // change current item label color
-        int selectionColor = getResources().getColor(R.color.primary);
+        final int selectionColor = getResources().getColor(R.color.primary);
         if (progress == 0) {
             oneDayTextView.setTextColor(selectionColor);
         } else if (progress == 1) {
@@ -283,7 +279,6 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
         lineChart.invalidate();
     }
 
-
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         // TODO Auto-generated method stub
@@ -293,7 +288,6 @@ public class StatisticsFragment extends Fragment implements SeekBar.OnSeekBarCha
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         // TODO Auto-generated method stub
-
     }
 
 }

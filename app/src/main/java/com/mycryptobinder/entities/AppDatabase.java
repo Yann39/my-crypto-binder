@@ -32,6 +32,9 @@ import com.mycryptobinder.dao.CurrencyDao;
 import com.mycryptobinder.dao.ExchangeDao;
 import com.mycryptobinder.dao.IcoDao;
 import com.mycryptobinder.dao.TransactionDao;
+import com.mycryptobinder.dao.bitfinex.BitfinexAssetDao;
+import com.mycryptobinder.dao.bitfinex.BitfinexOrderDao;
+import com.mycryptobinder.dao.bitfinex.BitfinexSymbolDao;
 import com.mycryptobinder.dao.bittrex.BittrexAssetDao;
 import com.mycryptobinder.dao.bittrex.BittrexDepositDao;
 import com.mycryptobinder.dao.bittrex.BittrexTradeDao;
@@ -43,6 +46,9 @@ import com.mycryptobinder.dao.poloniex.PoloniexAssetDao;
 import com.mycryptobinder.dao.poloniex.PoloniexDepositDao;
 import com.mycryptobinder.dao.poloniex.PoloniexTradeDao;
 import com.mycryptobinder.dao.poloniex.PoloniexWithdrawalDao;
+import com.mycryptobinder.entities.bitfinex.BitfinexAsset;
+import com.mycryptobinder.entities.bitfinex.BitfinexOrder;
+import com.mycryptobinder.entities.bitfinex.BitfinexSymbol;
 import com.mycryptobinder.entities.bittrex.BittrexAsset;
 import com.mycryptobinder.entities.bittrex.BittrexDeposit;
 import com.mycryptobinder.entities.bittrex.BittrexTrade;
@@ -55,7 +61,11 @@ import com.mycryptobinder.entities.poloniex.PoloniexDeposit;
 import com.mycryptobinder.entities.poloniex.PoloniexTrade;
 import com.mycryptobinder.entities.poloniex.PoloniexWithdrawal;
 import com.mycryptobinder.helpers.DateTypeConverter;
+import com.mycryptobinder.helpers.UtilsHelper;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 
 @Database(entities = {
@@ -71,22 +81,19 @@ import java.util.concurrent.Executors;
         BittrexTrade.class,
         BittrexDeposit.class,
         BittrexWithdrawal.class,
+        BitfinexAsset.class,
+        BitfinexSymbol.class,
+        BitfinexOrder.class,
         Currency.class,
         Exchange.class,
         Ico.class,
-        Transaction.class}, version = 18, exportSchema = false)
+        Transaction.class}, version = 19, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
 
     public abstract AppSettingDao settingsDao();
-
-    public abstract KrakenAssetDao krakenAssetDao();
-
-    public abstract KrakenAssetPairDao krakenAssetPairDao();
-
-    public abstract KrakenTradeDao krakenTradeDao();
 
     public abstract CurrencyDao currencyDao();
 
@@ -96,6 +103,15 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TransactionDao transactionDao();
 
+    //region Kraken
+    public abstract KrakenAssetDao krakenAssetDao();
+
+    public abstract KrakenAssetPairDao krakenAssetPairDao();
+
+    public abstract KrakenTradeDao krakenTradeDao();
+    //endregion
+
+    //region Poloniex
     public abstract PoloniexAssetDao poloniexAssetDao();
 
     public abstract PoloniexTradeDao poloniexTradeDao();
@@ -103,7 +119,9 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract PoloniexDepositDao poloniexDepositDao();
 
     public abstract PoloniexWithdrawalDao poloniexWithdrawalDao();
+    //endregion
 
+    //region Bittrex
     public abstract BittrexAssetDao bittrexAssetDao();
 
     public abstract BittrexTradeDao bittrexTradeDao();
@@ -111,6 +129,15 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract BittrexDepositDao bittrexDepositDao();
 
     public abstract BittrexWithdrawalDao bittrexWithdrawalDao();
+    //endregion
+
+    //region Bitfinex
+    public abstract BitfinexAssetDao bitfinexAssetDao();
+
+    public abstract BitfinexSymbolDao bitfinexSymbolDao();
+
+    public abstract BitfinexOrderDao bitfinexOrderDao();
+    //endregion
 
     public synchronized static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
@@ -122,16 +149,28 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase buildDatabase(final Context context) {
         return Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "cryptodatabase").fallbackToDestructiveMigration().addCallback(new Callback() {
             @Override
-            public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                super.onCreate(db);
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                super.onOpen(db);
                 Executors.newSingleThreadScheduledExecutor().execute(() -> {
-                    // initialize database with exchanges
-                    Exchange krakenExchange = new Exchange("Kraken", "https://www.kraken.com", "Kraken exchange", null, null);
-                    Exchange poloniexExchange = new Exchange("Poloniex", "https://poloniex.com", "Poloniex exchange", null, null);
-                    Exchange bittrexExchange = new Exchange("Bittrex", "https://bittrex.com", "Bittrex exchange", null, null);
-                    getInstance(context).exchangeDao().insert(krakenExchange);
-                    getInstance(context).exchangeDao().insert(poloniexExchange);
-                    getInstance(context).exchangeDao().insert(bittrexExchange);
+                    AppDatabase appDb = getInstance(context);
+
+                    // initialize database with exchanges if they does not exist
+                    if (appDb.exchangeDao().getByName("Kraken") == null) {
+                        Exchange krakenExchange = new Exchange("Kraken", "https://www.kraken.com", "Kraken exchange", null, null);
+                        appDb.exchangeDao().insert(krakenExchange);
+                    }
+                    if (appDb.exchangeDao().getByName("Poloniex") == null) {
+                        Exchange poloniexExchange = new Exchange("Poloniex", "https://poloniex.com", "Poloniex exchange", null, null);
+                        appDb.exchangeDao().insert(poloniexExchange);
+                    }
+                    if (appDb.exchangeDao().getByName("Bittrex") == null) {
+                        Exchange bittrexExchange = new Exchange("Bittrex", "https://bittrex.com", "Bittrex exchange", null, null);
+                        appDb.exchangeDao().insert(bittrexExchange);
+                    }
+                    if (appDb.exchangeDao().getByName("Bitfinex") == null) {
+                        Exchange bitfinexExchange = new Exchange("Bitfinex", "https://www.bitfinex.com", "Bitfinex exchange", null, null);
+                        appDb.exchangeDao().insert(bitfinexExchange);
+                    }
                 });
             }
         }).build();

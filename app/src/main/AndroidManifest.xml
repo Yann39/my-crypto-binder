@@ -3,6 +3,7 @@
     package="com.mycryptobinder">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /-->
 
     <application
         android:allowBackup="false"
@@ -16,7 +17,6 @@
             android:label="@string/title_portfolio">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -40,8 +40,7 @@
             android:label="@string/title_app_setting_list" />
         <activity
             android:name=".activities.CurrencyListActivity"
-            android:label="@string/title_currency_list"
-            android:parentActivityName=".activities.MainActivity" />
+            android:label="@string/title_currency_list" />
         <activity
             android:name=".activities.ExchangeListActivity"
             android:label="@string/title_exchange_list" />
@@ -51,6 +50,9 @@
         <activity
             android:name=".activities.EditExchangeActivity"
             android:label="@string/title_edit_exchange" />
+        <activity
+            android:name=".activities.EditIcoActivity"
+            android:label="@string/title_edit_ico" />
         <activity
             android:name=".activities.EditTransactionActivity"
             android:label="@string/title_edit_transaction" />

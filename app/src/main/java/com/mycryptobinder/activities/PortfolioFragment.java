@@ -31,6 +31,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,10 +78,10 @@ public class PortfolioFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
+        final View view = inflater.inflate(R.layout.fragment_portfolio, container, false);
 
         // prepare the recycler view with a linear layout
-        RecyclerView portfolioRecyclerView = view.findViewById(R.id.portfolio_recycler_view);
+        final RecyclerView portfolioRecyclerView = view.findViewById(R.id.portfolio_recycler_view);
         portfolioRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         // initialize the adapter for the list
@@ -87,22 +89,22 @@ public class PortfolioFragment extends Fragment {
         portfolioRecyclerView.setAdapter(portfolioCardAdapter);
 
         // add horizontal separator between rows
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(portfolioRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        final DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(portfolioRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
         portfolioRecyclerView.addItemDecoration(mDividerItemDecoration);
 
         // get view model
         portfolioViewModel = ViewModelProviders.of(this).get(PortfolioViewModel.class);
 
         // get view elements
-        TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
-        TextView totalHoldingTextView = view.findViewById(R.id.portfolio_total_value_textView);
-        TextView totalChange24hTextView = view.findViewById(R.id.portfolio_last24_value_textView);
+        final TextView nbCoinTextView = view.findViewById(R.id.portfolio_nbcoin_value_textView);
+        final TextView totalHoldingTextView = view.findViewById(R.id.portfolio_total_value_textView);
+        final TextView totalChange24hTextView = view.findViewById(R.id.portfolio_last24_value_textView);
         portfolioCurrencyColumnHeaderText = view.findViewById(R.id.portfolio_currency_column_header_text);
         portfolioQuantityColumnHeaderText = view.findViewById(R.id.portfolio_quantity_column_header_text);
         portfolioHoldingColumnHeaderText = view.findViewById(R.id.portfolio_holding_column_header_text);
 
         // display a progress bar while loading holdings data
-        ProgressBar progressBar = view.findViewById(R.id.progress_bar);
+        final ProgressBar progressBar = view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
 
         // observe the number of currencies from the view model so it will always be up to date in the UI
@@ -196,6 +198,13 @@ public class PortfolioFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        // inflate the menu, this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_main, menu);
     }
 
     @Override

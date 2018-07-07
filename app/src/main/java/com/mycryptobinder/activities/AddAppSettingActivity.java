@@ -45,7 +45,7 @@ public class AddAppSettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_app_setting);
 
         // set toolbar as actionbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // add back arrow to toolbar
@@ -57,8 +57,8 @@ public class AddAppSettingActivity extends AppCompatActivity {
         // get view components
         appSettingNameEditText = findViewById(R.id.add_app_setting_name_editText);
         appSettingValueEditText = findViewById(R.id.add_app_setting_value_editText);
-        Button createAppSettingButton = findViewById(R.id.btn_create_app_setting);
-        Button updateAppSettingButton = findViewById(R.id.btn_update_app_setting);
+        final Button createAppSettingButton = findViewById(R.id.btn_create_app_setting);
+        final Button updateAppSettingButton = findViewById(R.id.btn_update_app_setting);
 
         // hide edit button and show create button
         updateAppSettingButton.setVisibility(View.INVISIBLE);
@@ -70,8 +70,8 @@ public class AddAppSettingActivity extends AppCompatActivity {
         // set click listener for the create app setting button
         createAppSettingButton.setOnClickListener(view -> {
             // get field values
-            String settingName = appSettingNameEditText.getText().toString();
-            String settingValue = appSettingValueEditText.getText().toString();
+            final String settingName = appSettingNameEditText.getText().toString();
+            final String settingValue = appSettingValueEditText.getText().toString();
 
             // check mandatory fields
             if (settingName.trim().equals("")) {
@@ -93,7 +93,7 @@ public class AddAppSettingActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         // back arrow click
         if (id == android.R.id.home) {
