@@ -1,5 +1,14 @@
 ## General
 
+#### Disclaimer
+
+I started this project to play arround with Android architecture components for my own knowledge.
+I do not pretend the code is a reference.
+Some functionalities and checkings might be missing or incomplete.
+This project is not intended to be used in a production environment.
+
+#### Purpose
+
 The purpose of this application is to allow easy retrieval of trading data from online
 cryptocurrency exchanges. It only allows visualization of data, it can **NOT** be used as a trading
 platform.
@@ -50,7 +59,7 @@ design user interface implementations (RecyclerView, CardView, etc.). The follow
 #### Technologies
 
 - Java 8
-- SQLite as basic embedded database
+- [SQLite](https://www.sqlite.org) as basic embedded database
 - [Android architecture components](https://developer.android.com/topic/libraries/architecture/index.html)
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel.html) helper
   class to facilitate the MVVM architecture
@@ -78,7 +87,7 @@ Application code has been organized with the following package structure :
 
 - _activities_ : UI interaction classes
 - _adapters_ : underlying views datasets management classes
-- _components_ : custom components
+- _components_ : custom components / decorators
 - _dao_ : database access object interfaces
 - _entities_ : database entity classes
 - _helpers_ : helper classes
@@ -95,11 +104,11 @@ Data got from online exchanges are stored in the local SQLite database :
 - all assets from different exchanges are merged into a single `CURRENCY` table
 - all trades from different exchanges are merged into a `TRANSACTIONS` table
 
-Note: currencies with different names are merged into the same name (ie. Kraken XBT becomes BTC).
+Note: same currencies with different names are merged (ie. Kraken XBT becomes BTC).
 
 That way we have a simple `EXCHANGE` - `CURRENCY` - `TRANSACTIONS` relation, and have no need to
-call exchange API each time. Simply resynchronize with the exchange (from the settings menu) if you
-made new operations on it.
+call exchange API each time. Simply resynchronize the exchanges on which you performed new
+operations (from the settings menu) to get up-to-date data.
 
 ## Privacy
 
@@ -112,8 +121,6 @@ statement.
 
 We may change this policy from time to time by updating this page. You should check this page from
 time to time to ensure that you are happy with any changes.
-
-This application is free, we will never ask you for any money.
 
 ##### What personal information do we collect from people using the app?
 
@@ -141,14 +148,21 @@ We will never display any advertising and/or send you promotional information ab
 
 ##### Security
 
-Data is only stored in the local embedded SQLite database. Once in the app, data will never be sent
-over the network to any centralized server.
+Raw data is only stored in the local embedded SQLite database. Once in the app, it will never be sent
+over the network to any centralized server. Keys are AES encrypted before storage.
+
+Android Auto backup is disabled, so application data will not be sent to your Google Drive account.
+If you need to backup your data, please use the backup/restore functionality from the Settings menu.
+
+The backup/restore functionality writes CSV files to the internal storage in the application-specific
+directory so it does not require any additional permission. Your keys will remain AES encrypted in
+the backed up file.
 
 I have planned to use [Android Keystore System](https://developer.android.com/training/articles/keystore.html)
 in the near future to store the exchange API keys but for the moment I simply used an AES encryption. 
 
 Therefore we cannot guarantee the security of your data as any APK file can be easily decompiled.
-It's up to you to keep your application in safe hands.
+It's up to you to keep your application and related data in safe hands.
 
 ##### Controlling your personal information
 
@@ -172,3 +186,11 @@ see <http://www.gnu.org/licenses/>.
 ## Contributing
 
 Feel free to fork the project and/or create pull requests.
+
+## Known issues (Apr 2018)
+
+- Bittrex API is broken and does not allow to retrieve order history
+- Bitfinex API order history is limited to last 3 days and 1 request per minute. TO DO : use "Past
+Trades" endpoint that must be called for each pairs...
+- Backup / restore functionality simply backup and restore the exchanges list
+- Paging need to be refactored because of deprecated methods
