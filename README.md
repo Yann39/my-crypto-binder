@@ -2,7 +2,7 @@
 
 #### Disclaimer
 
-I started this project to play arround with Android architecture components for my own knowledge.
+I started this project to play around with Android architecture components for my own knowledge.
 I do not pretend the code is a reference.
 Some functionalities and checkings might be missing or incomplete.
 This project is not intended to be used in a production environment.
@@ -24,6 +24,18 @@ Here is the currently supported exchanges :
 - Poloniex : https://poloniex.com/
 - Bitfinex : https://www.bitfinex.com/
 - Bittrex : https://bittrex.com/
+
+## Screenshots
+
+![Homepage screenshot](doc/screen_home.png "Homepage")
+![Transactions page screenshot](doc/screen_transactions.png "Transactions page")
+![Edit transaction page screenshot](doc/screen_edit_transaction.png "Edit transaction page")
+![BTC price graphic screenshot](doc/screen_graphic.png "BTC price Graphic")
+
+![ICO list screenshot](doc/screen_ico.png "ICO list")
+![Exchanges selection screenshot](doc/screen_synchro_selection.png "Exchanges selection")
+![Exchange synchronization page screenshot](doc/screen_synchro.png "Exchange synchronization page")
+![Backup/restore page screenshot](doc/screen_backup_restore.png "Backup/restore page")
 
 ## Usage
 
@@ -79,7 +91,7 @@ operation).
 
 Application has been implemented using the **MVVM** (Model-View-ViewModel) pattern as described below :
 
-![Architecture schema](doc/architecture.svg "Architecture")
+![Architecture schema](doc/architecture.png "Architecture")
 
 #### Code structure
 
