@@ -31,7 +31,6 @@ Here is the currently supported exchanges :
 ![Transactions page screenshot](doc/screen_transactions.png "Transactions page")
 ![Edit transaction page screenshot](doc/screen_edit_transaction.png "Edit transaction page")
 ![BTC price graphic screenshot](doc/screen_graphic.png "BTC price Graphic")
-
 ![ICO list screenshot](doc/screen_ico.png "ICO list")
 ![Exchanges selection screenshot](doc/screen_synchro_selection.png "Exchanges selection")
 ![Exchange synchronization page screenshot](doc/screen_synchro.png "Exchange synchronization page")
