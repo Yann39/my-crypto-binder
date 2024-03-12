@@ -2,7 +2,7 @@
 
 **Android** application for managing **cryptocurrency** portfolio.
 
-![Version](https://img.shields.io/badge/Version-1.0.0-2AAB92.svg)
+![Version](https://img.shields.io/badge/Version-0.8.4-2AAB92.svg)
 ![Static Badge](https://img.shields.io/badge/Last%20update-07%20Jul%202018-blue)
 
 ![Version](https://img.shields.io/badge/Platform-Android-green.svg)
