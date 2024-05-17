@@ -139,7 +139,58 @@ design user interface implementations (RecyclerView, CardView, etc.). The follow
 
 Application has been implemented using the **MVVM** (Model-View-ViewModel) pattern as described below :
 
-![Architecture schema](doc/architecture.png "Architecture")
+```mermaid
+flowchart TB
+
+    style VIEW fill: #205566
+    style VIEWMODEL fill: #205566
+    style ADAPTER_VIEWHOLDER fill: #205566
+    style ROOM fill: #205566
+    style MODEL fill: #205566
+    style SERVICE fill: #205566
+    style REPOSITORY fill: #3d681b
+    style API fill: #806030
+    style DATABASE fill: #804030
+
+    subgraph VIEW
+        ACTIVITY_FRAGMENT(Activity / Fragment)
+    end
+
+    subgraph VIEWMODEL
+        LIVEDATA_OBSERVER(LiveData / Observer)
+    end
+
+    ADAPTER_VIEWHOLDER[Adapter / ViewHolder]
+
+    REPOSITORY[Repository]
+
+    subgraph ROOM
+        DAO(DAO)
+        ENTITY(Entity)
+    end
+
+    DATABASE[(SQLite)]
+
+    MODEL[Model]
+
+    subgraph SERVICE
+        RETROFIT(Retrofit)
+    end
+
+    API{{Exchanges API}}
+
+    VIEWMODEL --> ADAPTER_VIEWHOLDER
+    VIEW --> VIEWMODEL
+    VIEWMODEL --> REPOSITORY
+    VIEWMODEL -.-> MODEL
+    REPOSITORY ---> ROOM
+    REPOSITORY --> MODEL
+    ROOM --> DATABASE
+    MODEL --> SERVICE
+    SERVICE --> API
+    
+    
+```
 
 ## Code structure
 
